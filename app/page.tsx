@@ -461,20 +461,6 @@ export default function Home() {
                 );
               })}
             </div>
-
-            <div className="mt-10 rounded-3xl border-2 border-green-200 bg-gradient-to-r from-green-50 to-emerald-50 p-8 shadow-xl dark:border-green-500/30 dark:from-green-950/20 dark:to-emerald-950/20">
-              <div className="flex items-start gap-6">
-                <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl bg-green-500/20 border-2 border-green-300 dark:border-green-500">
-                  <Sparkles className="h-8 w-8 text-green-600 dark:text-green-400" />
-                </div>
-                <div>
-                  <p className="text-xl font-bold text-green-700 dark:text-green-300">🚀 Google Startup Program Ready</p>
-                  <p className="mt-3 text-base leading-7 text-green-800 dark:text-green-200">
-                    Our entire architecture is designed for Google Cloud Platform scalability. With Vertex AI, Cloud Speech/Text-to-Speech APIs, OAuth integration, and enterprise-grade security, MyAIDiary demonstrates the perfect use case for Google's AI ecosystem—making it an ideal candidate for Google startup funding and accelerator programs.
-                  </p>
-                </div>
-              </div>
-            </div>
           </div>
         </section>
 
@@ -567,20 +553,6 @@ export default function Home() {
                     </div>
                   );
                 })}
-              </div>
-            </div>
-
-            <div className="mt-12 rounded-3xl border-2 border-indigo-200 bg-gradient-to-r from-indigo-500/10 via-fuchsia-500/10 to-emerald-500/10 p-8 shadow-xl backdrop-blur dark:border-indigo-500/30">
-              <div className="flex items-start gap-6">
-                <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-indigo-500/20 border-2 border-indigo-300 dark:border-indigo-500">
-                  <CheckCircle2 className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
-                </div>
-                <div>
-                  <p className="text-lg font-bold text-indigo-700 dark:text-indigo-300">🚀 AI-First Roadmap</p>
-                  <p className="mt-3 text-base leading-7 text-zinc-700 dark:text-zinc-300">
-                    All steps showcase our comprehensive AI integration. The current demo includes foundational AI features, while advanced capabilities (STT, TTS, LLM-powered insights, and Google Cloud AI) are being integrated. Every feature is designed with AI at its core for maximum investor appeal.
-                  </p>
-                </div>
               </div>
             </div>
           </div>
