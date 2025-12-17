@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+html {
+  scroll-behavior: smooth;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -8,7 +12,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-sora);
   --font-mono: var(--font-geist-mono);
 }
 
@@ -22,5 +26,79 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji",
+    "Segoe UI Emoji";
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .myaidiary-fade-up,
+  .myaidiary-float,
+  .myaidiary-gradient-pan,
+  .myaidiary-shimmer {
+    animation: none !important;
+  }
+}
+
+@keyframes myaidiary-fade-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes myaidiary-float {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -6px, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.myaidiary-fade-up {
+  animation: myaidiary-fade-up 700ms ease-out both;
+}
+
+.myaidiary-float {
+  animation: myaidiary-float 6s ease-in-out infinite;
+}
+
+@keyframes myaidiary-gradient-pan {
+  0% {
+    transform: translate3d(-8%, 0, 0);
+  }
+  50% {
+    transform: translate3d(8%, 0, 0);
+  }
+  100% {
+    transform: translate3d(-8%, 0, 0);
+  }
+}
+
+@keyframes myaidiary-shimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+.myaidiary-gradient-pan {
+  animation: myaidiary-gradient-pan 10s ease-in-out infinite;
+}
+
+.myaidiary-shimmer {
+  background-size: 200% 200%;
+  animation: myaidiary-shimmer 8s ease-in-out infinite;
 }
