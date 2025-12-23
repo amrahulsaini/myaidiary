@@ -94,12 +94,12 @@ export default function Home() {
 
           <div className="flex items-center gap-3">
             <Link
-              href="/diary"
+              href="/dashboard"
               className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-zinc-950 px-6 text-sm font-semibold text-white shadow-md shadow-zinc-950/20 transition-all duration-300 hover:scale-105 hover:bg-zinc-800 hover:shadow-lg dark:bg-white dark:text-black dark:shadow-white/20 dark:hover:bg-zinc-200"
             >
               <BookOpen className="h-4 w-4" />
-              <span className="hidden sm:inline">Open Diary</span>
-              <span className="sm:hidden">Diary</span>
+              <span className="hidden sm:inline">Open App</span>
+              <span className="sm:hidden">App</span>
             </Link>
           </div>
         </div>
@@ -137,11 +137,11 @@ export default function Home() {
 
             <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row myaidiary-fade-up">
               <Link
-                href="/diary"
+                href="/dashboard"
                 className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-zinc-950 px-6 text-sm font-semibold text-white shadow-lg shadow-zinc-950/20 transition-all duration-300 hover:scale-105 hover:bg-zinc-800 hover:shadow-xl dark:bg-white dark:text-black dark:shadow-white/20 dark:hover:bg-zinc-200 sm:w-auto"
               >
                 <Sparkles className="h-4 w-4" />
-                Start writing
+                Open Dashboard
               </Link>
               <a
                 href="#features"
@@ -507,6 +507,15 @@ export default function Home() {
             <a className="hover:text-zinc-950 dark:hover:text-white" href="#contact">
               Contact
             </a>
+            <Link className="hover:text-zinc-950 dark:hover:text-white" href="/about">
+              About
+            </Link>
+            <Link className="hover:text-zinc-950 dark:hover:text-white" href="/privacy">
+              Privacy
+            </Link>
+            <Link className="hover:text-zinc-950 dark:hover:text-white" href="/terms">
+              Terms
+            </Link>
           </div>
         </div>
       </footer>

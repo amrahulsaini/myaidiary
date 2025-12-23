@@ -13,9 +13,31 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MyAIDiary",
+  metadataBase: process.env.NEXT_PUBLIC_SITE_URL
+    ? new URL(process.env.NEXT_PUBLIC_SITE_URL)
+    : undefined,
+  title: {
+    default: "MyAIDiary",
+    template: "%s · MyAIDiary",
+  },
   description:
-    "A privacy-first daily diary with roadmap AI personalization, reminders, time management, and email-based context.",
+    "MyAIDiary is a privacy-first diary app with AI-powered voice and insights. Record daily notes and reflect on patterns — with more AI features on the roadmap.",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    title: "MyAIDiary",
+    description:
+      "A privacy-first diary app with AI-powered voice and insights — built for daily reflection.",
+    url: "/",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "MyAIDiary",
+    description:
+      "A privacy-first diary app with AI-powered voice and insights — built for daily reflection.",
+  },
 };
 
 export default function RootLayout({
