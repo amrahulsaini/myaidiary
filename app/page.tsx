@@ -394,23 +394,6 @@ export default function Home() {
                     </p>
                   </div>
                 </div>
-
-                <div className="rounded-xl border-2 border-yellow-400 bg-gradient-to-r from-yellow-50 to-orange-50 p-5 dark:from-yellow-950/30 dark:to-orange-950/30">
-                  <p className="text-base font-bold text-yellow-900 dark:text-yellow-200 flex items-center gap-2">
-                    🚀 Built for Google for Startups
-                  </p>
-                  <div className="mt-3 space-y-2 text-sm leading-6 text-yellow-900/90 dark:text-yellow-100/80">
-                    <p>
-                      <span className="font-semibold">• Cloud-Native Architecture:</span> Built on GCP from day one with Cloud Run, Vertex AI, and Firestore for infinite scalability.
-                    </p>
-                    <p>
-                      <span className="font-semibold">• AI-First Product:</span> Every feature leverages Google AI—from speech recognition to natural language understanding to predictive analytics.
-                    </p>
-                    <p>
-                      <span className="font-semibold">• Enterprise Ready:</span> OAuth 2.0, API integrations, and admin controls prepare us for Google Workspace marketplace distribution.
-                    </p>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
