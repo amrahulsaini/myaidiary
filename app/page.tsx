@@ -272,6 +272,36 @@ export default function Home() {
                 title="Advanced AI powering every feature"
                 subtitle="We use AI throughout the entire experience: Speech-to-Text, Text-to-Speech, sentiment analysis, pattern recognition, and intelligent insights—all built for Google-level scalability."
               />
+              
+              <div className="mt-8 space-y-4">
+                <div className="rounded-2xl border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50 p-6 shadow-lg dark:border-blue-500/30 dark:from-blue-950/30 dark:to-indigo-950/30">
+                  <p className="text-lg font-bold text-blue-700 dark:text-blue-300 mb-3">
+                    🎓 How Google AI Transforms Your Diary Experience
+                  </p>
+                  <div className="space-y-3 text-sm leading-6 text-zinc-700 dark:text-zinc-300">
+                    <div className="flex items-start gap-3">
+                      <span className="text-blue-600 dark:text-blue-400 font-bold mt-0.5">1.</span>
+                      <p><span className="font-semibold">Contextual Understanding:</span> Google's Gemini AI reads between the lines, understanding not just what you write, but the emotions, intentions, and context behind your words.</p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <span className="text-blue-600 dark:text-blue-400 font-bold mt-0.5">2.</span>
+                      <p><span className="font-semibold">Intelligent Connections:</span> Automatically links your diary entries with emails, calendar events, and documents—creating a complete picture of your day without manual effort.</p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <span className="text-blue-600 dark:text-blue-400 font-bold mt-0.5">3.</span>
+                      <p><span className="font-semibold">Predictive Insights:</span> Machine learning models spot patterns you might miss—recurring stressors, productivity peaks, and opportunities for growth.</p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <span className="text-blue-600 dark:text-blue-400 font-bold mt-0.5">4.</span>
+                      <p><span className="font-semibold">Voice-First Design:</span> Google's world-class STT/TTS technology makes journaling as natural as having a conversation—capture thoughts instantly, anywhere.</p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <span className="text-blue-600 dark:text-blue-400 font-bold mt-0.5">5.</span>
+                      <p><span className="font-semibold">Privacy-Preserving AI:</span> Advanced federated learning and on-device processing keep your most personal thoughts secure while still delivering powerful AI insights.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="rounded-3xl border-2 border-indigo-200 bg-gradient-to-br from-white to-indigo-50/50 p-8 shadow-xl shadow-indigo-500/20 backdrop-blur dark:border-indigo-500/30 dark:from-zinc-900 dark:to-indigo-950/30 dark:shadow-none">
@@ -322,18 +352,65 @@ export default function Home() {
                     ☁️ Google Cloud AI Platform
                   </p>
                   <p className="mt-2 text-base leading-7 text-zinc-600 dark:text-zinc-400">
-                    Powered by Google Cloud Vertex AI, our infrastructure scales seamlessly. We leverage Google's state-of-the-art AI models, OAuth integration, Gmail API, and GCP for enterprise-grade reliability.
+                    Powered by Google Cloud Vertex AI, our infrastructure scales seamlessly. We leverage Google's state-of-the-art AI models including Gemini for multimodal understanding, PaLM 2 for language tasks, OAuth integration, Gmail API, and GCP for enterprise-grade reliability and global availability.
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-green-200 bg-gradient-to-br from-green-50 to-emerald-50 p-5 shadow-md dark:border-green-500/20 dark:bg-green-950/20">
+                  <p className="text-base font-bold text-green-700 dark:text-green-300">
+                    🌍 Google AI: Your Personal Intelligence Companion
+                  </p>
+                  <p className="mt-2 text-base leading-7 text-zinc-600 dark:text-zinc-400">
+                    Google's AI doesn't just process your words—it understands your journey. With contextual memory, cross-device sync via Google Drive, and intelligent suggestions powered by years of Google search and assistant technology, MyAIDiary becomes your most trusted companion for personal growth, productivity, and self-reflection.
                   </p>
                 </div>
               </div>
 
-              <div className="mt-6 rounded-xl bg-gradient-to-r from-indigo-600 to-fuchsia-600 p-5">
-                <p className="text-base font-bold text-white">
-                  💡 AI-First Philosophy
-                </p>
-                <p className="mt-2 text-base leading-7 text-white/90">
-                  Unlike traditional journals, MyAIDiary is built with AI at its foundation. Every feature—from data input (STT) to output (TTS), from analysis to insights—is powered by cutting-edge artificial intelligence, making it the perfect showcase for Google startup funding.
-                </p>
+              <div className="mt-6 space-y-4">
+                <div className="rounded-xl bg-gradient-to-r from-indigo-600 to-fuchsia-600 p-5">
+                  <p className="text-base font-bold text-white">
+                    💡 AI-First Philosophy
+                  </p>
+                  <p className="mt-2 text-base leading-7 text-white/90">
+                    Unlike traditional journals, MyAIDiary is built with AI at its foundation. Every feature—from data input (STT) to output (TTS), from analysis to insights—is powered by cutting-edge artificial intelligence, making it the perfect showcase for Google startup funding.
+                  </p>
+                </div>
+
+                <div className="rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 p-5">
+                  <p className="text-base font-bold text-white flex items-center gap-2">
+                    🎯 Why Google AI Powers Your Journey
+                  </p>
+                  <div className="mt-3 space-y-3 text-sm leading-6 text-white/90">
+                    <p>
+                      <span className="font-semibold">✓ Gemini AI Integration:</span> Google's most advanced multimodal AI understands your writing context, emotions, and goals to provide personalized insights that truly understand you.
+                    </p>
+                    <p>
+                      <span className="font-semibold">✓ Google Workspace Sync:</span> Seamlessly integrates with Gmail for email context, Calendar for scheduling insights, and Drive for document references—all in one AI-powered journal.
+                    </p>
+                    <p>
+                      <span className="font-semibold">✓ Privacy-First AI:</span> Google Cloud's enterprise-grade security ensures your personal data never trains public models. Your journal stays private with on-device processing options.
+                    </p>
+                    <p>
+                      <span className="font-semibold">✓ Real-time Intelligence:</span> Powered by Google's global infrastructure, get instant AI responses, voice transcription, and insights with sub-second latency anywhere in the world.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="rounded-xl border-2 border-yellow-400 bg-gradient-to-r from-yellow-50 to-orange-50 p-5 dark:from-yellow-950/30 dark:to-orange-950/30">
+                  <p className="text-base font-bold text-yellow-900 dark:text-yellow-200 flex items-center gap-2">
+                    🚀 Built for Google for Startups
+                  </p>
+                  <div className="mt-3 space-y-2 text-sm leading-6 text-yellow-900/90 dark:text-yellow-100/80">
+                    <p>
+                      <span className="font-semibold">• Cloud-Native Architecture:</span> Built on GCP from day one with Cloud Run, Vertex AI, and Firestore for infinite scalability.
+                    </p>
+                    <p>
+                      <span className="font-semibold">• AI-First Product:</span> Every feature leverages Google AI—from speech recognition to natural language understanding to predictive analytics.
+                    </p>
+                    <p>
+                      <span className="font-semibold">• Enterprise Ready:</span> OAuth 2.0, API integrations, and admin controls prepare us for Google Workspace marketplace distribution.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
