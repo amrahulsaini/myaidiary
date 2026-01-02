@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import {
   BookOpenText,
   LayoutDashboard,
@@ -8,21 +7,14 @@ import {
   ListTodo,
   LogOut,
 } from "lucide-react";
-import { createSupabaseServerClient } from "@/app/lib/supabase/server";
-import { signOut } from "@/app/auth/actions";
 
-export const dynamic = "force-dynamic";
-
-export default async function AppLayout({
+export default function AppLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createSupabaseServerClient();
-  const { data } = await supabase.auth.getUser();
-  const user = data.user;
-
-  if (!user) redirect("/auth");
+  // Demo mode - no authentication required
+  const user = { email: "demo@myaidiary.me" };
 
   return (
     <div className="min-h-screen bg-zinc-50 text-zinc-950 dark:bg-black dark:text-zinc-50">
@@ -58,12 +50,12 @@ export default async function AppLayout({
             </nav>
           </div>
 
-          <form action={signOut}>
+          <Link href="/">
             <button className="inline-flex h-10 items-center justify-center gap-2 rounded-full border border-zinc-200 bg-white/60 px-4 text-sm font-semibold text-zinc-900 backdrop-blur transition-all duration-300 hover:scale-[1.02] hover:border-zinc-300 hover:bg-white dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:border-white/20 dark:hover:bg-white/10">
               <LogOut className="h-4 w-4" />
-              Sign out
+              Sign out (Demo)
             </button>
-          </form>
+          </Link>
         </div>
       </header>
 

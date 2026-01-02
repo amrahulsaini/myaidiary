@@ -58,9 +58,9 @@ export default function DashboardClient() {
     let ignore = false;
 
     async function bootstrap() {
-      const { data } = await supabase.auth.getUser();
+      // Demo mode - skip user check
       if (ignore) return;
-      const uid = data.user?.id ?? null;
+      const uid = "demo-user-id";
       setUserId(uid);
       await refreshAll();
       setLoading(false);
