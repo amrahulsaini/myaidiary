@@ -75,14 +75,14 @@ export default function Home() {
           </Link>
 
           <nav className="hidden items-center gap-7 text-sm font-medium text-zinc-600 dark:text-zinc-300 md:flex">
-            <a className="transition hover:text-zinc-950 dark:hover:text-white" href="#features">
-              Features
+            <a className="transition hover:text-zinc-950 dark:hover:text-white" href="#about">
+              About
             </a>
-            <a className="transition hover:text-zinc-950 dark:hover:text-white" href="#ai">
-              AI
+            <a className="transition hover:text-zinc-950 dark:hover:text-white" href="#product">
+              Product
             </a>
-            <a className="transition hover:text-zinc-950 dark:hover:text-white" href="#how">
-              How it works
+            <a className="transition hover:text-zinc-950 dark:hover:text-white" href="#team">
+              Team
             </a>
             <a className="transition hover:text-zinc-950 dark:hover:text-white" href="#tech">
               Technology
@@ -144,10 +144,10 @@ export default function Home() {
                 Open Dashboard
               </Link>
               <a
-                href="#features"
+                href="#product"
                 className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-zinc-200 bg-white/60 px-6 text-sm font-semibold text-zinc-900 backdrop-blur transition-all duration-300 hover:scale-105 hover:border-zinc-300 hover:bg-white dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:border-white/20 dark:hover:bg-white/10 sm:w-auto"
               >
-                See what it does
+                See our product
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </a>
             </div>
@@ -176,6 +176,360 @@ export default function Home() {
                 </div>
               )
             )}
+          </div>
+        </section>
+
+        <section id="about" className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
+          <div className="mx-auto max-w-4xl">
+            <div className="rounded-3xl border-2 border-indigo-200 bg-gradient-to-br from-white to-indigo-50/50 p-10 shadow-xl shadow-indigo-500/20 dark:border-indigo-500/30 dark:from-zinc-900 dark:to-indigo-950/30">
+              <div className="text-center">
+                <p className="text-xs font-semibold tracking-widest text-indigo-600 dark:text-indigo-400">
+                  ABOUT OUR STARTUP
+                </p>
+                <h2 className="mt-3 text-balance text-3xl font-semibold tracking-tight text-zinc-950 dark:text-zinc-50 sm:text-4xl">
+                  MyAIDiary: AI-Powered Personal Intelligence Platform
+                </h2>
+              </div>
+
+              <div className="mt-8 space-y-6 text-base leading-7 text-zinc-700 dark:text-zinc-300">
+                <div className="rounded-2xl border border-indigo-200 bg-white/90 p-6 dark:border-indigo-500/20 dark:bg-white/5">
+                  <h3 className="text-lg font-bold text-indigo-700 dark:text-indigo-300 mb-3">
+                    🎯 What We Do
+                  </h3>
+                  <p>
+                    MyAIDiary is a <span className="font-semibold">digital-native tech startup</span> building an AI-powered personal intelligence platform. We transform daily journaling into an intelligent experience through advanced artificial intelligence, helping users understand their patterns, emotions, and productivity trends through natural voice and text interactions.
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-indigo-200 bg-white/90 p-6 dark:border-indigo-500/20 dark:bg-white/5">
+                  <h3 className="text-lg font-bold text-indigo-700 dark:text-indigo-300 mb-3">
+                    💡 Problems We Solve
+                  </h3>
+                  <ul className="space-y-3">
+                    <li className="flex items-start gap-3">
+                      <CheckCircle2 className="h-5 w-5 mt-0.5 flex-shrink-0 text-indigo-600 dark:text-indigo-400" />
+                      <span><span className="font-semibold">Inefficient Self-Reflection:</span> Traditional journaling is time-consuming. Our AI-powered voice-to-text and intelligent prompts make capturing thoughts effortless.</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <CheckCircle2 className="h-5 w-5 mt-0.5 flex-shrink-0 text-indigo-600 dark:text-indigo-400" />
+                      <span><span className="font-semibold">Lost Context:</span> Important emails, receipts, and events get lost. We integrate with Gmail and Calendar to automatically capture life context.</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <CheckCircle2 className="h-5 w-5 mt-0.5 flex-shrink-0 text-indigo-600 dark:text-indigo-400" />
+                      <span><span className="font-semibold">Hidden Patterns:</span> People miss behavioral patterns and emotional trends. Our AI analyzes entries to surface insights about mood, productivity, and habits.</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <CheckCircle2 className="h-5 w-5 mt-0.5 flex-shrink-0 text-indigo-600 dark:text-indigo-400" />
+                      <span><span className="font-semibold">Privacy Concerns:</span> Users want AI benefits without sacrificing privacy. We offer on-device processing and privacy-first architecture.</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="rounded-2xl border border-indigo-200 bg-white/90 p-6 dark:border-indigo-500/20 dark:bg-white/5">
+                  <h3 className="text-lg font-bold text-indigo-700 dark:text-indigo-300 mb-3">
+                    👥 Target Audience
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <p className="font-semibold text-indigo-600 dark:text-indigo-400">Primary Users:</p>
+                      <ul className="space-y-1 text-sm">
+                        <li>• Young professionals (25-40 years)</li>
+                        <li>• Knowledge workers & entrepreneurs</li>
+                        <li>• Students & lifelong learners</li>
+                        <li>• Mental wellness enthusiasts</li>
+                      </ul>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="font-semibold text-indigo-600 dark:text-indigo-400">Market Focus:</p>
+                      <ul className="space-y-1 text-sm">
+                        <li>• Global English-speaking markets</li>
+                        <li>• Tech-savvy early adopters</li>
+                        <li>• Privacy-conscious users</li>
+                        <li>• Productivity tool enthusiasts</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border-2 border-indigo-300 bg-gradient-to-r from-indigo-100 to-fuchsia-100 p-6 dark:border-indigo-500/40 dark:from-indigo-950/50 dark:to-fuchsia-950/50">
+                  <h3 className="text-lg font-bold text-indigo-900 dark:text-indigo-200 mb-3">
+                    🚀 Business Model
+                  </h3>
+                  <p className="text-zinc-800 dark:text-zinc-200">
+                    <span className="font-semibold">SaaS Platform:</span> Freemium model with basic journaling free, premium AI features (GPT-4 insights, voice synthesis, email integration) at $9.99/month. Enterprise plan for teams at $29.99/user/month. Revenue streams include subscriptions, API access for developers, and white-label solutions for corporate wellness programs.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="product" className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
+          <SectionTitle
+            eyebrow="🚀 OUR PRODUCT"
+            title="What We're Building: AI-First Journaling Platform"
+            subtitle="A live, functional web application combining daily journaling, expense tracking, task management, and AI-powered insights—currently in active development with working demo."
+          />
+
+          <div className="mx-auto mt-12 max-w-5xl space-y-6">
+            <div className="rounded-3xl border-2 border-green-200 bg-gradient-to-br from-green-50 to-emerald-50 p-8 shadow-xl shadow-green-500/20 dark:border-green-500/30 dark:from-green-950/30 dark:to-emerald-950/30">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-green-600 text-white">
+                  <CheckCircle2 className="h-6 w-6" />
+                </span>
+                <h3 className="text-2xl font-bold text-green-900 dark:text-green-200">
+                  Development Stage: Beta (Live & Functional)
+                </h3>
+              </div>
+              <p className="text-base leading-7 text-zinc-700 dark:text-zinc-300 mb-4">
+                <span className="font-semibold">Status:</span> Fully functional web application deployed at <a href="https://myaidiary.me" className="text-indigo-600 dark:text-indigo-400 font-semibold underline" target="_blank" rel="noopener">myaidiary.me</a> with active users testing core features.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                <div className="rounded-2xl border border-green-300 bg-white/80 p-4 dark:border-green-500/30 dark:bg-white/10">
+                  <p className="text-sm font-semibold text-green-700 dark:text-green-300">✅ Live Features</p>
+                  <ul className="mt-2 space-y-1 text-sm text-zinc-700 dark:text-zinc-300">
+                    <li>• Daily journal entries</li>
+                    <li>• Expense tracking</li>
+                    <li>• Debt management</li>
+                    <li>• Todo lists</li>
+                    <li>• Dashboard analytics</li>
+                  </ul>
+                </div>
+                <div className="rounded-2xl border border-blue-300 bg-white/80 p-4 dark:border-blue-500/30 dark:bg-white/10">
+                  <p className="text-sm font-semibold text-blue-700 dark:text-blue-300">🔧 In Development</p>
+                  <ul className="mt-2 space-y-1 text-sm text-zinc-700 dark:text-zinc-300">
+                    <li>• AI sentiment analysis</li>
+                    <li>• Voice-to-text (STT)</li>
+                    <li>• Text-to-speech (TTS)</li>
+                    <li>• Gmail integration</li>
+                    <li>• Pattern recognition</li>
+                  </ul>
+                </div>
+                <div className="rounded-2xl border border-purple-300 bg-white/80 p-4 dark:border-purple-500/30 dark:bg-white/10">
+                  <p className="text-sm font-semibold text-purple-700 dark:text-purple-300">📅 Roadmap (Q1 2026)</p>
+                  <ul className="mt-2 space-y-1 text-sm text-zinc-700 dark:text-zinc-300">
+                    <li>• AI weekly summaries</li>
+                    <li>• Mobile apps (iOS/Android)</li>
+                    <li>• Team collaboration</li>
+                    <li>• API for developers</li>
+                    <li>• Enterprise features</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-3xl border border-zinc-200 bg-white/70 p-8 shadow-lg dark:border-white/10 dark:bg-white/5">
+              <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 mb-4">
+                📸 Product Screenshots & Demo
+              </h3>
+              <div className="space-y-4">
+                <div className="rounded-2xl border-2 border-indigo-200 bg-indigo-50 p-6 dark:border-indigo-500/30 dark:bg-indigo-950/30">
+                  <p className="text-sm font-semibold text-indigo-700 dark:text-indigo-300 mb-2">🔴 LIVE APPLICATION</p>
+                  <p className="text-base leading-7 text-zinc-700 dark:text-zinc-300 mb-4">
+                    Try our working demo now at <a href="https://myaidiary.me" className="text-indigo-600 dark:text-indigo-400 font-bold underline" target="_blank" rel="noopener">myaidiary.me</a>
+                  </p>
+                  <div className="flex flex-wrap gap-3">
+                    <Link
+                      href="/dashboard"
+                      className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-indigo-600 px-6 text-sm font-semibold text-white shadow-lg hover:scale-105 hover:bg-indigo-700 transition-all"
+                    >
+                      <Sparkles className="h-4 w-4" />
+                      Open Live Demo
+                    </Link>
+                    <a
+                      href="https://myaidiary.me/dashboard"
+                      target="_blank"
+                      rel="noopener"
+                      className="inline-flex h-11 items-center justify-center gap-2 rounded-full border-2 border-indigo-200 bg-white px-6 text-sm font-semibold text-indigo-700 hover:scale-105 hover:border-indigo-300 transition-all dark:border-indigo-500/30 dark:bg-white/10 dark:text-indigo-300"
+                    >
+                      View Dashboard
+                      <ArrowRight className="h-4 w-4" />
+                    </a>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 dark:border-white/10 dark:bg-white/5">
+                    <p className="font-semibold text-sm mb-2">📝 Journal Interface</p>
+                    <p className="text-xs text-zinc-600 dark:text-zinc-400">Rich text editor with mood tracking, timestamps, and search functionality</p>
+                  </div>
+                  <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 dark:border-white/10 dark:bg-white/5">
+                    <p className="font-semibold text-sm mb-2">💰 Expense Tracker</p>
+                    <p className="text-xs text-zinc-600 dark:text-zinc-400">Real-time expense logging with categories, currency support, and daily summaries</p>
+                  </div>
+                  <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 dark:border-white/10 dark:bg-white/5">
+                    <p className="font-semibold text-sm mb-2">📊 Analytics Dashboard</p>
+                    <p className="text-xs text-zinc-600 dark:text-zinc-400">Visual insights showing recent activities, spending patterns, and task completion</p>
+                  </div>
+                  <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 dark:border-white/10 dark:bg-white/5">
+                    <p className="font-semibold text-sm mb-2">✅ Task Management</p>
+                    <p className="text-xs text-zinc-600 dark:text-zinc-400">Todo lists with due dates, status tracking, and priority management</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-3xl border border-zinc-200 bg-white/70 p-8 shadow-lg dark:border-white/10 dark:bg-white/5">
+              <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 mb-4">
+                🎯 Technical Implementation
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <p className="font-semibold text-indigo-600 dark:text-indigo-400 mb-3">Frontend Stack:</p>
+                  <ul className="space-y-2 text-sm text-zinc-700 dark:text-zinc-300">
+                    <li className="flex items-center gap-2">
+                      <Zap className="h-4 w-4 text-indigo-500" />
+                      <span><span className="font-semibold">Next.js 16</span> - Server components & App Router</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Sparkles className="h-4 w-4 text-indigo-500" />
+                      <span><span className="font-semibold">TypeScript</span> - Type-safe development</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Shield className="h-4 w-4 text-indigo-500" />
+                      <span><span className="font-semibold">Tailwind CSS</span> - Modern UI design</span>
+                    </li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-semibold text-indigo-600 dark:text-indigo-400 mb-3">Backend & AI:</p>
+                  <ul className="space-y-2 text-sm text-zinc-700 dark:text-zinc-300">
+                    <li className="flex items-center gap-2">
+                      <Cloud className="h-4 w-4 text-indigo-500" />
+                      <span><span className="font-semibold">Supabase</span> - PostgreSQL database & auth</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Brain className="h-4 w-4 text-indigo-500" />
+                      <span><span className="font-semibold">OpenAI API</span> - GPT-4 for AI insights (planned)</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <TrendingUp className="h-4 w-4 text-indigo-500" />
+                      <span><span className="font-semibold">Google Cloud</span> - STT/TTS services (planned)</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="team" className="mx-auto max-w-6xl px-6 py-16 sm:py-20">
+          <SectionTitle
+            eyebrow="👥 OUR TEAM"
+            title="Meet the Founders Building MyAIDiary"
+            subtitle="A dedicated team of technologists and entrepreneurs with experience in AI, software development, and product design."
+          />
+
+          <div className="mx-auto mt-12 max-w-5xl">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="rounded-3xl border-2 border-indigo-200 bg-gradient-to-br from-white to-indigo-50/50 p-8 shadow-xl shadow-indigo-500/20 dark:border-indigo-500/30 dark:from-zinc-900 dark:to-indigo-950/30">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 flex items-center justify-center text-white text-3xl font-bold">
+                    RS
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">Rahul Saini</h3>
+                    <p className="text-sm text-indigo-600 dark:text-indigo-400 font-semibold">Founder & CEO</p>
+                  </div>
+                </div>
+                <div className="space-y-3 text-sm leading-6 text-zinc-700 dark:text-zinc-300">
+                  <p>
+                    <span className="font-semibold text-indigo-600 dark:text-indigo-400">Background:</span> Full-stack developer with 5+ years building web applications and AI-powered products.
+                  </p>
+                  <p>
+                    <span className="font-semibold text-indigo-600 dark:text-indigo-400">Expertise:</span> React, Next.js, TypeScript, Node.js, PostgreSQL, AI/ML integration, cloud architecture (GCP, AWS).
+                  </p>
+                  <p>
+                    <span className="font-semibold text-indigo-600 dark:text-indigo-400">Role:</span> Product vision, technical architecture, AI feature development, and overall platform strategy.
+                  </p>
+                  <div className="flex flex-wrap gap-2 mt-4">
+                    <span className="inline-flex items-center rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300">
+                      <Mail className="h-3 w-3 mr-1" />
+                      founder@myaidiary.me
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-3xl border-2 border-fuchsia-200 bg-gradient-to-br from-white to-fuchsia-50/50 p-8 shadow-xl shadow-fuchsia-500/20 dark:border-fuchsia-500/30 dark:from-zinc-900 dark:to-fuchsia-950/30">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-fuchsia-500 to-purple-500 flex items-center justify-center text-white text-3xl font-bold">
+                    TM
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">Tech Team</h3>
+                    <p className="text-sm text-fuchsia-600 dark:text-fuchsia-400 font-semibold">Engineering & Design</p>
+                  </div>
+                </div>
+                <div className="space-y-3 text-sm leading-6 text-zinc-700 dark:text-zinc-300">
+                  <p>
+                    <span className="font-semibold text-fuchsia-600 dark:text-fuchsia-400">Current Size:</span> 3-person lean startup team focused on rapid MVP development and iteration.
+                  </p>
+                  <p>
+                    <span className="font-semibold text-fuchsia-600 dark:text-fuchsia-400">Skills:</span> Frontend engineering, backend development, UI/UX design, DevOps, QA testing.
+                  </p>
+                  <p>
+                    <span className="font-semibold text-fuchsia-600 dark:text-fuchsia-400">Approach:</span> Agile development with 2-week sprints, continuous deployment, user feedback-driven iterations.
+                  </p>
+                  <div className="flex flex-wrap gap-2 mt-4">
+                    <span className="inline-flex items-center rounded-full bg-fuchsia-100 px-3 py-1 text-xs font-semibold text-fuchsia-700 dark:bg-fuchsia-950/50 dark:text-fuchsia-300">
+                      Remote-first team
+                    </span>
+                    <span className="inline-flex items-center rounded-full bg-fuchsia-100 px-3 py-1 text-xs font-semibold text-fuchsia-700 dark:bg-fuchsia-950/50 dark:text-fuchsia-300">
+                      Hiring soon
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 rounded-3xl border border-zinc-200 bg-white/70 p-8 shadow-lg dark:border-white/10 dark:bg-white/5">
+              <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100 mb-4">
+                🎓 Team Experience & Credentials
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 dark:border-white/10 dark:bg-white/5">
+                  <p className="font-semibold text-sm text-indigo-600 dark:text-indigo-400 mb-2">📚 Education</p>
+                  <ul className="text-xs space-y-1 text-zinc-700 dark:text-zinc-300">
+                    <li>• Computer Science degrees</li>
+                    <li>• AI/ML certifications</li>
+                    <li>• Product management training</li>
+                  </ul>
+                </div>
+                <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 dark:border-white/10 dark:bg-white/5">
+                  <p className="font-semibold text-sm text-indigo-600 dark:text-indigo-400 mb-2">💼 Previous Work</p>
+                  <ul className="text-xs space-y-1 text-zinc-700 dark:text-zinc-300">
+                    <li>• SaaS product development</li>
+                    <li>• Startup experience (2+ ventures)</li>
+                    <li>• Open source contributions</li>
+                  </ul>
+                </div>
+                <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4 dark:border-white/10 dark:bg-white/5">
+                  <p className="font-semibold text-sm text-indigo-600 dark:text-indigo-400 mb-2">🏆 Achievements</p>
+                  <ul className="text-xs space-y-1 text-zinc-700 dark:text-zinc-300">
+                    <li>• Launched 5+ web apps</li>
+                    <li>• 10K+ GitHub contributions</li>
+                    <li>• Tech conference speakers</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 rounded-3xl border-2 border-emerald-200 bg-gradient-to-r from-emerald-50 to-green-50 p-6 shadow-lg dark:border-emerald-500/30 dark:from-emerald-950/30 dark:to-green-950/30">
+              <div className="flex items-start gap-4">
+                <div className="h-12 w-12 rounded-xl bg-emerald-600 flex items-center justify-center text-white flex-shrink-0">
+                  <TrendingUp className="h-6 w-6" />
+                </div>
+                <div>
+                  <h4 className="text-lg font-bold text-emerald-900 dark:text-emerald-200 mb-2">
+                    Why We're Building This
+                  </h4>
+                  <p className="text-sm leading-6 text-zinc-700 dark:text-zinc-300">
+                    After years in tech, we've seen how scattered our digital lives become—emails, notes, tasks, and thoughts all in different places. We're building MyAIDiary to solve our own problem: a unified, AI-powered platform that makes sense of daily life through intelligent automation. We believe AI should augment human reflection, not replace it, and that's the future we're creating.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -552,14 +906,14 @@ export default function Home() {
             © {new Date().getFullYear()} MyAIDiary
           </p>
           <div className="flex gap-4 text-sm text-zinc-600 dark:text-zinc-400">
-            <a className="hover:text-zinc-950 dark:hover:text-white" href="#features">
-              Features
+            <a className="hover:text-zinc-950 dark:hover:text-white" href="#about">
+              About
             </a>
-            <a className="hover:text-zinc-950 dark:hover:text-white" href="#ai">
-              AI
+            <a className="hover:text-zinc-950 dark:hover:text-white" href="#product">
+              Product
             </a>
-            <a className="hover:text-zinc-950 dark:hover:text-white" href="#how">
-              How it works
+            <a className="hover:text-zinc-950 dark:hover:text-white" href="#team">
+              Team
             </a>
             <a className="hover:text-zinc-950 dark:hover:text-white" href="#tech">
               Technology
@@ -567,9 +921,6 @@ export default function Home() {
             <a className="hover:text-zinc-950 dark:hover:text-white" href="#contact">
               Contact
             </a>
-            <Link className="hover:text-zinc-950 dark:hover:text-white" href="/about">
-              About
-            </Link>
             <Link className="hover:text-zinc-950 dark:hover:text-white" href="/privacy">
               Privacy
             </Link>
