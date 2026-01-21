@@ -8,6 +8,9 @@ import {
   Receipt,
   HandCoins,
   ListTodo,
+  Sparkles,
+  Brain,
+  TrendingUp,
 } from "lucide-react";
 import { storage, initDemoData } from "@/app/lib/storage";
 
@@ -85,6 +88,60 @@ export default function DashboardClient() {
 
   return (
     <div className="grid gap-6">
+      {/* AI Intelligence Banner */}
+      <div className="myaidiary-fade-up rounded-3xl border-2 border-gradient-to-r from-indigo-200 to-fuchsia-200 bg-gradient-to-r from-indigo-50 via-fuchsia-50 to-indigo-50 p-6 shadow-xl shadow-indigo-500/20 dark:border-indigo-500/30 dark:from-indigo-950/30 dark:via-fuchsia-950/30 dark:to-indigo-950/30">
+        <div className="flex items-start gap-4">
+          <div className="inline-flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 via-fuchsia-500 to-purple-500 text-white shadow-lg">
+            <Brain className="h-7 w-7" />
+          </div>
+          <div className="flex-1">
+            <div className="flex items-center gap-2">
+              <h3 className="text-xl font-bold text-indigo-900 dark:text-indigo-200">
+                🚀 AI-Powered Personal Intelligence
+              </h3>
+              <span className="rounded-full bg-fuchsia-500 px-2 py-0.5 text-xs font-bold text-white">
+                PREMIUM
+              </span>
+            </div>
+            <p className="mt-2 text-sm leading-6 text-zinc-700 dark:text-zinc-300">
+              <strong className="text-indigo-600 dark:text-indigo-400">Our AI analyzes your entire life:</strong> From journal entries to expenses, tasks to habits — get personalized insights, emotional patterns, productivity recommendations, and predictive analytics.
+            </p>
+            <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
+              <div className="rounded-xl border border-indigo-200 bg-white/80 p-3 dark:border-indigo-500/30 dark:bg-white/10">
+                <div className="flex items-center gap-2 text-sm font-semibold text-indigo-700 dark:text-indigo-300">
+                  <Sparkles className="h-4 w-4" />
+                  <span>AI Sentiment Analysis</span>
+                </div>
+                <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
+                  Understands your emotions & mood trends
+                </p>
+              </div>
+              <div className="rounded-xl border border-fuchsia-200 bg-white/80 p-3 dark:border-fuchsia-500/30 dark:bg-white/10">
+                <div className="flex items-center gap-2 text-sm font-semibold text-fuchsia-700 dark:text-fuchsia-300">
+                  <TrendingUp className="h-4 w-4" />
+                  <span>Pattern Recognition</span>
+                </div>
+                <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
+                  Identifies habits & recurring behaviors
+                </p>
+              </div>
+              <div className="rounded-xl border border-purple-200 bg-white/80 p-3 dark:border-purple-500/30 dark:bg-white/10">
+                <div className="flex items-center gap-2 text-sm font-semibold text-purple-700 dark:text-purple-300">
+                  <Brain className="h-4 w-4" />
+                  <span>Smart Recommendations</span>
+                </div>
+                <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
+                  Personalized tips for better wellbeing
+                </p>
+              </div>
+            </div>
+            <div className="mt-3 inline-flex items-center gap-2 rounded-full border-2 border-yellow-300 bg-yellow-50 px-3 py-1 text-xs font-bold text-yellow-800 dark:border-yellow-600/50 dark:bg-yellow-900/30 dark:text-yellow-200">
+              ⚠️ Demo Mode: AI features available in premium version
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="myaidiary-fade-up rounded-3xl border border-zinc-200 bg-white/70 p-6 shadow-sm shadow-black/5 backdrop-blur dark:border-white/10 dark:bg-white/5 dark:shadow-none">
         <p className="text-xs font-semibold tracking-widest text-zinc-600 dark:text-zinc-400">
           TODAY

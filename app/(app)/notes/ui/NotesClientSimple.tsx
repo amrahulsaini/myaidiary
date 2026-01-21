@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Trash2, Save } from "lucide-react";
+import { Plus, Trash2, Save, Volume2, Sparkles, Lock } from "lucide-react";
 import { storage, initDemoData } from "@/app/lib/storage";
 
 type NoteRow = {
@@ -101,7 +101,35 @@ export default function NotesClientSimple() {
   const active = notes.find(n => n.id === activeId);
 
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-[320px_1fr]">
+    <div className="grid grid-cols-1 gap-6">
+      {/* AI Features Banner */}
+      <div className="rounded-3xl border-2 border-indigo-200 bg-gradient-to-r from-indigo-50 to-fuchsia-50 p-6 shadow-lg dark:border-indigo-500/30 dark:from-indigo-950/30 dark:to-fuchsia-950/30">
+        <div className="flex items-start gap-4">
+          <div className="inline-flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white">
+            <Sparkles className="h-6 w-6" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-lg font-bold text-indigo-900 dark:text-indigo-200">
+              🤖 AI-Powered Intelligence (Coming Soon)
+            </h3>
+            <p className="mt-2 text-sm leading-6 text-zinc-700 dark:text-zinc-300">
+              Our AI analyzes your journal entries to provide personalized insights, emotional patterns, and productivity trends. Features include:
+            </p>
+            <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <div className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+                <Volume2 className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                <span><strong>Google TTS:</strong> Listen to your entries</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+                <Sparkles className="h-4 w-4 text-fuchsia-600 dark:text-fuchsia-400" />
+                <span><strong>AI Analysis:</strong> Emotional insights & patterns</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[320px_1fr]">
       {/* Sidebar */}
       <aside className="space-y-3">
         <div className="flex items-center justify-between">
@@ -146,6 +174,34 @@ export default function NotesClientSimple() {
             {activeId ? 'Edit Note' : 'New Note'}
           </p>
           <div className="flex gap-2">
+            {/* Listen to Note - Disabled */}
+            <button
+              disabled
+              className="group relative inline-flex h-9 items-center gap-2 rounded-full border-2 border-indigo-200 bg-indigo-50 px-4 text-sm font-semibold text-indigo-400 opacity-50 cursor-not-allowed dark:border-indigo-500/30 dark:bg-indigo-950/30"
+              title="Google TTS unavailable in demo mode"
+            >
+              <Volume2 className="h-4 w-4" />
+              <span className="hidden sm:inline">Listen</span>
+              <Lock className="h-3 w-3" />
+              <span className="absolute -top-8 right-0 hidden group-hover:block rounded-lg bg-zinc-900 px-2 py-1 text-xs text-white whitespace-nowrap">
+                Premium feature - Demo mode
+              </span>
+            </button>
+
+            {/* AI Analysis - Disabled */}
+            <button
+              disabled
+              className="group relative inline-flex h-9 items-center gap-2 rounded-full border-2 border-fuchsia-200 bg-fuchsia-50 px-4 text-sm font-semibold text-fuchsia-400 opacity-50 cursor-not-allowed dark:border-fuchsia-500/30 dark:bg-fuchsia-950/30"
+              title="AI Analysis unavailable in demo mode"
+            >
+              <Sparkles className="h-4 w-4" />
+              <span className="hidden sm:inline">AI Insights</span>
+              <Lock className="h-3 w-3" />
+              <span className="absolute -top-8 right-0 hidden group-hover:block rounded-lg bg-zinc-900 px-2 py-1 text-xs text-white whitespace-nowrap">
+                Premium feature - Demo mode
+              </span>
+            </button>
+
             <button
               onClick={handleSave}
               className="inline-flex h-9 items-center gap-2 rounded-full bg-indigo-600 px-4 text-sm font-semibold text-white transition hover:bg-indigo-700"

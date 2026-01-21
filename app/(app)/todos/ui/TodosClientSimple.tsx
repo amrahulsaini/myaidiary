@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, FormEvent } from "react";
-import { Plus, Trash2, CheckCircle2, Circle, X } from "lucide-react";
+import { Plus, Trash2, CheckCircle2, Circle, X, Brain, Lock, Zap } from "lucide-react";
 import { storage, initDemoData } from "@/app/lib/storage";
 
 type TodoRow = {
@@ -65,6 +65,23 @@ export default function TodosClientSimple() {
 
   return (
     <div className="grid gap-6">
+      {/* AI Productivity Banner */}
+      <div className="rounded-3xl border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-cyan-50 p-5 shadow-lg dark:border-blue-500/30 dark:from-blue-950/30 dark:to-cyan-950/30">
+        <div className="flex items-center gap-3">
+          <div className="inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 text-white">
+            <Zap className="h-5 w-5" />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-bold text-blue-900 dark:text-blue-200">
+              🎯 AI will prioritize your tasks, suggest optimal completion times, and send smart reminders
+            </p>
+            <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
+              Premium feature - Available in full version
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="rounded-2xl border border-zinc-200 bg-white/70 p-4 shadow-sm dark:border-white/10 dark:bg-white/5">
           <p className="text-xs font-semibold tracking-widest text-zinc-600 dark:text-zinc-400">OPEN TASKS</p>
