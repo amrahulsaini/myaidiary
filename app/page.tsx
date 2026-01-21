@@ -122,9 +122,9 @@ export default function Home() {
             <span className="text-sm">|</span>
             <span className="text-sm">📊 2,500+ Journal Entries Created</span>
             <span className="text-sm">|</span>
-            <a href="https://myaidiary.me" target="_blank" rel="noopener" className="underline font-semibold hover:text-green-100">
+            <Link href="/dashboard" className="underline font-semibold hover:text-green-100">
               Try Demo Now →
-            </a>
+            </Link>
           </div>
         </div>
 
