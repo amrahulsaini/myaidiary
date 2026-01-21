@@ -235,6 +235,7 @@ export default function NotesClientSimple() {
           className="mt-4 min-h-[400px] w-full rounded-2xl border border-zinc-200 bg-white/80 px-4 py-3 outline-none transition focus:border-indigo-300 dark:border-white/10 dark:bg-black/30 dark:focus:border-indigo-500"
         />
       </main>
+      </div>
     </div>
   );
 }
