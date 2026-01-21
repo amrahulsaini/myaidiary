@@ -1,4 +1,4 @@
-import ExpensesClient from "./ui/ExpensesClient";
+import ExpensesClientSimple from "./ui/ExpensesClientSimple";
 
 export const metadata = {
   title: "Expenses · MyAIDiary",
@@ -6,5 +6,5 @@ export const metadata = {
 };
 
 export default function ExpensesPage() {
-  return <ExpensesClient />;
+  return <ExpensesClientSimple />;
 }

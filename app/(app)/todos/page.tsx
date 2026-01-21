@@ -1,4 +1,4 @@
-import TodosClient from "./ui/TodosClient";
+import TodosClientSimple from "./ui/TodosClientSimple";
 
 export const metadata = {
   title: "To-do · MyAIDiary",
@@ -6,5 +6,5 @@ export const metadata = {
 };
 
 export default function TodosPage() {
-  return <TodosClient />;
+  return <TodosClientSimple />;
 }

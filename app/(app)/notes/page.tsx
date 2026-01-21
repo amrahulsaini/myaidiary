@@ -1,4 +1,4 @@
-import NotesClient from "./ui/NotesClient";
+import NotesClientSimple from "./ui/NotesClientSimple";
 
 export const metadata = {
   title: "Notes · MyAIDiary",
@@ -6,5 +6,5 @@ export const metadata = {
 };
 
 export default function NotesPage() {
-  return <NotesClient />;
+  return <NotesClientSimple />;
 }

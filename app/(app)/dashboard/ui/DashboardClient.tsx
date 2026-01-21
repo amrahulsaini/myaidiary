@@ -9,7 +9,7 @@ import {
   HandCoins,
   ListTodo,
 } from "lucide-react";
-import { createSupabaseBrowserClient } from "@/app/lib/supabase/browser";
+import { storage, initDemoData } from "@/app/lib/storage";
 
 type NoteRow = {
   id: string;
@@ -45,119 +45,30 @@ type TodoRow = {
 };
 
 export default function DashboardClient() {
-  const supabase = useMemo(() => createSupabaseBrowserClient(), []);
-
   const [loading, setLoading] = useState(true);
   const [notes, setNotes] = useState<NoteRow[]>([]);
   const [expenses, setExpenses] = useState<ExpenseRow[]>([]);
   const [debts, setDebts] = useState<DebtRow[]>([]);
   const [todos, setTodos] = useState<TodoRow[]>([]);
-  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    let ignore = false;
+    // Initialize demo data
+    initDemoData();
+    refreshAll();
+    setLoading(false);
+  }, []);
 
-    async function bootstrap() {
-      // Demo mode - skip user check
-      if (ignore) return;
-      const uid = "demo-user-id";
-      setUserId(uid);
-      await refreshAll();
-      setLoading(false);
-    }
+  function refreshAll() {
+    const allNotes = storage.get<any[]>('notes', []);
+    const allExpenses = storage.get<any[]>('expenses', []);
+    const allDebts = storage.get<any[]>('debts', []);
+    const allTodos = storage.get<any[]>('todos', []);
 
-    async function refreshAll() {
-      const [n, e, d, t] = await Promise.all([
-        supabase
-          .from("notes")
-          .select("id,title,content,created_at,updated_at")
-          .order("updated_at", { ascending: false })
-          .limit(5),
-        supabase
-          .from("expenses")
-          .select("id,amount,currency,category,description,spent_at")
-          .order("spent_at", { ascending: false })
-          .limit(5),
-        supabase
-          .from("debts")
-          .select("id,person,direction,amount,currency,status")
-          .eq("status", "open")
-          .order("occurred_at", { ascending: false })
-          .limit(5),
-        supabase
-          .from("todos")
-          .select("id,title,status,due_at")
-          .eq("status", "open")
-          .order("created_at", { ascending: false })
-          .limit(7),
-      ]);
-
-      if (n.data) setNotes(n.data as NoteRow[]);
-      if (e.data) setExpenses(e.data as ExpenseRow[]);
-      if (d.data) setDebts(d.data as DebtRow[]);
-      if (t.data) setTodos(t.data as TodoRow[]);
-    }
-
-    bootstrap();
-
-    return () => {
-      ignore = true;
-    };
-  }, [supabase]);
-
-  useEffect(() => {
-    if (!userId) return;
-
-    const channel = supabase
-      .channel("dashboard-realtime")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "notes", filter: `user_id=eq.${userId}` },
-        () => supabase
-          .from("notes")
-          .select("id,title,content,created_at,updated_at")
-          .order("updated_at", { ascending: false })
-          .limit(5)
-          .then(({ data }) => data && setNotes(data as NoteRow[]))
-      )
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "expenses", filter: `user_id=eq.${userId}` },
-        () => supabase
-          .from("expenses")
-          .select("id,amount,currency,category,description,spent_at")
-          .order("spent_at", { ascending: false })
-          .limit(5)
-          .then(({ data }) => data && setExpenses(data as ExpenseRow[]))
-      )
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "debts", filter: `user_id=eq.${userId}` },
-        () => supabase
-          .from("debts")
-          .select("id,person,direction,amount,currency,status")
-          .eq("status", "open")
-          .order("occurred_at", { ascending: false })
-          .limit(5)
-          .then(({ data }) => data && setDebts(data as DebtRow[]))
-      )
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "todos", filter: `user_id=eq.${userId}` },
-        () => supabase
-          .from("todos")
-          .select("id,title,status,due_at")
-          .eq("status", "open")
-          .order("created_at", { ascending: false })
-          .limit(7)
-          .then(({ data }) => data && setTodos(data as TodoRow[]))
-      )
-      .subscribe();
-
-    return () => {
-      void supabase.removeChannel(channel);
-    };
-  }, [supabase, userId]);
+    setNotes(allNotes.slice(0, 5) as NoteRow[]);
+    setExpenses(allExpenses.slice(0, 5) as ExpenseRow[]);
+    setDebts(allDebts.filter(d => d.status === 'open').slice(0, 5) as DebtRow[]);
+    setTodos(allTodos.filter(t => t.status === 'open').slice(0, 7) as TodoRow[]);
+  }
 
   const todayTotal = useMemo(() => {
     const start = new Date();
@@ -187,7 +98,7 @@ export default function DashboardClient() {
 
         <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-4">
           <StatCard label="Recent notes" value={loading ? "…" : String(notes.length)} />
-          <StatCard label="Spent today" value={loading ? "…" : `₹${todayTotal.toFixed(0)}`} />
+          <StatCard label="Spent today" value={loading ? "…" : `$${todayTotal.toFixed(0)}`} />
           <StatCard label="Open debts" value={loading ? "…" : String(debts.length)} />
           <StatCard label="Pending tasks" value={loading ? "…" : String(todos.length)} />
         </div>
@@ -235,7 +146,7 @@ export default function DashboardClient() {
                   className="rounded-2xl border border-zinc-200 bg-white/60 p-4 text-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-white dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10"
                 >
                   <div className="flex items-center justify-between">
-                    <p className="font-semibold">₹{Number(e.amount).toFixed(0)}</p>
+                    <p className="font-semibold">${Number(e.amount).toFixed(0)}</p>
                     <span className="rounded-full bg-zinc-100 px-2 py-1 text-[11px] font-medium text-zinc-700 dark:bg-white/10 dark:text-zinc-200">
                       {e.category}
                     </span>
@@ -266,7 +177,7 @@ export default function DashboardClient() {
                   <div className="flex items-center justify-between">
                     <p className="font-semibold line-clamp-1">{d.person}</p>
                     <p className="font-semibold">
-                      ₹{Number(d.amount).toFixed(0)}
+                      ${Number(d.amount).toFixed(0)}
                     </p>
                   </div>
                   <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">

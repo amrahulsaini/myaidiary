@@ -1,4 +1,4 @@
-import DebtsClient from "./ui/DebtsClient";
+import DebtsClientSimple from "./ui/DebtsClientSimple";
 
 export const metadata = {
   title: "Lena-Dena · MyAIDiary",
@@ -6,5 +6,5 @@ export const metadata = {
 };
 
 export default function DebtsPage() {
-  return <DebtsClient />;
+  return <DebtsClientSimple />;
 }
