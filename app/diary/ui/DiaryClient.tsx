@@ -13,6 +13,9 @@ import {
   Shield,
   CheckCircle2,
   Sparkles,
+  Volume2,
+  Square,
+  Loader2,
 } from "lucide-react";
 import type { Note } from "./types";
 import { createEmptyNote, loadNotes, saveNotes } from "./storage";
@@ -42,7 +45,10 @@ export default function DiaryClient() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [savingPulse, setSavingPulse] = useState<"idle" | "saved">("idle");
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [ttsLoading, setTtsLoading] = useState(false);
   const saveTimer = useRef<number | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     const loaded = loadNotes();
@@ -109,6 +115,61 @@ export default function DiaryClient() {
       copy.sort((a, b) => b.updatedAt - a.updatedAt);
       return copy;
     });
+  }
+
+  async function handleTextToSpeech() {
+    if (!active?.content?.trim()) return;
+
+    if (isSpeaking) {
+      // Stop current audio
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+      setIsSpeaking(false);
+      return;
+    }
+
+    try {
+      setTtsLoading(true);
+      const response = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: active.content })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error('TTS error:', data.error);
+        alert(data.error || 'Failed to generate speech');
+        return;
+      }
+
+      // Convert base64 to audio and play
+      const audioData = `data:audio/wav;base64,${data.audioContent}`;
+      
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+
+      const audio = new Audio(audioData);
+      audioRef.current = audio;
+
+      audio.onended = () => setIsSpeaking(false);
+      audio.onerror = () => {
+        setIsSpeaking(false);
+        alert('Failed to play audio');
+      };
+
+      await audio.play();
+      setIsSpeaking(true);
+    } catch (error) {
+      console.error('TTS error:', error);
+      alert('Failed to generate speech');
+    } finally {
+      setTtsLoading(false);
+    }
   }
 
   return (
@@ -307,13 +368,38 @@ export default function DiaryClient() {
                 </div>
 
                 {active && (
-                  <button
-                    onClick={() => deleteNote(active.id)}
-                    className="group inline-flex h-10 items-center justify-center gap-2 rounded-full border border-zinc-200 bg-white/60 px-5 text-sm font-semibold text-zinc-900 transition-all duration-300 hover:scale-105 hover:border-red-200 hover:bg-red-50 hover:text-red-600 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:border-red-500/30 dark:hover:bg-red-500/10 dark:hover:text-red-400"
-                  >
-                    <Trash2 className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
-                    Delete
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleTextToSpeech}
+                      disabled={!active.content?.trim() || ttsLoading}
+                      className="group inline-flex h-10 items-center justify-center gap-2 rounded-full border border-zinc-200 bg-white/60 px-5 text-sm font-semibold text-zinc-900 transition-all duration-300 hover:scale-105 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:border-indigo-500/30 dark:hover:bg-indigo-500/10 dark:hover:text-indigo-400"
+                    >
+                      {ttsLoading ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <span className="hidden sm:inline">Loading...</span>
+                        </>
+                      ) : isSpeaking ? (
+                        <>
+                          <Square className="h-4 w-4" />
+                          <span className="hidden sm:inline">Stop</span>
+                        </>
+                      ) : (
+                        <>
+                          <Volume2 className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
+                          <span className="hidden sm:inline">Listen</span>
+                        </>
+                      )}
+                    </button>
+
+                    <button
+                      onClick={() => deleteNote(active.id)}
+                      className="group inline-flex h-10 items-center justify-center gap-2 rounded-full border border-zinc-200 bg-white/60 px-5 text-sm font-semibold text-zinc-900 transition-all duration-300 hover:scale-105 hover:border-red-200 hover:bg-red-50 hover:text-red-600 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:border-red-500/30 dark:hover:bg-red-500/10 dark:hover:text-red-400"
+                    >
+                      <Trash2 className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
+                      <span className="hidden sm:inline">Delete</span>
+                    </button>
+                  </div>
                 )}
               </div>
 

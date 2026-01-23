@@ -404,6 +404,41 @@ export default function Home() {
                 <span className="font-bold text-green-700 dark:text-green-400">MyAIDiary is live and fully functional.</span> Click any link below to explore our working application. No sign-up required for demo mode - see our features in action immediately!
               </p>
 
+              {/* Video Demo Section */}
+              <div className="rounded-2xl border-3 border-indigo-400 bg-gradient-to-r from-indigo-100 via-purple-100 to-indigo-100 p-6 mb-6 dark:border-indigo-500/50 dark:from-indigo-950/50 dark:via-purple-950/50 dark:to-indigo-950/50">
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="text-2xl">🎥</span>
+                  <h4 className="text-xl font-bold text-indigo-900 dark:text-indigo-200">
+                    60-Second Video Walkthrough
+                  </h4>
+                </div>
+                <p className="text-sm leading-6 text-zinc-800 dark:text-zinc-200 mb-4">
+                  Watch our quick demo showcasing Gemini 2.0 integration, multimodal Speech-to-Text (STT), and Text-to-Speech (TTS) features in action:
+                </p>
+                
+                {/* Video Embed Area - Replace with your actual video link */}
+                <div className="rounded-xl overflow-hidden bg-white dark:bg-zinc-900 shadow-lg">
+                  <div className="aspect-video w-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                    {/* Replace the URL below with your Loom or YouTube video link */}
+                    <iframe
+                      className="w-full h-full"
+                      src="https://www.youtube.com/embed/YOUR_VIDEO_ID_HERE"
+                      title="MyAIDiary Product Demo"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    ></iframe>
+                    {/* Alternative: For Loom, use: src="https://www.loom.com/embed/YOUR_LOOM_ID_HERE" */}
+                  </div>
+                </div>
+                
+                <div className="mt-4 flex items-start gap-2 text-xs text-zinc-700 dark:text-zinc-300">
+                  <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-indigo-200 text-indigo-800 flex-shrink-0 dark:bg-indigo-900 dark:text-indigo-200">ℹ️</span>
+                  <p>
+                    This video demonstrates our AI-powered features including Gemini 2.0 integration, real-time speech-to-text journaling, and text-to-speech playback capabilities.
+                  </p>
+                </div>
+              </div>
+
               {/* Demo Action Buttons */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <Link

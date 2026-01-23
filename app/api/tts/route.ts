@@ -1,20 +1,38 @@
+import { NextResponse } from 'next/server';
+
 export async function POST(request: Request) {
   try {
     const { text } = await request.json();
 
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json(
+        { error: 'API key not configured' },
+        { status: 500 }
+      );
+    }
+
+    // Use Gemini 2.5 Flash TTS
     const response = await fetch(
-      `https://texttospeech.googleapis.com/v1/text:synthesize?key=${process.env.GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          input: { text },
-          voice: {
-            languageCode: 'en-US',
-            name: 'en-US-Standard-C' // Basic voice that works with free tier
-          },
-          audioConfig: {
-            audioEncoding: 'MP3'
+          contents: [{
+            parts: [{
+              text: text
+            }]
+          }],
+          generationConfig: {
+            responseModalities: ['AUDIO'],
+            speechConfig: {
+              voiceConfig: {
+                prebuiltVoiceConfig: {
+                  voiceName: 'Kore'
+                }
+              }
+            }
           }
         })
       }
@@ -24,7 +42,7 @@ export async function POST(request: Request) {
     
     if (!response.ok) {
       console.error('TTS API Error Response:', data);
-      return Response.json(
+      return NextResponse.json(
         { 
           error: data.error?.message || 'Failed to generate speech',
           details: data.error?.details || 'Unknown error'
@@ -33,10 +51,20 @@ export async function POST(request: Request) {
       );
     }
 
-    return Response.json({ audioContent: data.audioContent });
+    // Extract audio data from Gemini response
+    const audioData = data.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+    
+    if (!audioData) {
+      return NextResponse.json(
+        { error: 'No audio data returned from API' },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ audioContent: audioData });
   } catch (error) {
     console.error('TTS Error:', error);
-    return Response.json(
+    return NextResponse.json(
       { error: 'Failed to generate speech', details: String(error) },
       { status: 500 }
     );
