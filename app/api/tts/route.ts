@@ -15,9 +15,8 @@ export async function POST(request: Request) {
 
     const ai = new GoogleGenAI({ apiKey });
 
-    // Try gemini-2.0-flash-exp which is more stable
     const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash-exp",
+      model: "gemini-2.5-flash-preview-tts",
       contents: [{ parts: [{ text }] }],
       config: {
         responseModalities: ['AUDIO'],
@@ -29,25 +28,21 @@ export async function POST(request: Request) {
       },
     });
 
-    console.log('TTS Response:', JSON.stringify(response, null, 2));
-
-    const audioData = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+    const data = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
     
-    if (!audioData) {
-      console.error('No audio data in response. Full response:', response);
+    if (!data) {
+      console.error('No audio data in response. Full response:', JSON.stringify(response, null, 2));
       return NextResponse.json(
-        { error: 'No audio data returned from API', debug: response },
+        { error: 'No audio data returned from API' },
         { status: 500 }
       );
     }
 
-    console.log('Audio data length:', audioData.length);
-    console.log('Audio data preview:', audioData.substring(0, 100));
+    console.log('Audio data received, length:', data.length);
 
-    return NextResponse.json({ audioContent: audioData });
+    return NextResponse.json({ audioContent: data });
   } catch (error: any) {
     console.error('TTS Error:', error);
-    console.error('Error stack:', error.stack);
     console.error('Error message:', error.message);
     return NextResponse.json(
       { error: 'Failed to generate speech', details: error.message || String(error) },
