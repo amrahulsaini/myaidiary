@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState, FormEvent } from "react";
-import { Plus, Trash2, Brain, Lock, Loader2, Sparkles } from "lucide-react";
+import { useEffect, useState, FormEvent, useRef } from "react";
+import { Plus, Trash2, Brain, Lock, Loader2, Sparkles, Volume2 } from "lucide-react";
 import { storage, initDemoData } from "@/app/lib/storage";
 
 type ExpenseRow = {
@@ -22,6 +22,8 @@ export default function ExpensesClientSimple() {
   const [description, setDescription] = useState("");
   const [aiInsights, setAiInsights] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [playingInsights, setPlayingInsights] = useState(false);
+  const insightsAudioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     initDemoData();
@@ -92,6 +94,53 @@ export default function ExpensesClientSimple() {
     }
   }
 
+  async function handleInsightsTTS() {
+    if (!aiInsights) return;
+
+    // Stop current playback
+    if (playingInsights && insightsAudioRef.current) {
+      insightsAudioRef.current.pause();
+      insightsAudioRef.current = null;
+      setPlayingInsights(false);
+      return;
+    }
+
+    setPlayingInsights(true);
+
+    try {
+      const response = await fetch("/api/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: aiInsights }),
+      });
+
+      if (!response.ok) {
+        throw new Error("TTS failed");
+      }
+
+      const data = await response.json();
+      const audio = new Audio(`data:audio/wav;base64,${data.audioContent}`);
+      insightsAudioRef.current = audio;
+
+      audio.onended = () => {
+        setPlayingInsights(false);
+        insightsAudioRef.current = null;
+      };
+
+      audio.onerror = () => {
+        setPlayingInsights(false);
+        insightsAudioRef.current = null;
+        alert("Failed to play audio");
+      };
+
+      await audio.play();
+    } catch (error) {
+      console.error("TTS error:", error);
+      setPlayingInsights(false);
+      alert("Failed to convert to speech");
+    }
+  }
+
   const totalToday = expenses.filter(e => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -144,12 +193,22 @@ export default function ExpensesClientSimple() {
                 <Sparkles className="h-5 w-5 text-green-600 dark:text-green-400" />
                 <h4 className="font-bold text-green-900 dark:text-green-200">AI Financial Analysis</h4>
               </div>
-              <button
-                onClick={() => setAiInsights(null)}
-                className="text-xs text-green-600 hover:text-green-700 dark:text-green-400"
-              >
-                Close
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleInsightsTTS}
+                  disabled={playingInsights}
+                  className="inline-flex h-7 items-center gap-1.5 rounded-full bg-green-600 px-3 text-xs font-semibold text-white transition hover:bg-green-700 disabled:opacity-50"
+                >
+                  <Volume2 className="h-3.5 w-3.5" />
+                  {playingInsights ? "Stop" : "Listen"}
+                </button>
+                <button
+                  onClick={() => setAiInsights(null)}
+                  className="text-xs text-green-600 hover:text-green-700 dark:text-green-400"
+                >
+                  Close
+                </button>
+              </div>
             </div>
             <div className="prose prose-sm max-w-none text-zinc-700 dark:text-zinc-300">
               {aiInsights.split('\n').map((line, idx) => {
