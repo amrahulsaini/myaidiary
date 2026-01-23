@@ -205,7 +205,7 @@ export default function NotesClientSimple() {
       }
 
       // Convert base64 to audio and play
-      const audioData = `data:audio/wav;base64,${data.audioContent}`;
+      const audioData = `data:audio/mp3;base64,${data.audioContent}`;
       
       if (audioRef.current) {
         audioRef.current.pause();

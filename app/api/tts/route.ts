@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { GoogleGenAI } from '@google/genai';
 
 export async function POST(request: Request) {
   try {
@@ -13,39 +12,40 @@ export async function POST(request: Request) {
       );
     }
 
-    const ai = new GoogleGenAI({ apiKey });
-
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-preview-tts",
-      contents: [{ parts: [{ text }] }],
-      config: {
-        responseModalities: ['AUDIO'],
-        speechConfig: {
-          voiceConfig: {
-            prebuiltVoiceConfig: { voiceName: 'Kore' },
+    // Use Google Cloud Text-to-Speech API instead
+    const response = await fetch(
+      `https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          input: { text },
+          voice: {
+            languageCode: 'en-US',
+            name: 'en-US-Neural2-C' // High quality neural voice
           },
-        },
-      },
-    });
+          audioConfig: {
+            audioEncoding: 'MP3'
+          }
+        })
+      }
+    );
 
-    const data = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+    const data = await response.json();
     
-    if (!data) {
-      console.error('No audio data in response. Full response:', JSON.stringify(response, null, 2));
+    if (!response.ok) {
+      console.error('TTS API Error:', data);
       return NextResponse.json(
-        { error: 'No audio data returned from API' },
-        { status: 500 }
+        { error: data.error?.message || 'Failed to generate speech' },
+        { status: response.status }
       );
     }
 
-    console.log('Audio data received, length:', data.length);
-
-    return NextResponse.json({ audioContent: data });
+    return NextResponse.json({ audioContent: data.audioContent });
   } catch (error: any) {
     console.error('TTS Error:', error);
-    console.error('Error message:', error.message);
     return NextResponse.json(
-      { error: 'Failed to generate speech', details: error.message || String(error) },
+      { error: 'Failed to generate speech', details: error.message },
       { status: 500 }
     );
   }
