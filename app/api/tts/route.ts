@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { GoogleGenAI } from '@google/genai';
 
 export async function POST(request: Request) {
   try {
@@ -12,40 +13,36 @@ export async function POST(request: Request) {
       );
     }
 
-    // Use Google Cloud Text-to-Speech API instead
-    const response = await fetch(
-      `https://texttospeech.googleapis.com/v1/text:synthesize?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          input: { text },
-          voice: {
-            languageCode: 'en-US',
-            name: 'en-US-Neural2-C' // High quality neural voice
-          },
-          audioConfig: {
-            audioEncoding: 'MP3'
-          }
-        })
-      }
-    );
+    const ai = new GoogleGenAI({ apiKey });
 
-    const data = await response.json();
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash-preview-tts",
+      contents: [{ parts: [{ text }] }],
+      config: {
+        responseModalities: ['AUDIO'],
+        speechConfig: {
+          voiceConfig: {
+            prebuiltVoiceConfig: { voiceName: 'Kore' },
+          },
+        },
+      },
+    });
+
+    const data = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
     
-    if (!response.ok) {
-      console.error('TTS API Error:', data);
+    if (!data) {
+      console.error('No audio data in response:', response);
       return NextResponse.json(
-        { error: data.error?.message || 'Failed to generate speech' },
-        { status: response.status }
+        { error: 'No audio data returned from API', response },
+        { status: 500 }
       );
     }
 
-    return NextResponse.json({ audioContent: data.audioContent });
+    return NextResponse.json({ audioContent: data });
   } catch (error: any) {
     console.error('TTS Error:', error);
     return NextResponse.json(
-      { error: 'Failed to generate speech', details: error.message },
+      { error: 'Failed to generate speech', details: error.message || String(error) },
       { status: 500 }
     );
   }
