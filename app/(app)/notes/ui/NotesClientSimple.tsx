@@ -42,6 +42,7 @@ export default function NotesClientSimple() {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [chatInput, setChatInput] = useState("");
   const [isChatLoading, setIsChatLoading] = useState(false);
+  const [isPlaying, setIsPlaying] = useState<string | null>(null);
 
   useEffect(() => {
     initDemoData();
@@ -172,10 +173,71 @@ export default function NotesClientSimple() {
     }
   }
 
+  async function handleListen(note: NoteRow) {
+    try {
+      setIsPlaying(note.id);
+
+      const response = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: note.content })
+      });
+
+      if (!response.ok) throw new Error('TTS failed');
+
+      const { audioContent } = await response.json();
+      const audio = new Audio(`data:audio/mp3;base64,${audioContent}`);
+      
+      audio.onended = () => setIsPlaying(null);
+      audio.onerror = () => setIsPlaying(null);
+      
+      await audio.play();
+    } catch (error) {
+      console.error('TTS error:', error);
+      alert('Failed to play audio. Please try again.');
+      setIsPlaying(null);
+    }
+  }
+
   const active = notes.find(n => n.id === activeId);
 
   return (
     <div className="grid grid-cols-1 gap-6">
+      {/* AI Chat Banner - HIGHLIGHTED */}
+      <div className="rounded-3xl border-4 border-gradient-to-r from-indigo-400 to-fuchsia-400 bg-gradient-to-r from-indigo-500 via-purple-500 to-fuchsia-500 p-6 shadow-2xl animate-pulse-slow">
+        <div className="flex items-start gap-4">
+          <div className="inline-flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-white text-indigo-600 animate-bounce">
+            <MessageCircle className="h-7 w-7" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-xl font-bold text-white mb-2">
+              💬 NEW: Chat with Your Sentiment AI!
+            </h3>
+            <p className="text-sm leading-6 text-white/90 mb-3">
+              I've read all your journal entries and I'm here to chat about your thoughts, feelings, and emotional patterns. Click the floating button or ask me anything!
+            </p>
+            <button
+              onClick={() => {
+                setShowChat(true);
+                if (chatMessages.length === 0) {
+                  setChatMessages([{
+                    role: "ai",
+                    content: "Hi! I'm your sentiment AI. I can see all your journal entries and I'm here to chat about your thoughts and feelings. How are you doing today? 💜"
+                  }]);
+                }
+              }}
+              className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-indigo-600 shadow-lg hover:scale-105 transition-transform"
+            >
+              <MessageCircle className="h-4 w-4" />
+              Start Chatting Now
+              <span className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 px-2 py-0.5 text-[10px] font-bold text-white">
+                LIVE
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+
       {/* AI Features Banner */}
       <div className="rounded-3xl border-2 border-indigo-200 bg-gradient-to-r from-indigo-50 to-fuchsia-50 p-6 shadow-lg dark:border-indigo-500/30 dark:from-indigo-950/30 dark:to-fuchsia-950/30">
         <div className="flex items-start gap-4">
@@ -248,14 +310,21 @@ export default function NotesClientSimple() {
             {activeId ? 'Edit Note' : 'New Note'}
           </p>
           <div className="flex gap-2">
-            {/* Listen to Note - Disabled */}
+            {/* Listen to Note */}
             <button
-              disabled
-              className="group relative inline-flex h-9 items-center gap-2 rounded-full border-2 border-indigo-200 bg-indigo-50 px-4 text-sm font-semibold text-indigo-400 opacity-50 cursor-not-allowed dark:border-indigo-500/30 dark:bg-indigo-950/30"
-              title="Google TTS unavailable in demo mode"
+              onClick={() => activeId && handleListen(notes.find(n => n.id === activeId)!)}
+              disabled={!activeId || isPlaying === activeId}
+              className={`group relative inline-flex h-9 items-center gap-2 rounded-full border-2 px-4 text-sm font-semibold transition-all ${
+                !activeId || isPlaying === activeId
+                  ? 'border-indigo-200 bg-indigo-50 text-indigo-400 opacity-50 cursor-not-allowed dark:border-indigo-500/30 dark:bg-indigo-950/30'
+                  : 'border-indigo-500 bg-indigo-500 text-white hover:bg-indigo-600 dark:border-indigo-400 dark:bg-indigo-400 dark:hover:bg-indigo-500'
+              }`}
             >
-              <Volume2 className="h-4 w-4" />
-              <span className="hidden sm:inline">Listen</span>
+              <Volume2 className={`h-4 w-4 ${isPlaying === activeId ? 'animate-pulse' : ''}`} />
+              <span className="hidden sm:inline">
+                {isPlaying === activeId ? 'Playing...' : 'Listen'}
+              </span>
+            </button>
               <Lock className="h-3 w-3" />
               <span className="absolute -top-8 right-0 hidden group-hover:block rounded-lg bg-zinc-900 px-2 py-1 text-xs text-white whitespace-nowrap">
                 Premium feature - Demo mode
