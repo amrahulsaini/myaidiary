@@ -183,18 +183,27 @@ export default function NotesClientSimple() {
         body: JSON.stringify({ text: note.content })
       });
 
-      if (!response.ok) throw new Error('TTS failed');
+      const data = await response.json();
 
-      const { audioContent } = await response.json();
-      const audio = new Audio(`data:audio/mp3;base64,${audioContent}`);
+      if (!response.ok) {
+        console.error('TTS API Error:', data);
+        alert(`TTS Error: ${data.error}\n\nPlease enable the Text-to-Speech API in Google Cloud Console for your API key.`);
+        setIsPlaying(null);
+        return;
+      }
+
+      const audio = new Audio(`data:audio/mp3;base64,${data.audioContent}`);
       
       audio.onended = () => setIsPlaying(null);
-      audio.onerror = () => setIsPlaying(null);
+      audio.onerror = () => {
+        alert('Audio playback failed. Please check your browser permissions.');
+        setIsPlaying(null);
+      };
       
       await audio.play();
     } catch (error) {
       console.error('TTS error:', error);
-      alert('Failed to play audio. Please try again.');
+      alert(`Failed to play audio: ${error}`);
       setIsPlaying(null);
     }
   }

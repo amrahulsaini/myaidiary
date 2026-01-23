@@ -11,28 +11,33 @@ export async function POST(request: Request) {
           input: { text },
           voice: {
             languageCode: 'en-US',
-            name: 'en-US-Neural2-F', // Natural female voice
-            ssmlGender: 'FEMALE'
+            name: 'en-US-Standard-C' // Basic voice that works with free tier
           },
           audioConfig: {
-            audioEncoding: 'MP3',
-            speakingRate: 0.95,
-            pitch: 0
+            audioEncoding: 'MP3'
           }
         })
       }
     );
 
+    const data = await response.json();
+    
     if (!response.ok) {
-      throw new Error(`TTS API error: ${response.statusText}`);
+      console.error('TTS API Error Response:', data);
+      return Response.json(
+        { 
+          error: data.error?.message || 'Failed to generate speech',
+          details: data.error?.details || 'Unknown error'
+        },
+        { status: response.status }
+      );
     }
 
-    const data = await response.json();
     return Response.json({ audioContent: data.audioContent });
   } catch (error) {
     console.error('TTS Error:', error);
     return Response.json(
-      { error: 'Failed to generate speech' },
+      { error: 'Failed to generate speech', details: String(error) },
       { status: 500 }
     );
   }
