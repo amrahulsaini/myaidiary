@@ -28,21 +28,28 @@ export async function POST(request: Request) {
       },
     });
 
-    const data = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+    console.log('TTS Response:', JSON.stringify(response, null, 2));
+
+    const audioData = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
     
-    if (!data) {
-      console.error('No audio data in response');
+    if (!audioData) {
+      console.error('No audio data in response. Full response:', response);
       return NextResponse.json(
-        { error: 'No audio data returned from API' },
+        { error: 'No audio data returned from API', debug: response },
         { status: 500 }
       );
     }
 
-    return NextResponse.json({ audioContent: data });
-  } catch (error) {
+    console.log('Audio data length:', audioData.length);
+    console.log('Audio data preview:', audioData.substring(0, 100));
+
+    return NextResponse.json({ audioContent: audioData });
+  } catch (error: any) {
     console.error('TTS Error:', error);
+    console.error('Error stack:', error.stack);
+    console.error('Error message:', error.message);
     return NextResponse.json(
-      { error: 'Failed to generate speech', details: String(error) },
+      { error: 'Failed to generate speech', details: error.message || String(error) },
       { status: 500 }
     );
   }
