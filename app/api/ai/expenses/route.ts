@@ -17,16 +17,28 @@ export async function POST(request: NextRequest) {
       .map((e) => `${e.description || "Unknown"}: $${e.amount} (${e.category})`)
       .join("\n");
 
-    const prompt = `Analyze these recent expenses and provide spending insights (3-4 sentences):
+    const prompt = `You are a personal finance advisor analyzing someone's expenses. Speak directly to them and provide structured insights.
 
+Their recent expenses:
 ${expensesSummary}
 
-Provide:
-1. Spending patterns you notice
-2. Recommendations to save money
-3. Budget optimization tips
+Provide a structured analysis in this exact format:
 
-Response format: Plain text, conversational tone.`;
+📊 SPENDING PATTERNS
+• [Key observation 1]
+• [Key observation 2]
+• [Key observation 3]
+
+💡 MONEY-SAVING TIPS
+• [Actionable tip 1]
+• [Actionable tip 2]
+• [Actionable tip 3]
+
+🎯 BUDGET OPTIMIZATION
+• [Strategy 1]
+• [Strategy 2]
+
+Keep each bullet point concise (1 sentence max). Be direct and actionable.`;
 
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,

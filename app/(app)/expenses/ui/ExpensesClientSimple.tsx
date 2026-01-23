@@ -138,18 +138,39 @@ export default function ExpensesClientSimple() {
         
         {/* AI Analysis Result */}
         {aiInsights && (
-          <div className="mt-4 rounded-2xl border-2 border-green-200 bg-white/80 p-4 dark:border-green-500/30 dark:bg-green-950/30">
-            <div className="flex items-center gap-2 mb-2">
-              <Sparkles className="h-4 w-4 text-green-600 dark:text-green-400" />
-              <h4 className="font-bold text-sm text-green-900 dark:text-green-200">AI Insights</h4>
+          <div className="mt-4 rounded-2xl border-2 border-green-200 bg-gradient-to-r from-green-50 to-emerald-50 p-5 dark:border-green-500/30 dark:from-green-950/30 dark:to-emerald-950/30">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-green-600 dark:text-green-400" />
+                <h4 className="font-bold text-green-900 dark:text-green-200">AI Financial Analysis</h4>
+              </div>
+              <button
+                onClick={() => setAiInsights(null)}
+                className="text-xs text-green-600 hover:text-green-700 dark:text-green-400"
+              >
+                Close
+              </button>
             </div>
-            <p className="text-sm leading-6 text-zinc-700 dark:text-zinc-300">{aiInsights}</p>
-            <button
-              onClick={() => setAiInsights(null)}
-              className="mt-2 text-xs text-green-600 hover:text-green-700 dark:text-green-400"
-            >
-              Close
-            </button>
+            <div className="prose prose-sm max-w-none text-zinc-700 dark:text-zinc-300">
+              {aiInsights.split('\n').map((line, idx) => {
+                if (line.trim().startsWith('📊') || line.trim().startsWith('💡') || line.trim().startsWith('🎯')) {
+                  return (
+                    <h5 key={idx} className="font-bold text-base text-green-900 dark:text-green-200 mt-4 mb-2 first:mt-0">
+                      {line.trim()}
+                    </h5>
+                  );
+                } else if (line.trim().startsWith('•')) {
+                  return (
+                    <p key={idx} className="text-sm leading-6 ml-1 mb-1.5">
+                      {line.trim()}
+                    </p>
+                  );
+                } else if (line.trim()) {
+                  return <p key={idx} className="text-sm leading-6 mb-2">{line.trim()}</p>;
+                }
+                return null;
+              })}
+            </div>
           </div>
         )}
       </div>
