@@ -334,10 +334,10 @@ export default function NotesClientSimple() {
           </div>
           <div className="flex-1">
             <h3 className="text-lg font-bold text-indigo-900 dark:text-indigo-200">
-              🤖 AI-Powered Intelligence (Coming Soon)
+              🤖 AI-Powered Intelligence
             </h3>
             <p className="mt-2 text-sm leading-6 text-zinc-700 dark:text-zinc-300">
-              Our AI analyzes your journal entries to provide personalized insights, emotional patterns, and productivity trends. Features include:
+              Our AI analyzes your journal entries to provide personalized insights, emotional patterns, and productivity trends. Available features:
             </p>
             <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
               <div className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
@@ -346,7 +346,7 @@ export default function NotesClientSimple() {
               </div>
               <div className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
                 <Sparkles className="h-4 w-4 text-fuchsia-600 dark:text-fuchsia-400" />
-                <span><strong>AI Analysis:</strong> Emotional insights & patterns</span>
+                <span><strong>AI Analysis:</strong> Emotional insights & patterns in expenses</span>
               </div>
             </div>
           </div>
