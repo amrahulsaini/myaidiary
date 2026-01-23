@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Trash2, Save, Volume2, Sparkles, Lock } from "lucide-react";
+import { Plus, Trash2, Save, Volume2, Sparkles, Lock, Loader2 } from "lucide-react";
 import { storage, initDemoData } from "@/app/lib/storage";
 
 type NoteRow = {
@@ -31,6 +31,8 @@ export default function NotesClientSimple() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [draftTitle, setDraftTitle] = useState("");
   const [draftContent, setDraftContent] = useState("");
+  const [aiAnalysis, setAiAnalysis] = useState<string | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   useEffect(() => {
     initDemoData();
@@ -84,6 +86,7 @@ export default function NotesClientSimple() {
     setActiveId(null);
     setDraftTitle("");
     setDraftContent("");
+    setAiAnalysis(null);
   }
 
   function handleDelete(id: string) {
@@ -96,6 +99,36 @@ export default function NotesClientSimple() {
       handleNew();
     }
     loadNotes();
+  }
+
+  async function handleAiAnalysis() {
+    if (!draftContent.trim()) {
+      alert("Please write some content first!");
+      return;
+    }
+
+    setIsAnalyzing(true);
+    setAiAnalysis(null);
+
+    try {
+      const response = await fetch("/api/ai/sentiment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: draftContent }),
+      });
+
+      if (!response.ok) {
+        throw new Error("AI analysis failed");
+      }
+
+      const data = await response.json();
+      setAiAnalysis(data.analysis);
+    } catch (error) {
+      console.error("AI analysis error:", error);
+      alert("Failed to analyze. Please try again.");
+    } finally {
+      setIsAnalyzing(false);
+    }
   }
 
   const active = notes.find(n => n.id === activeId);
@@ -188,18 +221,27 @@ export default function NotesClientSimple() {
               </span>
             </button>
 
-            {/* AI Analysis - Disabled */}
+            {/* AI Analysis - NOW WORKING */}
             <button
-              disabled
-              className="group relative inline-flex h-9 items-center gap-2 rounded-full border-2 border-fuchsia-200 bg-fuchsia-50 px-4 text-sm font-semibold text-fuchsia-400 opacity-50 cursor-not-allowed dark:border-fuchsia-500/30 dark:bg-fuchsia-950/30"
-              title="AI Analysis unavailable in demo mode"
+              onClick={handleAiAnalysis}
+              disabled={isAnalyzing || !draftContent.trim()}
+              className="group relative inline-flex h-9 items-center gap-2 rounded-full border-2 border-fuchsia-200 bg-fuchsia-50 px-4 text-sm font-semibold text-fuchsia-700 hover:bg-fuchsia-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed dark:border-fuchsia-500/30 dark:bg-fuchsia-950/30 dark:text-fuchsia-300"
+              title={isAnalyzing ? "Analyzing..." : "Get AI sentiment analysis"}
             >
-              <Sparkles className="h-4 w-4" />
-              <span className="hidden sm:inline">AI Insights</span>
-              <Lock className="h-3 w-3" />
-              <span className="absolute -top-8 right-0 hidden group-hover:block rounded-lg bg-zinc-900 px-2 py-1 text-xs text-white whitespace-nowrap">
-                Premium feature - Demo mode
-              </span>
+              {isAnalyzing ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span className="hidden sm:inline">Analyzing...</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-4 w-4" />
+                  <span className="hidden sm:inline">AI Insights</span>
+                  <span className="inline-flex items-center justify-center rounded-full bg-green-500 px-1.5 py-0.5 text-[10px] font-bold text-white">
+                    NEW
+                  </span>
+                </>
+              )}
             </button>
 
             <button
@@ -234,6 +276,23 @@ export default function NotesClientSimple() {
           placeholder="Start writing..."
           className="mt-4 min-h-[400px] w-full rounded-2xl border border-zinc-200 bg-white/80 px-4 py-3 outline-none transition focus:border-indigo-300 dark:border-white/10 dark:bg-black/30 dark:focus:border-indigo-500"
         />
+
+        {/* AI Analysis Result */}
+        {aiAnalysis && (
+          <div className="mt-4 rounded-2xl border-2 border-fuchsia-200 bg-gradient-to-r from-fuchsia-50 to-purple-50 p-5 dark:border-fuchsia-500/30 dark:from-fuchsia-950/30 dark:to-purple-950/30">
+            <div className="flex items-center gap-2 mb-3">
+              <Sparkles className="h-5 w-5 text-fuchsia-600 dark:text-fuchsia-400" />
+              <h4 className="font-bold text-fuchsia-900 dark:text-fuchsia-200">AI Sentiment Analysis</h4>
+            </div>
+            <p className="text-sm leading-6 text-zinc-700 dark:text-zinc-300">{aiAnalysis}</p>
+            <button
+              onClick={() => setAiAnalysis(null)}
+              className="mt-3 text-xs text-fuchsia-600 hover:text-fuchsia-700 dark:text-fuchsia-400"
+            >
+              Close
+            </button>
+          </div>
+        )}
       </main>
       </div>
     </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, FormEvent } from "react";
-import { Plus, Trash2, Brain, Lock } from "lucide-react";
+import { Plus, Trash2, Brain, Lock, Loader2, Sparkles } from "lucide-react";
 import { storage, initDemoData } from "@/app/lib/storage";
 
 type ExpenseRow = {
@@ -20,6 +20,8 @@ export default function ExpensesClientSimple() {
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("Food");
   const [description, setDescription] = useState("");
+  const [aiInsights, setAiInsights] = useState<string | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   useEffect(() => {
     initDemoData();
@@ -60,6 +62,36 @@ export default function ExpensesClientSimple() {
     loadExpenses();
   }
 
+  async function handleAiAnalysis() {
+    if (expenses.length === 0) {
+      alert("Add some expenses first!");
+      return;
+    }
+
+    setIsAnalyzing(true);
+    setAiInsights(null);
+
+    try {
+      const response = await fetch("/api/ai/expenses", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ expenses: expenses.slice(0, 10) }), // Last 10 expenses
+      });
+
+      if (!response.ok) {
+        throw new Error("AI analysis failed");
+      }
+
+      const data = await response.json();
+      setAiInsights(data.analysis);
+    } catch (error) {
+      console.error("AI analysis error:", error);
+      alert("Failed to analyze. Please try again.");
+    } finally {
+      setIsAnalyzing(false);
+    }
+  }
+
   const totalToday = expenses.filter(e => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -70,19 +102,56 @@ export default function ExpensesClientSimple() {
     <div className="grid gap-6">
       {/* AI Spending Insights Banner */}
       <div className="rounded-3xl border-2 border-emerald-200 bg-gradient-to-r from-emerald-50 to-green-50 p-5 shadow-lg dark:border-emerald-500/30 dark:from-emerald-950/30 dark:to-green-950/30">
-        <div className="flex items-center gap-3">
+        <div className="flex items-start gap-3">
           <div className="inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-green-500 text-white">
             <Brain className="h-5 w-5" />
           </div>
           <div className="flex-1">
             <p className="text-sm font-bold text-emerald-900 dark:text-emerald-200">
-              💡 AI will analyze your spending patterns, identify savings opportunities, and predict future expenses
+              💡 AI Spending Analysis - Powered by Google Gemini
             </p>
             <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
-              Premium feature - Available in full version
+              Get personalized insights on your spending patterns and savings opportunities
             </p>
           </div>
+          <button
+            onClick={handleAiAnalysis}
+            disabled={isAnalyzing || expenses.length === 0}
+            className="inline-flex h-9 items-center gap-2 rounded-full bg-emerald-600 px-4 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isAnalyzing ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Analyzing...
+              </>
+            ) : (
+              <>
+                <Brain className="h-4 w-4" />
+                Ask AI
+                <span className="inline-flex items-center justify-center rounded-full bg-white px-1.5 py-0.5 text-[10px] font-bold text-emerald-600">
+                  NEW
+                </span>
+              </>
+            )}
+          </button>
         </div>
+        
+        {/* AI Analysis Result */}
+        {aiInsights && (
+          <div className="mt-4 rounded-2xl border-2 border-green-200 bg-white/80 p-4 dark:border-green-500/30 dark:bg-green-950/30">
+            <div className="flex items-center gap-2 mb-2">
+              <Sparkles className="h-4 w-4 text-green-600 dark:text-green-400" />
+              <h4 className="font-bold text-sm text-green-900 dark:text-green-200">AI Insights</h4>
+            </div>
+            <p className="text-sm leading-6 text-zinc-700 dark:text-zinc-300">{aiInsights}</p>
+            <button
+              onClick={() => setAiInsights(null)}
+              className="mt-2 text-xs text-green-600 hover:text-green-700 dark:text-green-400"
+            >
+              Close
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="rounded-3xl border border-zinc-200 bg-white/70 p-6 shadow-sm backdrop-blur dark:border-white/10 dark:bg-white/5">
@@ -131,21 +200,7 @@ export default function ExpensesClientSimple() {
       </form>
 
       <div className="rounded-3xl border border-zinc-200 bg-white/70 p-6 shadow-sm backdrop-blur dark:border-white/10 dark:bg-white/5">
-        <div className="flex items-center justify-between mb-4">
-          <p className="text-sm font-semibold">Recent Expenses</p>
-          <button
-            disabled
-            className="group relative inline-flex h-9 items-center gap-2 rounded-full border-2 border-fuchsia-200 bg-fuchsia-50 px-4 text-sm font-semibold text-fuchsia-400 opacity-50 cursor-not-allowed dark:border-fuchsia-500/30 dark:bg-fuchsia-950/30"
-            title="AI Analysis unavailable in demo mode"
-          >
-            <Brain className="h-4 w-4" />
-            Ask AI
-            <Lock className="h-3 w-3" />
-            <span className="absolute -top-8 right-0 hidden group-hover:block rounded-lg bg-zinc-900 px-2 py-1 text-xs text-white whitespace-nowrap z-10">
-              Premium feature - Demo mode
-            </span>
-          </button>
-        </div>
+        <p className="text-sm font-semibold mb-4">Recent Expenses</p>
         <div className="space-y-2">
           {expenses.map((expense) => (
             <div
