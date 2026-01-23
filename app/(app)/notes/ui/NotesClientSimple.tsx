@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Plus, Trash2, Save, Volume2, Sparkles, Lock, Loader2, MessageCircle, X, Send } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Plus, Trash2, Save, Volume2, Sparkles, Lock, Loader2, MessageCircle, X, Send, Square } from "lucide-react";
 import { storage, initDemoData } from "@/app/lib/storage";
 
 type NoteRow = {
@@ -43,6 +43,8 @@ export default function NotesClientSimple() {
   const [chatInput, setChatInput] = useState("");
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [isPlaying, setIsPlaying] = useState<string | null>(null);
+  const [ttsLoading, setTtsLoading] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     initDemoData();
@@ -174,27 +176,57 @@ export default function NotesClientSimple() {
   }
 
   async function handleListen(note: NoteRow) {
-    // Use browser's built-in Text-to-Speech
-    if ('speechSynthesis' in window) {
-      setIsPlaying(note.id);
+    if (!note.content?.trim()) return;
+
+    if (isPlaying === note.id) {
+      // Stop current audio
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+      setIsPlaying(null);
+      return;
+    }
+
+    try {
+      setTtsLoading(true);
+      const response = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: note.content })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error('TTS error:', data.error);
+        alert(data.error || 'Failed to generate speech');
+        return;
+      }
+
+      // Convert base64 to audio and play
+      const audioData = `data:audio/wav;base64,${data.audioContent}`;
       
-      // Stop any currently playing speech
-      window.speechSynthesis.cancel();
-      
-      const utterance = new SpeechSynthesisUtterance(note.content);
-      utterance.lang = 'en-US';
-      utterance.rate = 0.9;
-      utterance.pitch = 1.0;
-      
-      utterance.onend = () => setIsPlaying(null);
-      utterance.onerror = () => {
-        alert('Speech playback failed. Please try again.');
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+
+      const audio = new Audio(audioData);
+      audioRef.current = audio;
+
+      audio.onended = () => setIsPlaying(null);
+      audio.onerror = () => {
         setIsPlaying(null);
+        alert('Failed to play audio');
       };
-      
-      window.speechSynthesis.speak(utterance);
-    } else {
-      alert('Your browser does not support text-to-speech.');
+
+      await audio.play();
+      setIsPlaying(note.id);
+    } catch (error) {
+      console.error('TTS error:', error);
+      alert('Failed to generate speech');
+    } finally {
+      setTtsLoading(false);
     }
   }
 
@@ -253,7 +285,7 @@ export default function NotesClientSimple() {
             <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
               <div className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
                 <Volume2 className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
-                <span><strong>Google TTS:</strong> Listen to your entries</span>
+                <span><strong>Gemini TTS:</strong> Listen to your entries with AI voice</span>
               </div>
               <div className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
                 <Sparkles className="h-4 w-4 text-fuchsia-600 dark:text-fuchsia-400" />
@@ -312,17 +344,29 @@ export default function NotesClientSimple() {
             {/* Listen to Note */}
             <button
               onClick={() => activeId && handleListen(notes.find(n => n.id === activeId)!)}
-              disabled={!activeId || isPlaying === activeId}
+              disabled={!activeId || !draftContent.trim() || ttsLoading}
               className={`group relative inline-flex h-9 items-center gap-2 rounded-full border-2 px-4 text-sm font-semibold transition-all ${
-                !activeId || isPlaying === activeId
+                !activeId || !draftContent.trim() || ttsLoading
                   ? 'border-indigo-200 bg-indigo-50 text-indigo-400 opacity-50 cursor-not-allowed dark:border-indigo-500/30 dark:bg-indigo-950/30'
                   : 'border-indigo-500 bg-indigo-500 text-white hover:bg-indigo-600 dark:border-indigo-400 dark:bg-indigo-400 dark:hover:bg-indigo-500'
               }`}
             >
-              <Volume2 className={`h-4 w-4 ${isPlaying === activeId ? 'animate-pulse' : ''}`} />
-              <span className="hidden sm:inline">
-                {isPlaying === activeId ? 'Playing...' : 'Listen'}
-              </span>
+              {ttsLoading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span className="hidden sm:inline">Loading...</span>
+                </>
+              ) : isPlaying === activeId ? (
+                <>
+                  <Square className="h-4 w-4" />
+                  <span className="hidden sm:inline">Stop</span>
+                </>
+              ) : (
+                <>
+                  <Volume2 className="h-4 w-4" />
+                  <span className="hidden sm:inline">Listen</span>
+                </>
+              )}
             </button>
 
             {/* AI Analysis - NOW WORKING */}
