@@ -15,8 +15,9 @@ export async function POST(request: Request) {
 
     const ai = new GoogleGenAI({ apiKey });
 
+    // Try gemini-2.0-flash-exp which is more stable
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-preview-tts",
+      model: "gemini-2.0-flash-exp",
       contents: [{ parts: [{ text }] }],
       config: {
         responseModalities: ['AUDIO'],
