@@ -45,8 +45,10 @@ export default function NotesClientSimple() {
   const [isPlaying, setIsPlaying] = useState<string | null>(null);
   const [ttsLoading, setTtsLoading] = useState(false);
   const [playingChatIndex, setPlayingChatIndex] = useState<number | null>(null);
+  const [playingAnalysis, setPlayingAnalysis] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const chatAudioRef = useRef<HTMLAudioElement | null>(null);
+  const analysisAudioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     initDemoData();
@@ -287,6 +289,61 @@ export default function NotesClientSimple() {
     }
   }
 
+  async function handleAnalysisTTS() {
+    if (!aiAnalysis?.trim()) return;
+
+    if (playingAnalysis) {
+      // Stop current audio
+      if (analysisAudioRef.current) {
+        analysisAudioRef.current.pause();
+        analysisAudioRef.current.currentTime = 0;
+      }
+      setPlayingAnalysis(false);
+      return;
+    }
+
+    try {
+      setTtsLoading(true);
+      const response = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: aiAnalysis })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error('TTS error:', data.error);
+        alert(data.error || 'Failed to generate speech');
+        return;
+      }
+
+      // Convert base64 to audio and play
+      const audioData = `data:audio/wav;base64,${data.audioContent}`;
+      
+      if (analysisAudioRef.current) {
+        analysisAudioRef.current.pause();
+      }
+
+      const audio = new Audio(audioData);
+      analysisAudioRef.current = audio;
+
+      audio.onended = () => setPlayingAnalysis(false);
+      audio.onerror = () => {
+        setPlayingAnalysis(false);
+        alert('Failed to play audio');
+      };
+
+      await audio.play();
+      setPlayingAnalysis(true);
+    } catch (error) {
+      console.error('TTS error:', error);
+      alert('Failed to generate speech');
+    } finally {
+      setTtsLoading(false);
+    }
+  }
+
   const active = notes.find(n => n.id === activeId);
 
   return (
@@ -490,21 +547,35 @@ export default function NotesClientSimple() {
                 <Sparkles className="h-5 w-5 text-fuchsia-600 dark:text-fuchsia-400" />
                 <h4 className="font-bold text-fuchsia-900 dark:text-fuchsia-200">AI Sentiment Analysis</h4>
               </div>
-              <button
-                onClick={() => {
-                  setShowChat(true);
-                  if (chatMessages.length === 0) {
-                    setChatMessages([{
-                      role: "ai",
-                      content: "Hi! I've been reading your journal entries. What would you like to talk about? 💜"
-                    }]);
-                  }
-                }}
-                className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 px-3 py-1.5 text-xs font-semibold text-white hover:scale-105 transition-transform"
-              >
-                <MessageCircle className="h-3.5 w-3.5" />
-                Chat with AI
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleAnalysisTTS}
+                  disabled={ttsLoading}
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-fuchsia-200 bg-white hover:bg-fuchsia-50 transition disabled:opacity-50 dark:border-fuchsia-500/30 dark:bg-zinc-800 dark:hover:bg-zinc-700"
+                  title="Listen to analysis"
+                >
+                  {playingAnalysis ? (
+                    <Square className="h-3.5 w-3.5 text-fuchsia-600 dark:text-fuchsia-400" />
+                  ) : (
+                    <Volume2 className="h-3.5 w-3.5 text-fuchsia-600 dark:text-fuchsia-400" />
+                  )}
+                </button>
+                <button
+                  onClick={() => {
+                    setShowChat(true);
+                    if (chatMessages.length === 0) {
+                      setChatMessages([{
+                        role: "ai",
+                        content: "Hi! I've been reading your journal entries. What would you like to talk about? 💜"
+                      }]);
+                    }
+                  }}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 px-3 py-1.5 text-xs font-semibold text-white hover:scale-105 transition-transform"
+                >
+                  <MessageCircle className="h-3.5 w-3.5" />
+                  Chat with AI
+                </button>
+              </div>
             </div>
             <p className="text-sm leading-6 text-zinc-700 dark:text-zinc-300">{aiAnalysis}</p>
             <button
