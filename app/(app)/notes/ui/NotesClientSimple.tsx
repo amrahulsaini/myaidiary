@@ -174,37 +174,27 @@ export default function NotesClientSimple() {
   }
 
   async function handleListen(note: NoteRow) {
-    try {
+    // Use browser's built-in Text-to-Speech
+    if ('speechSynthesis' in window) {
       setIsPlaying(note.id);
-
-      const response = await fetch('/api/tts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: note.content })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        console.error('TTS API Error:', data);
-        alert(`TTS Error: ${data.error}\n\nPlease enable the Text-to-Speech API in Google Cloud Console for your API key.`);
-        setIsPlaying(null);
-        return;
-      }
-
-      const audio = new Audio(`data:audio/mp3;base64,${data.audioContent}`);
       
-      audio.onended = () => setIsPlaying(null);
-      audio.onerror = () => {
-        alert('Audio playback failed. Please check your browser permissions.');
+      // Stop any currently playing speech
+      window.speechSynthesis.cancel();
+      
+      const utterance = new SpeechSynthesisUtterance(note.content);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.9;
+      utterance.pitch = 1.0;
+      
+      utterance.onend = () => setIsPlaying(null);
+      utterance.onerror = () => {
+        alert('Speech playback failed. Please try again.');
         setIsPlaying(null);
       };
       
-      await audio.play();
-    } catch (error) {
-      console.error('TTS error:', error);
-      alert(`Failed to play audio: ${error}`);
-      setIsPlaying(null);
+      window.speechSynthesis.speak(utterance);
+    } else {
+      alert('Your browser does not support text-to-speech.');
     }
   }
 
