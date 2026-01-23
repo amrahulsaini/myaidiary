@@ -388,6 +388,164 @@ export default function Home() {
               </div>
             </div>
 
+            {/* LIVE PRODUCT DEMO SECTION - NEW */}
+            <div className="rounded-3xl border-4 border-green-400 bg-gradient-to-br from-green-50 via-emerald-50 to-green-50 p-8 shadow-2xl shadow-green-500/30 dark:border-green-500/50 dark:from-green-950/40 dark:via-emerald-950/40 dark:to-green-950/40">
+              <div className="flex items-center gap-3 mb-6">
+                <span className="relative flex h-4 w-4">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-600 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-4 w-4 bg-green-600"></span>
+                </span>
+                <h3 className="text-2xl font-bold text-green-900 dark:text-green-200">
+                  🎬 LIVE PRODUCT DEMO - Try It Now!
+                </h3>
+              </div>
+
+              <p className="text-base leading-7 text-zinc-800 dark:text-zinc-200 mb-6">
+                <span className="font-bold text-green-700 dark:text-green-400">MyAIDiary is live and fully functional.</span> Click any link below to explore our working application. No sign-up required for demo mode - see our features in action immediately!
+              </p>
+
+              {/* Demo Action Buttons */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <Link
+                  href="/dashboard"
+                  className="group relative rounded-2xl border-2 border-green-500 bg-white p-5 shadow-lg transition-all hover:scale-105 hover:shadow-xl dark:border-green-500/50 dark:bg-green-950/30"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 text-white">
+                      <TrendingUp className="h-5 w-5" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-bold text-base text-green-900 dark:text-green-200 mb-1">📊 Dashboard Demo</p>
+                      <p className="text-sm text-zinc-700 dark:text-zinc-300">View analytics, recent activity, and AI insights placeholder</p>
+                    </div>
+                    <ArrowRight className="h-5 w-5 text-green-600 group-hover:translate-x-1 transition-transform dark:text-green-400" />
+                  </div>
+                </Link>
+
+                <Link
+                  href="/notes"
+                  className="group relative rounded-2xl border-2 border-indigo-500 bg-white p-5 shadow-lg transition-all hover:scale-105 hover:shadow-xl dark:border-indigo-500/50 dark:bg-indigo-950/30"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 text-white">
+                      <BookOpen className="h-5 w-5" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-bold text-base text-indigo-900 dark:text-indigo-200 mb-1">📝 Journal Demo</p>
+                      <p className="text-sm text-zinc-700 dark:text-zinc-300">Create entries, see AI TTS/STT buttons (premium features)</p>
+                    </div>
+                    <ArrowRight className="h-5 w-5 text-indigo-600 group-hover:translate-x-1 transition-transform dark:text-indigo-400" />
+                  </div>
+                </Link>
+
+                <Link
+                  href="/expenses"
+                  className="group relative rounded-2xl border-2 border-blue-500 bg-white p-5 shadow-lg transition-all hover:scale-105 hover:shadow-xl dark:border-blue-500/50 dark:bg-blue-950/30"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 text-white">
+                      <DollarSign className="h-5 w-5" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-bold text-base text-blue-900 dark:text-blue-200 mb-1">💰 Expense Tracker Demo</p>
+                      <p className="text-sm text-zinc-700 dark:text-zinc-300">Log expenses, see categories, view AI spending insights UI</p>
+                    </div>
+                    <ArrowRight className="h-5 w-5 text-blue-600 group-hover:translate-x-1 transition-transform dark:text-blue-400" />
+                  </div>
+                </Link>
+
+                <Link
+                  href="/todos"
+                  className="group relative rounded-2xl border-2 border-purple-500 bg-white p-5 shadow-lg transition-all hover:scale-105 hover:shadow-xl dark:border-purple-500/50 dark:bg-purple-950/30"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-fuchsia-500 text-white">
+                      <CheckCircle2 className="h-5 w-5" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-bold text-base text-purple-900 dark:text-purple-200 mb-1">✅ Task Manager Demo</p>
+                      <p className="text-sm text-zinc-700 dark:text-zinc-300">Create todos, toggle status, see AI productivity UI</p>
+                    </div>
+                    <ArrowRight className="h-5 w-5 text-purple-600 group-hover:translate-x-1 transition-transform dark:text-purple-400" />
+                  </div>
+                </Link>
+              </div>
+
+              {/* Product Walkthrough */}
+              <div className="rounded-2xl border-2 border-zinc-200 bg-white/80 p-6 dark:border-white/10 dark:bg-white/5">
+                <h4 className="text-lg font-bold text-zinc-900 dark:text-zinc-100 mb-4 flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                  Step-by-Step Product Walkthrough
+                </h4>
+                <div className="space-y-4 text-sm leading-6 text-zinc-700 dark:text-zinc-300">
+                  <div className="flex items-start gap-3">
+                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-green-100 text-xs font-bold text-green-700 flex-shrink-0 dark:bg-green-950 dark:text-green-400">1</span>
+                    <div>
+                      <p className="font-semibold text-zinc-900 dark:text-zinc-100">Dashboard Overview</p>
+                      <p>Open <Link href="/dashboard" className="text-indigo-600 font-semibold underline dark:text-indigo-400">/dashboard</Link> to see: Recent activity feed, expense summaries, task completion stats, and AI Intelligence banner showing planned features.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-green-100 text-xs font-bold text-green-700 flex-shrink-0 dark:bg-green-950 dark:text-green-400">2</span>
+                    <div>
+                      <p className="font-semibold text-zinc-900 dark:text-zinc-100">Journal with AI UI</p>
+                      <p>Visit <Link href="/notes" className="text-indigo-600 font-semibold underline dark:text-indigo-400">/notes</Link> to: Create journal entries, see AI banner explaining sentiment analysis, view disabled "Listen" (Google TTS) and "AI Insights" buttons with premium badges.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-green-100 text-xs font-bold text-green-700 flex-shrink-0 dark:bg-green-950 dark:text-green-400">3</span>
+                    <div>
+                      <p className="font-semibold text-zinc-900 dark:text-zinc-100">Expense Tracking with AI</p>
+                      <p>Go to <Link href="/expenses" className="text-indigo-600 font-semibold underline dark:text-indigo-400">/expenses</Link> to: Log expenses with categories (Food, Transport, Shopping, etc.), see daily totals, view disabled "Ask AI" spending insights button.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-green-100 text-xs font-bold text-green-700 flex-shrink-0 dark:bg-green-950 dark:text-green-400">4</span>
+                    <div>
+                      <p className="font-semibold text-zinc-900 dark:text-zinc-100">Data Persistence</p>
+                      <p>All data saves to browser sessionStorage in demo mode. Create multiple entries across features and navigate between pages - your data persists throughout the session, demonstrating full CRUD functionality.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* What You'll See */}
+              <div className="mt-6 rounded-2xl border-2 border-indigo-200 bg-gradient-to-r from-indigo-50 to-purple-50 p-6 dark:border-indigo-500/30 dark:from-indigo-950/30 dark:to-purple-950/30">
+                <h4 className="text-base font-bold text-indigo-900 dark:text-indigo-200 mb-3">
+                  🤖 AI Features You'll See (Current Implementation)
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0 dark:text-green-400" />
+                    <span><strong>AI Intelligence Banner:</strong> Dashboard shows AI capabilities overview with Brain icon and feature cards</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0 dark:text-green-400" />
+                    <span><strong>Google TTS Button:</strong> Journal page displays "Listen" button with Volume icon (disabled in demo)</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0 dark:text-green-400" />
+                    <span><strong>AI Insights UI:</strong> "AI Insights" button with Sparkles icon showing sentiment analysis UI (premium feature)</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0 dark:text-green-400" />
+                    <span><strong>AI Spending Analysis:</strong> Expense tracker shows "Ask AI" button with Brain icon for financial insights (premium)</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0 dark:text-green-400" />
+                    <span><strong>AI Productivity UI:</strong> Todo page displays AI productivity banner explaining task prioritization (coming soon)</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0 dark:text-green-400" />
+                    <span><strong>Premium Badges:</strong> All AI features clearly marked with Lock icons and "Premium feature" tooltips</span>
+                  </div>
+                </div>
+                <p className="mt-4 text-xs italic text-indigo-700 dark:text-indigo-300">
+                  <strong>Note:</strong> AI features are implemented in the UI layer with clear indicators for premium functionality. Backend AI integration (OpenAI GPT-4, Google Cloud STT/TTS) will be activated with Google for Startups cloud credits.
+                </p>
+              </div>
+            </div>
+
             <div className="rounded-3xl border border-zinc-200 bg-white/70 p-8 shadow-lg dark:border-white/10 dark:bg-white/5">
               <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 mb-4">
                 📸 Product Screenshots & Demo
