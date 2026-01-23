@@ -325,11 +325,6 @@ export default function NotesClientSimple() {
                 {isPlaying === activeId ? 'Playing...' : 'Listen'}
               </span>
             </button>
-              <Lock className="h-3 w-3" />
-              <span className="absolute -top-8 right-0 hidden group-hover:block rounded-lg bg-zinc-900 px-2 py-1 text-xs text-white whitespace-nowrap">
-                Premium feature - Demo mode
-              </span>
-            </button>
 
             {/* AI Analysis - NOW WORKING */}
             <button
