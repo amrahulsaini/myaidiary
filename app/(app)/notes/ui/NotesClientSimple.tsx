@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Trash2, Save, Volume2, Sparkles, Lock, Loader2 } from "lucide-react";
+import { Plus, Trash2, Save, Volume2, Sparkles, Lock, Loader2, MessageCircle, X, Send } from "lucide-react";
 import { storage, initDemoData } from "@/app/lib/storage";
 
 type NoteRow = {
@@ -12,6 +12,11 @@ type NoteRow = {
   font?: string;
   created_at: string;
   updated_at: string;
+};
+
+type ChatMessage = {
+  role: "user" | "ai";
+  content: string;
 };
 
 function formatDay(ts: string) {
@@ -33,6 +38,10 @@ export default function NotesClientSimple() {
   const [draftContent, setDraftContent] = useState("");
   const [aiAnalysis, setAiAnalysis] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [showChat, setShowChat] = useState(false);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [chatInput, setChatInput] = useState("");
+  const [isChatLoading, setIsChatLoading] = useState(false);
 
   useEffect(() => {
     initDemoData();
@@ -128,6 +137,38 @@ export default function NotesClientSimple() {
       alert("Failed to analyze. Please try again.");
     } finally {
       setIsAnalyzing(false);
+    }
+  }
+
+  async function handleSendChat() {
+    if (!chatInput.trim()) return;
+
+    const userMessage = chatInput.trim();
+    setChatMessages(prev => [...prev, { role: "user", content: userMessage }]);
+    setChatInput("");
+    setIsChatLoading(true);
+
+    try {
+      const response = await fetch("/api/ai/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          message: userMessage,
+          journalContext: notes.slice(0, 5) // Last 5 entries for context
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Chat failed");
+      }
+
+      const data = await response.json();
+      setChatMessages(prev => [...prev, { role: "ai", content: data.reply }]);
+    } catch (error) {
+      console.error("Chat error:", error);
+      setChatMessages(prev => [...prev, { role: "ai", content: "I'm having trouble connecting right now. Please try again." }]);
+    } finally {
+      setIsChatLoading(false);
     }
   }
 
@@ -280,9 +321,26 @@ export default function NotesClientSimple() {
         {/* AI Analysis Result */}
         {aiAnalysis && (
           <div className="mt-4 rounded-2xl border-2 border-fuchsia-200 bg-gradient-to-r from-fuchsia-50 to-purple-50 p-5 dark:border-fuchsia-500/30 dark:from-fuchsia-950/30 dark:to-purple-950/30">
-            <div className="flex items-center gap-2 mb-3">
-              <Sparkles className="h-5 w-5 text-fuchsia-600 dark:text-fuchsia-400" />
-              <h4 className="font-bold text-fuchsia-900 dark:text-fuchsia-200">AI Sentiment Analysis</h4>
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-fuchsia-600 dark:text-fuchsia-400" />
+                <h4 className="font-bold text-fuchsia-900 dark:text-fuchsia-200">AI Sentiment Analysis</h4>
+              </div>
+              <button
+                onClick={() => {
+                  setShowChat(true);
+                  if (chatMessages.length === 0) {
+                    setChatMessages([{
+                      role: "ai",
+                      content: "Hi! I've been reading your journal entries. What would you like to talk about? 💜"
+                    }]);
+                  }
+                }}
+                className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 px-3 py-1.5 text-xs font-semibold text-white hover:scale-105 transition-transform"
+              >
+                <MessageCircle className="h-3.5 w-3.5" />
+                Chat with AI
+              </button>
             </div>
             <p className="text-sm leading-6 text-zinc-700 dark:text-zinc-300">{aiAnalysis}</p>
             <button
@@ -295,6 +353,99 @@ export default function NotesClientSimple() {
         )}
       </main>
       </div>
+
+      {/* Floating Chat Button */}
+      {!showChat && (
+        <button
+          onClick={() => {
+            setShowChat(true);
+            if (chatMessages.length === 0) {
+              setChatMessages([{
+                role: "ai",
+                content: "Hi! I'm your sentiment AI. I can see all your journal entries and I'm here to chat about your thoughts and feelings. How are you doing today? 💜"
+              }]);
+            }
+          }}
+          className="fixed bottom-6 right-6 z-50 inline-flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 text-white shadow-2xl hover:scale-110 transition-transform animate-bounce"
+        >
+          <MessageCircle className="h-6 w-6" />
+        </button>
+      )}
+
+      {/* AI Chat Modal */}
+      {showChat && (
+        <div className="fixed inset-0 z-50 flex items-end justify-end p-4 sm:p-6">
+          <div className="w-full max-w-md h-[600px] rounded-3xl border-2 border-indigo-200 bg-white shadow-2xl flex flex-col dark:border-indigo-500/30 dark:bg-zinc-900">
+            {/* Chat Header */}
+            <div className="flex items-center justify-between p-4 border-b border-indigo-100 dark:border-indigo-500/30">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 flex items-center justify-center text-white">
+                  <Sparkles className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-zinc-900 dark:text-zinc-100">Sentiment AI</h3>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400">Based on {notes.length} journal entries</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowChat(false)}
+                className="h-8 w-8 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center justify-center transition"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Chat Messages */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              {chatMessages.map((msg, idx) => (
+                <div
+                  key={idx}
+                  className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                >
+                  <div
+                    className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+                      msg.role === "user"
+                        ? "bg-gradient-to-r from-indigo-500 to-fuchsia-500 text-white"
+                        : "bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
+                    }`}
+                  >
+                    <p className="text-sm leading-6">{msg.content}</p>
+                  </div>
+                </div>
+              ))}
+              {isChatLoading && (
+                <div className="flex justify-start">
+                  <div className="bg-zinc-100 dark:bg-zinc-800 rounded-2xl px-4 py-3">
+                    <Loader2 className="h-4 w-4 animate-spin text-indigo-500" />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Chat Input */}
+            <div className="p-4 border-t border-indigo-100 dark:border-indigo-500/30">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSendChat()}
+                  placeholder="Type your message..."
+                  disabled={isChatLoading}
+                  className="flex-1 rounded-full border border-zinc-200 bg-white/80 px-4 py-2.5 text-sm outline-none transition focus:border-indigo-300 disabled:opacity-50 dark:border-white/10 dark:bg-black/30 dark:focus:border-indigo-500"
+                />
+                <button
+                  onClick={handleSendChat}
+                  disabled={isChatLoading || !chatInput.trim()}
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 text-white transition hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Send className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
