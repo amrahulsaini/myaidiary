@@ -44,7 +44,9 @@ export default function NotesClientSimple() {
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [isPlaying, setIsPlaying] = useState<string | null>(null);
   const [ttsLoading, setTtsLoading] = useState(false);
+  const [playingChatIndex, setPlayingChatIndex] = useState<number | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const chatAudioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     initDemoData();
@@ -222,6 +224,61 @@ export default function NotesClientSimple() {
 
       await audio.play();
       setIsPlaying(note.id);
+    } catch (error) {
+      console.error('TTS error:', error);
+      alert('Failed to generate speech');
+    } finally {
+      setTtsLoading(false);
+    }
+  }
+
+  async function handleChatTTS(messageContent: string, messageIndex: number) {
+    if (!messageContent?.trim()) return;
+
+    if (playingChatIndex === messageIndex) {
+      // Stop current audio
+      if (chatAudioRef.current) {
+        chatAudioRef.current.pause();
+        chatAudioRef.current.currentTime = 0;
+      }
+      setPlayingChatIndex(null);
+      return;
+    }
+
+    try {
+      setTtsLoading(true);
+      const response = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: messageContent })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error('TTS error:', data.error);
+        alert(data.error || 'Failed to generate speech');
+        return;
+      }
+
+      // Convert base64 to audio and play
+      const audioData = `data:audio/wav;base64,${data.audioContent}`;
+      
+      if (chatAudioRef.current) {
+        chatAudioRef.current.pause();
+      }
+
+      const audio = new Audio(audioData);
+      chatAudioRef.current = audio;
+
+      audio.onended = () => setPlayingChatIndex(null);
+      audio.onerror = () => {
+        setPlayingChatIndex(null);
+        alert('Failed to play audio');
+      };
+
+      await audio.play();
+      setPlayingChatIndex(messageIndex);
     } catch (error) {
       console.error('TTS error:', error);
       alert('Failed to generate speech');
@@ -509,14 +566,30 @@ export default function NotesClientSimple() {
                   key={idx}
                   className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                 >
-                  <div
-                    className={`max-w-[80%] rounded-2xl px-4 py-3 ${
-                      msg.role === "user"
-                        ? "bg-gradient-to-r from-indigo-500 to-fuchsia-500 text-white"
-                        : "bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
-                    }`}
-                  >
-                    <p className="text-sm leading-6">{msg.content}</p>
+                  <div className={`flex items-start gap-2 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}>
+                    <div
+                      className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+                        msg.role === "user"
+                          ? "bg-gradient-to-r from-indigo-500 to-fuchsia-500 text-white"
+                          : "bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
+                      }`}
+                    >
+                      <p className="text-sm leading-6">{msg.content}</p>
+                    </div>
+                    {msg.role === "ai" && (
+                      <button
+                        onClick={() => handleChatTTS(msg.content, idx)}
+                        disabled={ttsLoading}
+                        className="mt-1 inline-flex h-8 w-8 items-center justify-center rounded-full border border-indigo-200 bg-white hover:bg-indigo-50 transition disabled:opacity-50 dark:border-indigo-500/30 dark:bg-zinc-800 dark:hover:bg-zinc-700"
+                        title="Listen to message"
+                      >
+                        {playingChatIndex === idx ? (
+                          <Square className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
+                        ) : (
+                          <Volume2 className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
+                        )}
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}
