@@ -413,21 +413,19 @@ export default function Home() {
                   </h4>
                 </div>
                 <p className="text-sm leading-6 text-zinc-800 dark:text-zinc-200 mb-4">
-                  Watch our quick demo showcasing Gemini 2.0 integration, multimodal Speech-to-Text (STT), and Text-to-Speech (TTS) features in action:
+                  Watch our quick demo showcasing Gemini 2.0 integration and Text-to-Speech (TTS) features in action:
                 </p>
                 
-                {/* Video Embed Area - Replace with your actual video link */}
+                {/* Video Embed Area */}
                 <div className="rounded-xl overflow-hidden bg-white dark:bg-zinc-900 shadow-lg">
                   <div className="aspect-video w-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-                    {/* Replace the URL below with your Loom or YouTube video link */}
                     <iframe
                       className="w-full h-full"
-                      src="https://www.youtube.com/embed/YOUR_VIDEO_ID_HERE"
-                      title="MyAIDiary Product Demo"
+                      src="https://www.youtube.com/embed/zaOcHJIAu5A"
+                      title="MyAIDiary Product Demo - Gemini 2.0 AI & TTS"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
                     ></iframe>
-                    {/* Alternative: For Loom, use: src="https://www.loom.com/embed/YOUR_LOOM_ID_HERE" */}
                   </div>
                 </div>
                 
