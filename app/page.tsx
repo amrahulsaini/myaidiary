@@ -752,34 +752,44 @@ export default function Home() {
 
               <div className="rounded-3xl border-2 border-fuchsia-200 bg-gradient-to-br from-white to-fuchsia-50/50 p-8 shadow-xl shadow-fuchsia-500/20 dark:border-fuchsia-500/30 dark:from-zinc-900 dark:to-fuchsia-950/30">
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-fuchsia-500 to-purple-500 flex items-center justify-center text-white text-3xl font-bold">
-                    TM
-                  </div>
+                  <img 
+                    src="/about.jpeg" 
+                    alt="Aishwarya Nayak" 
+                    className="h-20 w-20 rounded-2xl object-cover border-2 border-fuchsia-300 dark:border-fuchsia-700"
+                  />
                   <div>
-                    <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">Core Development Team</h3>
-                    <p className="text-sm text-fuchsia-600 dark:text-fuchsia-400 font-semibold">Engineering, Design & Operations</p>
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400">3 members + advisors</p>
+                    <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">Aishwarya Nayak</h3>
+                    <p className="text-sm text-fuchsia-600 dark:text-fuchsia-400 font-semibold">Lead Developer</p>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400">Full-Stack Engineering</p>
                   </div>
                 </div>
                 <div className="space-y-3 text-sm leading-6 text-zinc-700 dark:text-zinc-300">
-                  <div>
-                    <p className="font-semibold text-fuchsia-600 dark:text-fuchsia-400 mb-1">🎨 Lead Designer</p>
-                    <p className="text-xs">5+ years UI/UX design, previously designed apps with 100k+ users, specializes in accessibility and user research</p>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-fuchsia-600 dark:text-fuchsia-400 mb-1">⚙️ Backend Engineer</p>
-                    <p className="text-xs">4+ years with PostgreSQL, Node.js, API architecture, previously at fintech startup handling 1M+ transactions/day</p>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-fuchsia-600 dark:text-fuchsia-400 mb-1">📊 Growth & Operations</p>
-                    <p className="text-xs">3+ years in SaaS growth, managed beta programs for 3 startups, expert in user onboarding and retention analytics</p>
-                  </div>
+                  <p>
+                    <span className="font-semibold text-fuchsia-600 dark:text-fuchsia-400">🎓 Education:</span> Computer Science background with expertise in web development and AI integration
+                  </p>
+                  <p>
+                    <span className="font-semibold text-fuchsia-600 dark:text-fuchsia-400">💼 Experience:</span> Full-stack developer with experience in React, Next.js, TypeScript, and modern web technologies
+                  </p>
+                  <p>
+                    <span className="font-semibold text-fuchsia-600 dark:text-fuchsia-400">🛠️ Technical Skills:</span> React, Next.js, TypeScript, UI/UX design, API integration, responsive design
+                  </p>
+                  <p>
+                    <span className="font-semibold text-fuchsia-600 dark:text-fuchsia-400">🚀 Current Role:</span> Building and maintaining MyAIDiary platform, implementing features, optimizing user experience
+                  </p>
                   <div className="flex flex-wrap gap-2 mt-4">
-                    <span className="inline-flex items-center rounded-full bg-fuchsia-100 px-3 py-1 text-xs font-semibold text-fuchsia-700 dark:bg-fuchsia-950/50 dark:text-fuchsia-300">
-                      🌍 Remote-first
-                    </span>
-                    <span className="inline-flex items-center rounded-full bg-fuchsia-100 px-3 py-1 text-xs font-semibold text-fuchsia-700 dark:bg-fuchsia-950/50 dark:text-fuchsia-300">
-                      💼 Hiring Q2 2026
+                    <a 
+                      href="https://www.linkedin.com/in/aishwarya-nayak-7869b932b/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center rounded-full bg-blue-600 px-3 py-1 text-xs font-semibold text-white hover:bg-blue-700 transition"
+                    >
+                      <svg className="h-3 w-3 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                      </svg>
+                      LinkedIn
+                    </a>
+                    <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700 dark:bg-green-950/50 dark:text-green-300">
+                      ✓ Full-time Developer
                     </span>
                   </div>
                 </div>
