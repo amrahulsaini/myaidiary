@@ -76,9 +76,9 @@ export default function Home() {
           </Link>
 
           <nav className="hidden items-center gap-7 text-sm font-medium text-zinc-600 dark:text-zinc-300 md:flex">
-            <a className="transition hover:text-zinc-950 dark:hover:text-white" href="#about">
+            <Link className="transition hover:text-zinc-950 dark:hover:text-white" href="/about">
               About
-            </a>
+            </Link>
             <a className="transition hover:text-zinc-950 dark:hover:text-white" href="#product">
               Product
             </a>
