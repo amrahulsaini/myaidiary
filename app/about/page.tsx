@@ -59,8 +59,13 @@ export default function AboutPage() {
             Meet the team building MyAIDiary:
           </p>
           <div className="mt-4 space-y-3">
-            <div className="flex items-center justify-between rounded-lg border border-zinc-200 bg-white/50 p-4 dark:border-white/5 dark:bg-white/5">
-              <div>
+            <div className="flex items-center gap-4 rounded-lg border border-zinc-200 bg-white/50 p-4 dark:border-white/5 dark:bg-white/5">
+              <img 
+                src="/about.jpeg" 
+                alt="Aishwarya Nayak" 
+                className="h-16 w-16 rounded-full object-cover border-2 border-zinc-200 dark:border-zinc-700"
+              />
+              <div className="flex-1">
                 <p className="font-semibold text-zinc-900 dark:text-zinc-100">Aishwarya Nayak</p>
                 <p className="text-sm text-zinc-600 dark:text-zinc-400">Developer</p>
               </div>
