@@ -29,11 +29,11 @@ export default function Home() {
               Demo
             </Link>
             <Link
-              href="/dashboard"
+              href="/contact"
               className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-zinc-950 px-5 text-sm font-semibold text-white transition hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
             >
               <BookOpen className="h-4 w-4" />
-              Open App
+              Request Demo
             </Link>
           </div>
         </div>
@@ -56,16 +56,10 @@ export default function Home() {
 
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link
-                href="/dashboard"
+                href="/contact"
                 className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-zinc-950 px-8 text-sm font-semibold text-white shadow-lg transition hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200 sm:w-auto"
               >
                 <Sparkles className="h-4 w-4" />
-                Get Started Free
-              </Link>
-              <Link
-                href="/contact"
-                className="inline-flex h-12 w-full items-center justify-center rounded-full border border-zinc-200 bg-white px-8 text-sm font-semibold text-zinc-900 transition hover:bg-zinc-50 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10 sm:w-auto"
-              >
                 Request Demo
               </Link>
             </div>
@@ -142,14 +136,8 @@ export default function Home() {
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Link
-                href="/dashboard"
-                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-zinc-950 px-8 text-sm font-semibold text-white shadow-lg transition hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200 sm:w-auto"
-              >
-                Open Dashboard
-              </Link>
-              <Link
                 href="/contact"
-                className="inline-flex h-12 w-full items-center justify-center rounded-full border border-zinc-200 bg-white px-8 text-sm font-semibold text-zinc-900 transition hover:bg-zinc-50 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10 sm:w-auto"
+                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-zinc-950 px-8 text-sm font-semibold text-white shadow-lg transition hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200 sm:w-auto"
               >
                 Request Demo
               </Link>
