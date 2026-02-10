@@ -3,8 +3,8 @@ import Link from "next/link";
 import { Mail } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Contact",
-  description: "Contact the MyAIDiary team.",
+  title: "Demo",
+  description: "Request a demo of MyAIDiary.",
 };
 
 export default function ContactPage() {
@@ -26,13 +26,24 @@ export default function ContactPage() {
           </Link>
         </div>
 
-        <h1 className="mt-10 text-4xl font-semibold tracking-tight">Contact</h1>
-        <p className="mt-4 text-pretty text-base leading-7 text-zinc-600 dark:text-zinc-400">
-          For partnerships, pilots, or investment conversations, email us and we’ll reply as soon
-          as possible.
+        <h1 className="mt-10 text-4xl font-semibold tracking-tight">Demo Request</h1>
+        <p className="mt-4 text-base leading-7 text-zinc-600 dark:text-zinc-400">
+          Experience MyAIDiary's powerful features.
         </p>
 
-        <div className="mt-8 rounded-2xl border border-zinc-200 bg-white/70 p-6 shadow-sm shadow-black/5 backdrop-blur dark:border-white/10 dark:bg-white/5 dark:shadow-none">
+        <div className="mt-6 rounded-2xl border border-zinc-200 bg-white/70 p-6 backdrop-blur dark:border-white/10 dark:bg-white/5">
+          <h2 className="text-lg font-semibold">Features</h2>
+          <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-6 text-zinc-600 dark:text-zinc-400">
+            <li>AI-powered voice input (speech-to-text)</li>
+            <li>Text-to-speech listening</li>
+            <li>Smart pattern insights</li>
+            <li>Privacy-first design</li>
+            <li>Multi-device sync</li>
+          </ul>
+        </div>
+
+        <div className="mt-6 rounded-2xl border border-zinc-200 bg-white/70 p-6 backdrop-blur dark:border-white/10 dark:bg-white/5">
+          <h2 className="text-lg font-semibold mb-4">Request a Demo</h2>
           <a
             className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-zinc-950 px-6 text-sm font-semibold text-white transition hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
             href="mailto:founder@Myaidiary.me"
@@ -40,9 +51,6 @@ export default function ContactPage() {
             <Mail className="h-4 w-4" />
             founder@Myaidiary.me
           </a>
-          <p className="mt-4 text-xs text-zinc-500 dark:text-zinc-400">
-            For demos: include your name and platform (web/iOS/Android).
-          </p>
         </div>
 
         <div className="mt-10 flex flex-wrap gap-4 text-sm text-zinc-600 dark:text-zinc-400">
