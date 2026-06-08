@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BookOpen, Sparkles, LineChart, MessageCircleHeart, Lock, Mic } from "lucide-react";
+import { BookOpen, Sparkles, LineChart, MessageCircleHeart, Lock, Mic, ArrowRight } from "lucide-react";
 import { ScrollReveal } from "@/components/ScrollReveal";
 
 const features = [
@@ -23,14 +23,7 @@ export default function Home() {
       {/* Hero — fullscreen video, buttons at the bottom */}
       <section className="hero-bg">
         <h1 className="sr-only">MyAIDiary — your private, AI-powered journal.</h1>
-        <video
-          className="hero-video"
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-        >
+        <video className="hero-video" autoPlay muted loop playsInline preload="auto">
           <source src="/myaidiary-vid.mp4" type="video/mp4" />
         </video>
         <div className="hero-video-overlay" />
@@ -40,22 +33,47 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features */}
-      <section id="features" className="section" style={{ borderTop: "1px solid var(--ink)", background: "var(--sand)" }}>
+      {/* Features — vertical rows, big heading, no eyebrow chip */}
+      <section id="features" className="features-section">
         <div className="container">
           <ScrollReveal>
-            <span className="eyebrow" style={{ background: "var(--cream)" }}>What it does</span>
-            <h2 className="section-title" style={{ marginTop: "1rem" }}>A journal that thinks with you.</h2>
+            <h2 className="features-heading">What does it do?</h2>
           </ScrollReveal>
-          <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 300px), 1fr))", gap: "1.25rem", marginTop: "2rem" }}>
-            {features.map(({ icon: Icon, title, body }, i) => (
-              <ScrollReveal key={title} delay={i * 60}>
-                <div className="card card-pad hover-lift" style={{ background: "var(--cream)", height: "100%" }}>
-                  <span className="inline-flex" style={{ width: 46, height: 46, border: "1px solid var(--ink)", background: "var(--paper)", alignItems: "center", justifyContent: "center", boxShadow: "var(--shadow-sm)" }}>
-                    <Icon size={22} strokeWidth={1.75} />
-                  </span>
-                  <h3 style={{ fontSize: "1.3rem", marginTop: "1rem" }}>{title}</h3>
-                  <p className="muted" style={{ marginTop: ".5rem" }}>{body}</p>
+        </div>
+        <div className="features-list">
+          {features.map(({ icon: Icon, title, body }, i) => (
+            <ScrollReveal key={title} delay={i * 70} className="feature-row">
+              <div className="feature-item container">
+                <span className="feature-num">0{i + 1}</span>
+                <span className="feature-icon-wrap">
+                  <Icon size={22} strokeWidth={1.75} />
+                </span>
+                <div className="feature-text">
+                  <h3 className="feature-title">{title}</h3>
+                  <p className="feature-body">{body}</p>
+                </div>
+                <ArrowRight size={20} className="feature-arrow" strokeWidth={2} />
+              </div>
+            </ScrollReveal>
+          ))}
+        </div>
+      </section>
+
+      {/* How it works — vertical rows, big heading */}
+      <section id="how" className="how-section">
+        <div className="container">
+          <ScrollReveal>
+            <h2 className="features-heading">How does it work?</h2>
+          </ScrollReveal>
+          <div className="how-list">
+            {steps.map(([t, b], i) => (
+              <ScrollReveal key={t} delay={i * 90} className="how-row">
+                <div className="how-item">
+                  <span className="how-num">{String(i + 1).padStart(2, "0")}</span>
+                  <div className="how-text">
+                    <h3 className="how-title">{t}</h3>
+                    <p className="how-body">{b}</p>
+                  </div>
                 </div>
               </ScrollReveal>
             ))}
@@ -63,35 +81,14 @@ export default function Home() {
         </div>
       </section>
 
-      {/* How it works */}
-      <section id="how" className="container section">
+      {/* CTA — full edge to edge, no container */}
+      <section className="cta-fullbleed">
         <ScrollReveal>
-          <span className="eyebrow">How it works</span>
-          <h2 className="section-title" style={{ marginTop: "1rem" }}>Three calm steps.</h2>
-        </ScrollReveal>
-        <div className="grid md:grid-cols-3" style={{ gap: "1.25rem", marginTop: "2rem" }}>
-          {steps.map(([t, b], i) => (
-            <ScrollReveal key={t} delay={i * 100}>
-              <div className="card card-pad" style={{ height: "100%" }}>
-                <div className="display" style={{ fontSize: "3rem", color: "var(--stone)" }}>{String(i + 1).padStart(2, "0")}</div>
-                <h3 style={{ fontSize: "1.4rem", marginTop: ".5rem" }}>{t}</h3>
-                <p className="muted" style={{ marginTop: ".4rem" }}>{b}</p>
-              </div>
-            </ScrollReveal>
-          ))}
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="container" style={{ paddingBottom: "clamp(3rem,6vw,5rem)" }}>
-        <ScrollReveal>
-          <div className="card card-pad" style={{ background: "var(--ink)", textAlign: "center", padding: "clamp(2.5rem,5vw,4rem)" }}>
-            <h2 className="section-title" style={{ color: "var(--cream)" }}>Start your journal today.</h2>
-            <p style={{ color: "var(--stone)", marginTop: ".6rem" }}>Free to begin. Your story, with a little AI by your side.</p>
-            <div style={{ marginTop: "1.6rem" }}>
-              <Link href="/auth?mode=signup" className="btn btn-sand">Create your journal</Link>
-            </div>
-          </div>
+          <h2 className="cta-heading">Start your journal today.</h2>
+          <p className="cta-sub">Free to begin. Your story, with a little AI by your side.</p>
+          <Link href="/auth?mode=signup" className="btn btn-sand" style={{ marginTop: "2rem" }}>
+            Create your journal
+          </Link>
         </ScrollReveal>
       </section>
     </div>
