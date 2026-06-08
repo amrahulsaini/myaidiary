@@ -11,9 +11,9 @@ export default async function SiteHeader() {
       <div className="container flex items-center justify-between" style={{ height: 70 }}>
         <Link href="/" aria-label="MyAIDiary home" className="inline-flex items-center">
           <img
-            src="/myaidiary-fulllogo.png"
+            src="/myaidiary-fulllogo-withoutbg.png"
             alt="MyAIDiary"
-            style={{ height: 48, width: "auto", mixBlendMode: "multiply" }}
+            style={{ height: 48, width: "auto" }}
           />
         </Link>
 
