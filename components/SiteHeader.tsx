@@ -13,8 +13,7 @@ export default async function SiteHeader() {
           <img
             src="/myaidiary-fulllogo.png"
             alt="MyAIDiary"
-            className="logo-img"
-            style={{ height: 52, width: "auto" }}
+            style={{ height: 48, width: "auto", mixBlendMode: "multiply" }}
           />
         </Link>
 

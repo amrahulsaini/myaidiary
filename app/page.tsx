@@ -20,17 +20,25 @@ const steps = [
 export default function Home() {
   return (
     <div>
-      {/* Hero — full 100svh, image behind transparent fixed header */}
+      {/* Hero — logo-centered, cream background, instant load */}
       <section className="hero-bg">
         <h1 className="sr-only">MyAIDiary — your private, AI-powered journal.</h1>
+
+        {/* faint oversized pen watermark in background */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/myaidiary-faviconandshortlogo-penonly.png" alt="" aria-hidden="true" className="hero-watermark" />
+
         <div className="hero-body">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/myaidiary-fulllogo.png" alt="MyAIDiary" className="hero-logo" />
           <p className="hero-tagline">Your private<br />AI journal.</p>
           <p className="hero-sub">Write your day. Let AI summarise, track your mood, and chat with your past self.</p>
           <div className="hero-cta-row">
-            <Link href="/auth?mode=signup" className="btn btn-light">Start journaling</Link>
-            <Link href="/auth" className="btn btn-ghost-light">I have an account</Link>
+            <Link href="/auth?mode=signup" className="btn">Start journaling</Link>
+            <Link href="/auth" className="btn btn-outline">I have an account</Link>
           </div>
         </div>
+
         <div className="hero-scroll-hint" aria-hidden="true">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
         </div>

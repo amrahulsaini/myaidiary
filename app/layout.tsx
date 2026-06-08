@@ -20,10 +20,6 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${montserrat.variable} ${inconsolata.variable}`}>
-      <head>
-        <link rel="preload" as="image" href="/herobanner-img1.png" fetchPriority="high" />
-        <link rel="preload" as="image" href="/herobanner-img2.png" fetchPriority="high" />
-      </head>
       <body>
         {/* hand-drawn wiggle filter for accent images */}
         <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden focusable="false">
