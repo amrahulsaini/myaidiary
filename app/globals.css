@@ -143,14 +143,15 @@ textarea.field { height: auto; padding: .7rem .85rem; resize: vertical; }
   border-bottom: 1px solid var(--ink);
 }
 
-/* Logo fills the entire hero as background — whole image shown */
+/* Logo fills edge-to-edge horizontally, natural height, vertically centred */
 .hero-bg-logo {
   position: absolute;
-  inset: 0;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
   width: 100%;
-  height: 100%;
-  object-fit: contain;   /* show the WHOLE logo, no cropping */
-  object-position: center;
+  height: auto;          /* natural proportional height — no cropping */
   z-index: 0;
   pointer-events: none;
   animation: bgLogoIn 1s cubic-bezier(.2,.7,.2,1) both;
@@ -183,17 +184,6 @@ textarea.field { height: auto; padding: .7rem .85rem; resize: vertical; }
   width: 100%;
 }
 
-.hero-tagline {
-  color: var(--ink);
-  font-family: var(--font-heading);
-  font-weight: 900;
-  text-transform: uppercase;
-  font-size: clamp(2.8rem, 7.5vw, 6.5rem);
-  letter-spacing: -0.025em;
-  line-height: .98;
-  animation: heroBodyIn .9s cubic-bezier(.2,.7,.2,1) .15s both;
-}
-
 .hero-sub {
   color: var(--muted);
   font-size: clamp(.95rem, 1.8vw, 1.1rem);
@@ -218,7 +208,6 @@ textarea.field { height: auto; padding: .7rem .85rem; resize: vertical; }
 @media (max-width: 480px) {
   .hero-cta-row { flex-direction: column; width: 100%; }
   .hero-cta-row .btn { width: 100%; justify-content: center; }
-  .hero-tagline { font-size: clamp(2.4rem, 13vw, 3.5rem); }
   .hero-body { padding-top: 4.5rem; }
 }
 
