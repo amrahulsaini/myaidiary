@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BookOpen, Sparkles, LineChart, MessageCircleHeart, Lock, Mic } from "lucide-react";
+import { HeroSlider } from "@/components/HeroSlider";
 
 const features = [
   { icon: Sparkles, title: "AI summary & title", body: "Write freely — AI distils each entry into a tidy summary and a title." },
@@ -19,24 +20,10 @@ const steps = [
 export default function Home() {
   return (
     <div>
-      {/* Hero — image-led, hover reveals CTAs */}
-      <section className="container" style={{ paddingTop: "clamp(2rem,5vw,3.5rem)", paddingBottom: "clamp(2.5rem,5vw,4rem)" }}>
-        <h1 className="sr-only">MyAIDiary — your private, AI-powered journal. Write your day and reflect with AI.</h1>
-        <div className="hero-grid">
-          {[
-            { src: "/herobanner-img1.png", title: "Start your story" },
-            { src: "/herobanner-img2.png", title: "See it in action" },
-          ].map((b, i) => (
-            <div key={b.src} className="hero-card animate-fade-up" style={{ ["--delay" as any]: `${i * 140}ms` }}>
-              <img src={b.src} alt="MyAIDiary — AI-powered journaling" width={600} height={400} loading="eager" decoding="async" />
-              <div className="hero-overlay">
-                <span className="o-title">{b.title}</span>
-                <Link href="/auth?mode=signup" className="btn btn-light">Start journaling</Link>
-                <Link href="/auth" className="btn btn-ghost-light">I have an account</Link>
-              </div>
-            </div>
-          ))}
-        </div>
+      {/* Hero — full-screen crossfade slider, hover reveals CTAs */}
+      <h1 className="sr-only">MyAIDiary — your private, AI-powered journal. Write your day and reflect with AI.</h1>
+      <section className="hero-section">
+        <HeroSlider />
       </section>
 
       {/* Features */}
