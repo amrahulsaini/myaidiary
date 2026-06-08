@@ -108,18 +108,30 @@ textarea.field { height: auto; padding: .7rem .85rem; resize: vertical; }
 
 .hero-section { width: 100%; }
 
+/* 3:2 aspect ratio = exact image ratio → zero cropping */
 .hero-full {
   position: relative;
   width: 100%;
-  height: 90svh;
-  min-height: 520px;
+  aspect-ratio: 3 / 2;
+  max-height: 92svh;
   overflow: hidden;
   background: var(--ink);
   cursor: default;
 }
-@media (max-width: 640px) { .hero-full { height: 68svh; min-height: 340px; } }
+@media (max-width: 640px) {
+  .hero-full { aspect-ratio: 4 / 3; max-height: 80svh; }
+}
 
-/* Ken Burns crossfade — images stack, active one fades in and slowly zooms out */
+/* Parallax track — 10% oversized so edges never peek during mouse tilt */
+.hero-img-track {
+  position: absolute;
+  inset: -5%;
+  width: 110%;
+  height: 110%;
+  will-change: transform;
+}
+
+/* All images fully visible; active one wipes in on top */
 .hero-slide-img {
   position: absolute;
   inset: 0;
@@ -127,19 +139,19 @@ textarea.field { height: auto; padding: .7rem .85rem; resize: vertical; }
   height: 100%;
   object-fit: cover;
   display: block;
-  opacity: 0;
-  transform: scale(1.06);
   z-index: 1;
-  transition: opacity 1.3s cubic-bezier(.4,0,.2,1), transform 8s linear;
-  will-change: opacity, transform;
 }
 .hero-slide-img.active {
-  opacity: 1;
-  transform: scale(1);
   z-index: 2;
+  animation: heroWipeIn 1.05s cubic-bezier(.86, 0, .07, 1) forwards;
 }
 
-/* Desktop hover overlay */
+@keyframes heroWipeIn {
+  from { clip-path: polygon(100% 0%, 100% 0%, 100% 100%, 100% 100%); }
+  to   { clip-path: polygon(-2%  0%, 100% 0%, 100% 100%,  -2% 100%); }
+}
+
+/* Overlay: invisible until hover on desktop */
 .hero-full-overlay {
   position: absolute;
   inset: 0;
@@ -148,84 +160,95 @@ textarea.field { height: auto; padding: .7rem .85rem; resize: vertical; }
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
+  gap: 1.25rem;
   padding: 2rem;
   text-align: center;
-  background: linear-gradient(to top, rgba(21,22,23,.88) 0%, rgba(21,22,23,.45) 50%, rgba(21,22,23,.18) 100%);
+  background: linear-gradient(
+    to top,
+    rgba(21,22,23,.92) 0%,
+    rgba(21,22,23,.5)  40%,
+    rgba(21,22,23,.15) 100%
+  );
   opacity: 0;
-  transition: opacity .4s ease;
+  transition: opacity .38s ease;
+  pointer-events: none;
 }
-.hero-full-overlay > * {
-  transform: translateY(16px);
+.hero-full:hover .hero-full-overlay { opacity: 1; pointer-events: auto; }
+
+.hero-full-overlay .o-title,
+.hero-cta-row {
+  transform: translateY(18px);
   transition: transform .5s cubic-bezier(.2,.7,.2,1);
 }
-.hero-full:hover .hero-full-overlay { opacity: 1; }
-.hero-full:hover .hero-full-overlay > * { transform: none; }
+.hero-full:hover .hero-full-overlay .o-title,
+.hero-full:hover .hero-cta-row { transform: none; }
+
+.hero-cta-row {
+  display: flex;
+  gap: .85rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  transition-delay: .06s;
+}
 
 .hero-full-overlay .o-title {
   color: #fff;
   font-family: var(--font-heading);
   font-weight: 900;
   text-transform: uppercase;
-  font-size: clamp(1.8rem, 5vw, 3.5rem);
-  letter-spacing: -0.01em;
-  text-shadow: 0 2px 24px rgba(0,0,0,.5);
-  animation: oTitleIn .55s cubic-bezier(.2,.7,.2,1) both;
-}
-
-@keyframes oTitleIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: none; }
+  font-size: clamp(2rem, 5vw, 4rem);
+  letter-spacing: -0.02em;
+  text-shadow: 0 2px 32px rgba(0,0,0,.55);
+  font-variant-numeric: tabular-nums;
 }
 
 /* Slide indicator dots */
 .hero-dots {
   position: absolute;
-  bottom: 1.6rem;
+  bottom: 1.5rem;
   left: 50%;
   transform: translateX(-50%);
   z-index: 20;
   display: flex;
-  gap: .65rem;
+  gap: .6rem;
 }
 .hero-dot {
-  width: 11px; height: 11px;
+  width: 10px; height: 10px;
   border-radius: 50%;
-  border: 2px solid rgba(255,255,255,.55);
+  border: 2px solid rgba(255,255,255,.5);
   background: transparent;
   cursor: pointer;
   padding: 0;
-  transition: background .3s ease, border-color .3s ease, transform .2s ease;
+  transition: background .3s, border-color .3s, transform .25s;
 }
-.hero-dot.active { background: #fff; border-color: #fff; transform: scale(1.2); }
+.hero-dot.active { background: #fff; border-color: #fff; transform: scale(1.25); }
 
-/* Mobile: overlay always visible (title + gradient), CTAs shown below */
+/* Mobile CTAs below slider */
 .hero-mobile-cta { display: none; }
 
 @media (hover: none) {
   .hero-full-overlay {
     opacity: 1;
-    background: linear-gradient(to top, rgba(21,22,23,.8) 0%, rgba(21,22,23,.12) 70%);
+    pointer-events: auto;
+    background: linear-gradient(to top, rgba(21,22,23,.82) 0%, rgba(21,22,23,.08) 65%);
     justify-content: flex-end;
-    padding-bottom: 3.5rem; /* space above dots */
+    padding-bottom: 3.2rem;
   }
-  .hero-full-overlay .btn { display: none; }
-  .hero-full-overlay > * { transform: none; }
-  .hero-full-overlay .o-title { font-size: clamp(1.5rem, 6vw, 2.2rem); }
+  .hero-cta-row { display: none; }
+  .hero-full-overlay .o-title,
+  .hero-cta-row { transform: none; }
+  .hero-full-overlay .o-title { font-size: clamp(1.4rem, 6vw, 2rem); }
 
   .hero-mobile-cta {
     display: flex;
     flex-direction: column;
     align-items: stretch;
     gap: .75rem;
-    padding: 1.4rem 1.25rem;
+    padding: 1.4rem 1.25rem 1.6rem;
     background: var(--cream);
     border-bottom: 1px solid var(--ink);
   }
-  .hero-cta-btn {
-    width: 100%;
-    justify-content: center;
-  }
+  .hero-cta-btn { width: 100%; justify-content: center; }
 }
 
 .btn-light { background: var(--cream); color: var(--ink); border-color: var(--cream); box-shadow: 4px 4px 0 rgba(0,0,0,.35); }
