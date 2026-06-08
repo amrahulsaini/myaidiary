@@ -19,29 +19,23 @@ const steps = [
 export default function Home() {
   return (
     <div>
-      {/* Hero */}
-      <section className="container section" style={{ textAlign: "center" }}>
-        <span className="eyebrow animate-fade-up">Your AI-powered journal</span>
-        <h1 className="display animate-fade-up" style={{ ["--delay" as any]: "60ms", marginTop: "1.2rem", maxWidth: "16ch", marginInline: "auto" }}>
-          Write your day.<br />Reflect with AI.
-        </h1>
-        <p className="lead animate-fade-up" style={{ ["--delay" as any]: "140ms", marginTop: "1.3rem", maxWidth: "54ch", marginInline: "auto" }}>
-          MyAIDiary turns your daily notes into summaries, mood insights and gentle prompts —
-          and lets you chat with your own journal. Private, calm, and yours.
-        </p>
-        <div className="flex flex-wrap items-center justify-center animate-fade-up" style={{ gap: ".8rem", marginTop: "2rem", ["--delay" as any]: "220ms" }}>
-          <Link href="/auth?mode=signup" className="btn">Start journaling — free</Link>
-          <Link href="/auth" className="btn btn-outline">I have an account</Link>
-        </div>
-
-        {/* hero art */}
-        <div className="animate-fade-up" style={{ ["--delay" as any]: "300ms", marginTop: "3rem", display: "flex", justifyContent: "center" }}>
-          <img
-            src="/myaidiary-fulllogo.png"
-            alt="MyAIDiary"
-            className="media wiggle"
-            style={{ maxWidth: 460, width: "100%", mixBlendMode: "multiply", padding: "1.5rem", background: "var(--paper)" }}
-          />
+      {/* Hero — image-led, hover reveals CTAs */}
+      <section className="container" style={{ paddingTop: "clamp(2rem,5vw,3.5rem)", paddingBottom: "clamp(2.5rem,5vw,4rem)" }}>
+        <h1 className="sr-only">MyAIDiary — your private, AI-powered journal. Write your day and reflect with AI.</h1>
+        <div className="hero-grid">
+          {[
+            { src: "/herobanner-img1.png", title: "Start your story" },
+            { src: "/herobanner-img2.png", title: "See it in action" },
+          ].map((b, i) => (
+            <div key={b.src} className="hero-card animate-fade-up" style={{ ["--delay" as any]: `${i * 140}ms` }}>
+              <img src={b.src} alt="MyAIDiary — AI-powered journaling" width={600} height={400} loading="eager" decoding="async" />
+              <div className="hero-overlay">
+                <span className="o-title">{b.title}</span>
+                <Link href="/auth?mode=signup" className="btn btn-light">Start journaling</Link>
+                <Link href="/auth" className="btn btn-ghost-light">I have an account</Link>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
