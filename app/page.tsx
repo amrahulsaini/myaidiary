@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BookOpen, Sparkles, LineChart, MessageCircleHeart, Lock, Mic, ArrowRight } from "lucide-react";
+import { BookOpen, Sparkles, LineChart, MessageCircleHeart, Lock, Mic } from "lucide-react";
 import { ScrollReveal } from "@/components/ScrollReveal";
 
 const features = [
@@ -40,22 +40,20 @@ export default function Home() {
             <h2 className="features-heading">What does it do?</h2>
           </ScrollReveal>
         </div>
-        <div className="features-list">
-          {features.map(({ icon: Icon, title, body }, i) => (
-            <ScrollReveal key={title} delay={i * 70} className="feature-row">
-              <div className="feature-item container">
-                <span className="feature-num">0{i + 1}</span>
-                <span className="feature-icon-wrap">
-                  <Icon size={22} strokeWidth={1.75} />
-                </span>
-                <div className="feature-text">
+        <div className="container">
+          <div className="features-grid">
+            {features.map(({ icon: Icon, title, body }, i) => (
+              <ScrollReveal key={title} delay={i * 70}>
+                <div className="feature-card">
+                  <span className="feature-icon-wrap">
+                    <Icon size={22} strokeWidth={1.75} />
+                  </span>
                   <h3 className="feature-title">{title}</h3>
                   <p className="feature-body">{body}</p>
                 </div>
-                <ArrowRight size={20} className="feature-arrow" strokeWidth={2} />
-              </div>
-            </ScrollReveal>
-          ))}
+              </ScrollReveal>
+            ))}
+          </div>
         </div>
       </section>
 
