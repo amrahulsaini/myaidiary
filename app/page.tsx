@@ -20,17 +20,18 @@ const steps = [
 export default function Home() {
   return (
     <div>
-      {/* Hero — logo-centered, cream background, instant load */}
+      {/* Hero — full logo as background, content centred over it */}
       <section className="hero-bg">
         <h1 className="sr-only">MyAIDiary — your private, AI-powered journal.</h1>
 
-        {/* faint oversized pen watermark in background */}
+        {/* Full logo fills the hero as background */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/myaidiary-faviconandshortlogo-penonly.png" alt="" aria-hidden="true" className="hero-watermark" />
+        <img src="/myaidiary-fulllogo.png" alt="" aria-hidden="true" className="hero-bg-logo" />
+
+        {/* Light overlay so text stays readable */}
+        <div className="hero-bg-overlay" />
 
         <div className="hero-body">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/myaidiary-fulllogo.png" alt="MyAIDiary" className="hero-logo" />
           <p className="hero-tagline">Your private<br />AI journal.</p>
           <p className="hero-sub">Write your day. Let AI summarise, track your mood, and chat with your past self.</p>
           <div className="hero-cta-row">
