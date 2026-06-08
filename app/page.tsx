@@ -1,174 +1,94 @@
 import Link from "next/link";
-import { BookOpen, Sparkles } from "lucide-react";
+import { BookOpen, Sparkles, LineChart, MessageCircleHeart, Lock, Mic } from "lucide-react";
+
+const features = [
+  { icon: Sparkles, title: "AI summary & title", body: "Write freely — AI distils each entry into a tidy summary and a title." },
+  { icon: LineChart, title: "Mood timeline", body: "Every entry is read for emotion, charted so you can see how you've been." },
+  { icon: BookOpen, title: "Daily prompts", body: "Never face a blank page — gentle, personalised questions to get you going." },
+  { icon: MessageCircleHeart, title: "Chat with your journal", body: "Ask anything about your past — answers grounded in your own entries." },
+  { icon: Mic, title: "Voice journaling", body: "Speak your day; we transcribe and tidy it up. (coming soon)" },
+  { icon: Lock, title: "Private by design", body: "Your words are yours. Strong isolation, export anytime, delete anytime." },
+];
+
+const steps = [
+  ["Write", "Jot the day in plain words, or answer the daily prompt. Add a mood."],
+  ["Reflect", "AI summarises, tags the feeling, and surfaces gentle insights."],
+  ["Look back", "Browse your mood timeline and chat with your journal whenever."],
+];
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-zinc-50 text-zinc-950 dark:bg-black dark:text-zinc-50">
-      <header className="sticky top-0 z-40 border-b border-zinc-200/60 bg-zinc-50/70 backdrop-blur dark:border-white/10 dark:bg-black/40">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3.5">
-          <Link href="/" className="group inline-flex items-center gap-3">
-            <span className="relative inline-flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl border border-zinc-200 bg-white/60 shadow-sm shadow-black/5 transition group-hover:-translate-y-0.5 dark:border-white/10 dark:bg-white/5 dark:shadow-none">
-              <img src="/brand.svg" alt="MyAIDiary" className="h-full w-full" />
-            </span>
-            <span className="text-base font-semibold tracking-tight">
-              MyAIDiary
-            </span>
-          </Link>
+    <div>
+      {/* Hero */}
+      <section className="container section" style={{ textAlign: "center" }}>
+        <span className="eyebrow animate-fade-up">Your AI-powered journal</span>
+        <h1 className="display animate-fade-up" style={{ ["--delay" as any]: "60ms", marginTop: "1.2rem", maxWidth: "16ch", marginInline: "auto" }}>
+          Write your day.<br />Reflect with AI.
+        </h1>
+        <p className="lead animate-fade-up" style={{ ["--delay" as any]: "140ms", marginTop: "1.3rem", maxWidth: "54ch", marginInline: "auto" }}>
+          MyAIDiary turns your daily notes into summaries, mood insights and gentle prompts —
+          and lets you chat with your own journal. Private, calm, and yours.
+        </p>
+        <div className="flex flex-wrap items-center justify-center animate-fade-up" style={{ gap: ".8rem", marginTop: "2rem", ["--delay" as any]: "220ms" }}>
+          <Link href="/auth?mode=signup" className="btn">Start journaling — free</Link>
+          <Link href="/auth" className="btn btn-outline">I have an account</Link>
+        </div>
 
-          <div className="flex items-center gap-3">
-            <Link
-              href="/about"
-              className="text-sm font-medium text-zinc-600 transition hover:text-zinc-950 dark:text-zinc-300 dark:hover:text-white"
-            >
-              About
-            </Link>
-            <Link
-              href="/contact"
-              className="text-sm font-medium text-zinc-600 transition hover:text-zinc-950 dark:text-zinc-300 dark:hover:text-white"
-            >
-              Demo
-            </Link>
-            <Link
-              href="/contact"
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-zinc-950 px-5 text-sm font-semibold text-white transition hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
-            >
-              <BookOpen className="h-4 w-4" />
-              Request Demo
-            </Link>
+        {/* hero art */}
+        <div className="animate-fade-up" style={{ ["--delay" as any]: "300ms", marginTop: "3rem", display: "flex", justifyContent: "center" }}>
+          <img
+            src="/myaidiary-fulllogo.png"
+            alt="MyAIDiary"
+            className="media wiggle"
+            style={{ maxWidth: 460, width: "100%", mixBlendMode: "multiply", padding: "1.5rem", background: "var(--paper)" }}
+          />
+        </div>
+      </section>
+
+      {/* Features */}
+      <section id="features" className="section" style={{ borderTop: "1px solid var(--ink)", background: "var(--sand)" }}>
+        <div className="container">
+          <span className="eyebrow" style={{ background: "var(--cream)" }}>What it does</span>
+          <h2 className="section-title" style={{ marginTop: "1rem" }}>A journal that thinks with you.</h2>
+          <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 300px), 1fr))", gap: "1.25rem", marginTop: "2rem" }}>
+            {features.map(({ icon: Icon, title, body }) => (
+              <div key={title} className="card card-pad hover-lift" style={{ background: "var(--cream)" }}>
+                <span className="inline-flex" style={{ width: 46, height: 46, border: "1px solid var(--ink)", background: "var(--paper)", alignItems: "center", justifyContent: "center", boxShadow: "var(--shadow-sm)" }}>
+                  <Icon size={22} strokeWidth={1.75} />
+                </span>
+                <h3 style={{ fontSize: "1.3rem", marginTop: "1rem" }}>{title}</h3>
+                <p className="muted" style={{ marginTop: ".5rem" }}>{body}</p>
+              </div>
+            ))}
           </div>
         </div>
-      </header>
+      </section>
 
-      <main className="relative">
-        <section className="mx-auto max-w-4xl px-6 py-20 sm:py-32">
-          <div className="text-center">
-            <h1 className="text-5xl font-semibold tracking-tight sm:text-7xl">
-              Your{" "}
-              <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent dark:from-blue-400 dark:to-indigo-400">
-                AI-Powered
-              </span>{" "}
-              personal diary
-            </h1>
-
-            <p className="mt-6 text-lg leading-8 text-zinc-600 dark:text-zinc-400 sm:text-xl">
-              Capture your thoughts, track expenses, manage tasks, and get AI-powered insights—all in one place.
-            </p>
-
-            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Link
-                href="/contact"
-                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-zinc-950 px-8 text-sm font-semibold text-white shadow-lg transition hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200 sm:w-auto"
-              >
-                <Sparkles className="h-4 w-4" />
-                Request Demo
-              </Link>
+      {/* How it works */}
+      <section id="how" className="container section">
+        <span className="eyebrow">How it works</span>
+        <h2 className="section-title" style={{ marginTop: "1rem" }}>Three calm steps.</h2>
+        <div className="grid md:grid-cols-3" style={{ gap: "1.25rem", marginTop: "2rem" }}>
+          {steps.map(([t, b], i) => (
+            <div key={t} className="card card-pad">
+              <div className="display" style={{ fontSize: "3rem", color: "var(--stone)" }}>{String(i + 1).padStart(2, "0")}</div>
+              <h3 style={{ fontSize: "1.4rem", marginTop: ".5rem" }}>{t}</h3>
+              <p className="muted" style={{ marginTop: ".4rem" }}>{b}</p>
             </div>
-          </div>
+          ))}
+        </div>
+      </section>
 
-          <div className="mx-auto mt-16 grid max-w-3xl grid-cols-1 gap-6 sm:grid-cols-3">
-            <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
-              <div className="text-3xl mb-3">🎤</div>
-              <h3 className="font-semibold mb-2">Voice to Text</h3>
-              <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                Speak naturally and let AI transcribe your thoughts
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
-              <div className="text-3xl mb-3">🧠</div>
-              <h3 className="font-semibold mb-2">AI Insights</h3>
-              <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                Discover patterns and get personalized recommendations
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
-              <div className="text-3xl mb-3">🔒</div>
-              <h3 className="font-semibold mb-2">Privacy First</h3>
-              <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                Your data stays yours, stored securely and privately
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <section className="border-t border-zinc-200 bg-white py-16 dark:border-white/10 dark:bg-zinc-950">
-          <div className="mx-auto max-w-4xl px-6 text-center">
-            <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-              Everything you need in one app
-            </h2>
-            <div className="mx-auto mt-10 grid max-w-3xl grid-cols-1 gap-6 text-left sm:grid-cols-2">
-              <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-6 dark:border-white/5 dark:bg-white/5">
-                <h3 className="font-semibold">📝 Daily Journaling</h3>
-                <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                  Write and organize your thoughts with rich text editing
-                </p>
-              </div>
-              <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-6 dark:border-white/5 dark:bg-white/5">
-                <h3 className="font-semibold">💰 Expense Tracking</h3>
-                <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                  Monitor spending and manage your budget effectively
-                </p>
-              </div>
-              <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-6 dark:border-white/5 dark:bg-white/5">
-                <h3 className="font-semibold">✅ Task Management</h3>
-                <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                  Keep track of todos and stay organized
-                </p>
-              </div>
-              <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-6 dark:border-white/5 dark:bg-white/5">
-                <h3 className="font-semibold">📊 Analytics Dashboard</h3>
-                <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                  Visualize your progress and patterns over time
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="py-16">
-          <div className="mx-auto max-w-2xl px-6 text-center">
-            <h2 className="text-3xl font-semibold tracking-tight">
-              Ready to get started?
-            </h2>
-            <p className="mt-4 text-base text-zinc-600 dark:text-zinc-400">
-              Join hundreds of users already using MyAIDiary
-            </p>
-            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Link
-                href="/contact"
-                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-zinc-950 px-8 text-sm font-semibold text-white shadow-lg transition hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200 sm:w-auto"
-              >
-                Request Demo
-              </Link>
-            </div>
-          </div>
-        </section>
-      </main>
-
-      <footer className="border-t border-zinc-200 bg-zinc-50 py-10 dark:border-white/10 dark:bg-zinc-950">
-        <div className="mx-auto max-w-6xl px-6">
-          <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              © 2026 MyAIDiary. All rights reserved.
-            </p>
-            <div className="flex gap-6 text-sm text-zinc-600 dark:text-zinc-400">
-              <Link href="/about" className="hover:text-zinc-950 dark:hover:text-white">
-                About
-              </Link>
-              <Link href="/privacy" className="hover:text-zinc-950 dark:hover:text-white">
-                Privacy
-              </Link>
-              <Link href="/terms" className="hover:text-zinc-950 dark:hover:text-white">
-                Terms
-              </Link>
-              <Link href="/contact" className="hover:text-zinc-950 dark:hover:text-white">
-                Contact
-              </Link>
-            </div>
+      {/* CTA */}
+      <section className="container" style={{ paddingBottom: "clamp(3rem,6vw,5rem)" }}>
+        <div className="card card-pad" style={{ background: "var(--ink)", textAlign: "center", padding: "clamp(2.5rem,5vw,4rem)" }}>
+          <h2 className="section-title" style={{ color: "var(--cream)" }}>Start your journal today.</h2>
+          <p style={{ color: "var(--stone)", marginTop: ".6rem" }}>Free to begin. Your story, with a little AI by your side.</p>
+          <div style={{ marginTop: "1.6rem" }}>
+            <Link href="/auth?mode=signup" className="btn btn-sand">Create your journal</Link>
           </div>
         </div>
-      </footer>
+      </section>
     </div>
   );
 }
