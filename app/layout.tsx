@@ -1,58 +1,35 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Sora } from "next/font/google";
+import { Montserrat, Inconsolata } from "next/font/google";
 import "./globals.css";
+import SiteHeader from "@/components/SiteHeader";
+import SiteFooter from "@/components/SiteFooter";
 
-const sora = Sora({
-  variable: "--font-sora",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const montserrat = Montserrat({ variable: "--font-montserrat", weight: ["700", "900"], subsets: ["latin"], display: "swap" });
+const inconsolata = Inconsolata({ variable: "--font-inconsolata", weight: ["400", "500", "600"], subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
-  metadataBase: process.env.NEXT_PUBLIC_SITE_URL
-    ? new URL(process.env.NEXT_PUBLIC_SITE_URL)
-    : process.env.VERCEL_URL
-      ? new URL(`https://${process.env.VERCEL_URL}`)
-      : undefined,
-  title: {
-    default: "MyAIDiary",
-    template: "%s · MyAIDiary",
-  },
+  metadataBase: new URL("https://myaidiary.me"),
+  title: { default: "MyAIDiary — Your AI-powered journal", template: "%s · MyAIDiary" },
   description:
-    "MyAIDiary is a privacy-first diary app with AI-powered voice and insights. Record daily notes and reflect on patterns — with more AI features on the roadmap.",
-  alternates: {
-    canonical: "/",
-  },
-  openGraph: {
-    type: "website",
-    title: "MyAIDiary",
-    description:
-      "A privacy-first diary app with AI-powered voice and insights — built for daily reflection.",
-    url: "/",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "MyAIDiary",
-    description:
-      "A privacy-first diary app with AI-powered voice and insights — built for daily reflection.",
-  },
+    "A private, AI-powered journal. Write your day and get summaries, mood insights, gentle prompts, and chat with your own journal.",
+  icons: { icon: "/myaidiary-faviconandshortlogo-penonly.png" },
+  openGraph: { title: "MyAIDiary", description: "Your AI-powered journal.", url: "https://myaidiary.me", siteName: "MyAIDiary", type: "website" },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${sora.variable} ${geistMono.variable} antialiased bg-zinc-50 text-zinc-950 dark:bg-black dark:text-zinc-50`}
-      >
-        {children}
+    <html lang="en" className={`${montserrat.variable} ${inconsolata.variable}`}>
+      <body>
+        {/* hand-drawn wiggle filter for accent images */}
+        <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden focusable="false">
+          <filter id="wiggle">
+            <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" result="noise" seed="7" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="6" />
+          </filter>
+        </svg>
+        <SiteHeader />
+        <main>{children}</main>
+        <SiteFooter />
       </body>
     </html>
   );

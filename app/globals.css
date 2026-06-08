@@ -1,129 +1,111 @@
 @import "tailwindcss";
 
-html {
-  scroll-behavior: smooth;
-}
+/* ============================================================
+   MyAIDiary — warm editorial / neo-brutalist theme
+   Cream canvas · Montserrat Black headings · Inconsolata body
+   Square corners · hard offset shadows · thin #151617 borders
+   ============================================================ */
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --ink: #151617;
+  --cream: #f8ece4;
+  --sand: #f2ded0;     /* secondary accent 1 */
+  --stone: #bab6aa;    /* secondary accent 2 */
+  --paper: #fffaf5;    /* slightly lighter card option */
+
+  --bg: var(--cream);
+  --card: var(--cream);
+  --text: var(--ink);
+  --muted: #5c5b57;
+  --border: var(--ink);
+
+  --shadow: 6px 6px 0 var(--ink);
+  --shadow-sm: 4px 4px 0 var(--ink);
+  --shadow-lg: 10px 10px 0 var(--ink);
+
+  --maxw: 1120px;
+
+  --font-heading: var(--font-montserrat), system-ui, sans-serif;
+  --font-body: var(--font-inconsolata), ui-monospace, monospace;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-sora);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+html { scroll-behavior: smooth; }
+html, body { background: var(--bg); color: var(--text); }
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system,
-    "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji",
-    "Segoe UI Emoji";
-  font-size: 18px;
+  font-family: var(--font-body);
+  font-size: 16px;
   line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
+::selection { background: var(--ink); color: var(--cream); }
 
-@media (min-width: 768px) {
-  body {
-    font-size: 19px;
-  }
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 900;
+  color: var(--ink);
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
 }
+a { color: inherit; text-decoration: none; }
 
-@media (min-width: 1024px) {
-  body {
-    font-size: 20px;
-  }
-}
+/* ===================== Layout ===================== */
+.container { max-width: var(--maxw); margin-inline: auto; padding-inline: 1.5rem; }
+@media (max-width: 640px) { .container { padding-inline: 1.1rem; } }
+.section { padding-block: clamp(3rem, 7vw, 6rem); }
 
-@media (prefers-reduced-motion: reduce) {
-  .myaidiary-fade-up,
-  .myaidiary-float,
-  .myaidiary-gradient-pan,
-  .myaidiary-shimmer {
-    animation: none !important;
-  }
+.eyebrow {
+  display: inline-block; font-family: var(--font-body);
+  font-size: .8rem; letter-spacing: .18em; text-transform: uppercase; color: var(--muted);
+  border: 1px solid var(--border); background: var(--sand); padding: .35rem .7rem; box-shadow: var(--shadow-sm);
 }
+.display { font-family: var(--font-heading); font-weight: 900; text-transform: uppercase; line-height: .98; letter-spacing: -0.02em; font-size: clamp(2.6rem, 7vw, 5.5rem); }
+.section-title { font-family: var(--font-heading); font-weight: 900; text-transform: uppercase; font-size: clamp(1.9rem, 4vw, 3rem); line-height: 1.02; }
+.lead { font-size: clamp(1.05rem, 1.6vw, 1.25rem); color: var(--muted); }
+.muted { color: var(--muted); }
 
-@keyframes myaidiary-fade-up {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 12px, 0);
-  }
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
+/* ===================== Buttons ===================== */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+  height: 50px; padding-inline: 1.4rem; border-radius: 0;
+  font-family: var(--font-heading); font-weight: 900; text-transform: uppercase; font-size: .9rem; letter-spacing: .02em;
+  background: var(--ink); color: var(--cream); border: 1px solid var(--ink);
+  box-shadow: var(--shadow); cursor: pointer; white-space: nowrap;
+  transition: transform .12s ease, box-shadow .12s ease, background-color .15s ease, color .15s ease;
 }
+.btn:hover { transform: translate(-2px, -2px); box-shadow: var(--shadow-lg); }
+.btn:active { transform: translate(3px, 3px); box-shadow: 2px 2px 0 var(--ink); }
+.btn-outline { background: var(--cream); color: var(--ink); }
+.btn-sand { background: var(--sand); color: var(--ink); }
+.btn-sm { height: 40px; padding-inline: 1rem; font-size: .8rem; box-shadow: var(--shadow-sm); }
 
-@keyframes myaidiary-float {
-  0% {
-    transform: translate3d(0, 0, 0);
-  }
-  50% {
-    transform: translate3d(0, -6px, 0);
-  }
-  100% {
-    transform: translate3d(0, 0, 0);
-  }
-}
+/* ===================== Surfaces ===================== */
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 0; box-shadow: var(--shadow); }
+.card-pad { padding: clamp(1.25rem, 3vw, 2rem); }
+.hover-lift { transition: transform .15s ease, box-shadow .15s ease; }
+.hover-lift:hover { transform: translate(-3px,-3px); box-shadow: var(--shadow-lg); }
+.chip { display: inline-flex; align-items: center; gap: .35rem; font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; border: 1px solid var(--border); background: var(--sand); padding: .2rem .6rem; }
 
-.myaidiary-fade-up {
-  animation: myaidiary-fade-up 700ms ease-out both;
-}
+/* ===================== Inputs ===================== */
+.field { width: 100%; height: 48px; padding: 0 .85rem; border: 1px solid var(--border); border-radius: 0; background: var(--paper); color: var(--ink); font-family: var(--font-body); font-size: 1rem; box-shadow: var(--shadow-sm); outline: none; }
+.field:focus { box-shadow: var(--shadow); transform: translate(-1px,-1px); }
+textarea.field { height: auto; padding: .7rem .85rem; resize: vertical; }
+.label { display: block; font-family: var(--font-heading); font-weight: 700; text-transform: uppercase; font-size: .72rem; letter-spacing: .08em; margin-bottom: .4rem; }
 
-.myaidiary-float {
-  animation: myaidiary-float 6s ease-in-out infinite;
-}
+/* ===================== Header ===================== */
+.site-header { position: sticky; top: 0; z-index: 60; background: var(--cream); border-bottom: 1px solid var(--border); }
+.nav-link { font-family: var(--font-heading); font-weight: 700; text-transform: uppercase; font-size: .82rem; letter-spacing: .04em; color: var(--ink); padding: .25rem 0; border-bottom: 2px solid transparent; }
+.nav-link:hover { border-bottom-color: var(--ink); }
+.wordmark { font-family: var(--font-heading); font-weight: 900; text-transform: uppercase; font-size: 1.15rem; letter-spacing: -.01em; }
 
-@keyframes myaidiary-gradient-pan {
-  0% {
-    transform: translate3d(-8%, 0, 0);
-  }
-  50% {
-    transform: translate3d(8%, 0, 0);
-  }
-  100% {
-    transform: translate3d(-8%, 0, 0);
-  }
-}
+/* ===================== Wiggle image frame ===================== */
+.media { border: 1px solid var(--border); box-shadow: var(--shadow); background: var(--paper); display: block; }
+.wiggle { filter: url(#wiggle); }
 
-@keyframes myaidiary-pulse-slow {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.95;
-  }
-}
-
-.animate-pulse-slow {
-  animation: myaidiary-pulse-slow 3s ease-in-out infinite;
-}
-
-@keyframes myaidiary-shimmer {
-  0% {
-    background-position: 0% 50%;
-  }
-  100% {
-    background-position: 100% 50%;
-  }
-}
-
-.myaidiary-gradient-pan {
-  animation: myaidiary-gradient-pan 10s ease-in-out infinite;
-}
-
-.myaidiary-shimmer {
-  background-size: 200% 200%;
-  animation: myaidiary-shimmer 8s ease-in-out infinite;
-}
+/* ===================== Animations ===================== */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+.animate-fade-up { animation: fadeUp .6s cubic-bezier(.2,.7,.2,1) both; animation-delay: var(--delay, 0ms); }
+.reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s ease, transform .6s ease; }
+.reveal.in-view { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .animate-fade-up, .reveal { animation: none !important; transition: none !important; opacity: 1 !important; transform: none !important; } }
