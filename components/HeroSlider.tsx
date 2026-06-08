@@ -8,88 +8,97 @@ const slides = [
   { src: "/herobanner-img2.png", title: "See it in action" },
 ];
 
-const SCRAMBLE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@!";
-const SCRAMBLE_FRAMES = 14;
-const SCRAMBLE_TICK = 32; // ms per frame
+const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ#@!0123456789";
 
 function useScramble(text: string) {
-  const [display, setDisplay] = useState(text);
+  const [out, setOut] = useState(text);
   useEffect(() => {
-    let frame = 0;
+    let f = 0;
     const id = setInterval(() => {
-      frame++;
-      if (frame >= SCRAMBLE_FRAMES) {
-        setDisplay(text);
-        clearInterval(id);
-        return;
-      }
-      const progress = frame / SCRAMBLE_FRAMES;
-      setDisplay(
-        text
-          .split("")
-          .map((char, i) => {
-            if (char === " ") return " ";
-            if (i / text.length < progress) return char;
-            return SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
-          })
-          .join("")
+      f++;
+      if (f >= 16) { setOut(text); clearInterval(id); return; }
+      const p = f / 16;
+      setOut(
+        text.split("").map((c, i) =>
+          c === " " ? " " : i / text.length < p ? c : CHARS[Math.floor(Math.random() * CHARS.length)]
+        ).join("")
       );
-    }, SCRAMBLE_TICK);
+    }, 30);
     return () => clearInterval(id);
   }, [text]);
-  return display;
+  return out;
 }
 
 export function HeroSlider() {
   const [current, setCurrent] = useState(0);
   const [hovered, setHovered] = useState(false);
-  const [parallax, setParallax] = useState({ x: 0, y: 0 });
   const heroRef = useRef<HTMLDivElement>(null);
-  const animRef = useRef<number>(0);
-  const targetRef = useRef({ x: 0, y: 0 });
-  const currentRef = useRef({ x: 0, y: 0 });
+  const imgRefs = useRef<(HTMLImageElement | null)[]>([]);
+  const targetX = useRef(0);
+  const targetY = useRef(0);
+  const curX = useRef(0);
+  const curY = useRef(0);
+  const rafId = useRef(0);
+  const [px, setPx] = useState(0);
+  const [py, setPy] = useState(0);
 
-  const scrambledTitle = useScramble(slides[current].title);
+  const title = useScramble(slides[current].title);
+
+  /* restart wipe animation on the target image */
+  const restartAnim = useCallback((i: number) => {
+    const el = imgRefs.current[i];
+    if (!el) return;
+    el.style.animation = "none";
+    void el.offsetWidth; // force reflow
+    el.style.animation = "";
+  }, []);
+
+  /* go to slide */
+  const goTo = useCallback((i: number) => {
+    restartAnim(i);
+    setCurrent(i);
+  }, [restartAnim]);
 
   /* auto-advance */
   useEffect(() => {
     if (hovered) return;
-    const id = setInterval(() => setCurrent(c => (c + 1) % slides.length), 5200);
+    const id = setInterval(() => {
+      setCurrent(c => {
+        const next = (c + 1) % slides.length;
+        restartAnim(next);
+        return next;
+      });
+    }, 5200);
     return () => clearInterval(id);
-  }, [hovered]);
+  }, [hovered, restartAnim]);
 
-  /* smooth mouse parallax via rAF */
+  /* mouse parallax — smooth lerp via rAF */
   const onMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = heroRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    const nx = (e.clientX - rect.left) / rect.width - 0.5;
-    const ny = (e.clientY - rect.top) / rect.height - 0.5;
-    targetRef.current = { x: nx * -22, y: ny * -14 };
+    const r = heroRef.current?.getBoundingClientRect();
+    if (!r) return;
+    targetX.current = ((e.clientX - r.left) / r.width  - 0.5) * -18;
+    targetY.current = ((e.clientY - r.top)  / r.height - 0.5) * -12;
   }, []);
 
   const onMouseLeave = useCallback(() => {
     setHovered(false);
-    targetRef.current = { x: 0, y: 0 };
+    targetX.current = 0;
+    targetY.current = 0;
   }, []);
 
   useEffect(() => {
-    let running = true;
+    let alive = true;
     const tick = () => {
-      if (!running) return;
-      const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
-      currentRef.current.x = lerp(currentRef.current.x, targetRef.current.x, 0.07);
-      currentRef.current.y = lerp(currentRef.current.y, targetRef.current.y, 0.07);
-      setParallax({ x: currentRef.current.x, y: currentRef.current.y });
-      animRef.current = requestAnimationFrame(tick);
+      if (!alive) return;
+      curX.current += (targetX.current - curX.current) * 0.075;
+      curY.current += (targetY.current - curY.current) * 0.075;
+      setPx(curX.current);
+      setPy(curY.current);
+      rafId.current = requestAnimationFrame(tick);
     };
-    animRef.current = requestAnimationFrame(tick);
-    return () => { running = false; cancelAnimationFrame(animRef.current); };
+    rafId.current = requestAnimationFrame(tick);
+    return () => { alive = false; cancelAnimationFrame(rafId.current); };
   }, []);
-
-  const imgStyle = {
-    transform: `translate(${parallax.x}px, ${parallax.y}px) scale(1.09)`,
-    transition: "transform 0ms linear",
-  };
 
   return (
     <>
@@ -100,43 +109,42 @@ export function HeroSlider() {
         onMouseMove={onMouseMove}
         onMouseLeave={onMouseLeave}
       >
-        {/* image layer — all stacked, active one wipes in on top */}
-        <div className="hero-img-track" style={imgStyle}>
-          {slides.map((slide, i) => (
-            <img
-              key={slide.src}
-              src={slide.src}
-              alt="MyAIDiary — AI-powered journaling"
-              className={`hero-slide-img${i === current ? " active" : ""}`}
-              loading={i === 0 ? "eager" : "lazy"}
-              fetchPriority={i === 0 ? "high" : "auto"}
-            />
-          ))}
-        </div>
+        {slides.map((slide, i) => (
+          <img
+            key={slide.src}
+            ref={el => { imgRefs.current[i] = el; }}
+            src={slide.src}
+            alt="MyAIDiary"
+            className={`hero-slide-img${i === current ? " active" : ""}`}
+            loading={i === 0 ? "eager" : "lazy"}
+            style={i === current ? {
+              transform: `translate(${px}px, ${py}px) scale(1.1)`,
+            } : { transform: "scale(1.1)" }}
+          />
+        ))}
 
-        {/* desktop overlay — fades in on hover */}
+        {/* desktop: invisible until hover */}
         <div className="hero-full-overlay">
-          <span className="o-title">{scrambledTitle}</span>
+          <span className="o-title">{title}</span>
           <div className="hero-cta-row">
             <Link href="/auth?mode=signup" className="btn btn-light">Start journaling</Link>
             <Link href="/auth" className="btn btn-ghost-light">I have an account</Link>
           </div>
         </div>
 
-        {/* always-visible dots */}
         <div className="hero-dots" aria-hidden="true">
           {slides.map((_, i) => (
             <button
               key={i}
               className={`hero-dot${i === current ? " active" : ""}`}
-              onClick={() => setCurrent(i)}
-              aria-label={`Go to slide ${i + 1}`}
+              onClick={() => goTo(i)}
+              aria-label={`Slide ${i + 1}`}
             />
           ))}
         </div>
       </div>
 
-      {/* mobile — CTAs below the slider */}
+      {/* mobile only */}
       <div className="hero-mobile-cta">
         <Link href="/auth?mode=signup" className="btn btn-sand hero-cta-btn">Start journaling</Link>
         <Link href="/auth" className="btn btn-outline hero-cta-btn">I have an account</Link>
