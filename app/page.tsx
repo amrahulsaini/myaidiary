@@ -32,7 +32,6 @@ export default function Home() {
         <div className="hero-bg-overlay" />
 
         <div className="hero-body">
-          <p className="hero-tagline">Your private<br />AI journal.</p>
           <p className="hero-sub">Write your day. Let AI summarise, track your mood, and chat with your past self.</p>
           <div className="hero-cta-row">
             <Link href="/auth?mode=signup" className="btn">Start journaling</Link>
