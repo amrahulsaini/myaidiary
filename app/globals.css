@@ -218,3 +218,171 @@ textarea.field { height: auto; padding: .7rem .85rem; resize: vertical; }
 .reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s ease, transform .6s ease; }
 .reveal.in-view { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .animate-fade-up, .reveal { animation: none !important; transition: none !important; opacity: 1 !important; transform: none !important; } }
+
+/* ===================== Features section ===================== */
+.features-section {
+  background: var(--sand);
+  border-top: 1px solid var(--ink);
+  padding-bottom: 0;
+}
+
+.features-heading {
+  font-family: var(--font-heading);
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: clamp(2.8rem, 8vw, 6.5rem);
+  letter-spacing: -0.03em;
+  line-height: .92;
+  padding-block: clamp(2rem, 5vw, 4rem) clamp(1.5rem, 3vw, 3rem);
+  color: var(--ink);
+}
+
+.features-list { width: 100%; }
+
+/* Each feature row — full-width with bottom border, bg on hover */
+.feature-row {
+  border-bottom: 1px solid var(--ink);
+  transition: background .25s ease;
+}
+.features-list .feature-row:first-child { border-top: 1px solid var(--ink); }
+.feature-row:hover { background: var(--cream); }
+
+/* Inner content constrained by .container */
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding-block: 1.4rem;
+}
+
+.feature-num {
+  font-family: var(--font-heading);
+  font-weight: 900;
+  font-size: .72rem;
+  letter-spacing: .12em;
+  color: var(--stone);
+  min-width: 2rem;
+  user-select: none;
+  transition: color .25s ease;
+}
+.feature-row:hover .feature-num { color: var(--muted); }
+
+.feature-icon-wrap {
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .25s ease, color .25s ease, box-shadow .25s ease;
+  box-shadow: var(--shadow-sm);
+}
+.feature-row:hover .feature-icon-wrap {
+  background: var(--ink);
+  color: var(--cream);
+  box-shadow: none;
+}
+
+.feature-text { flex: 1; min-width: 0; }
+.feature-title {
+  font-family: var(--font-heading);
+  font-weight: 900;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: -0.005em;
+  transition: color .2s ease;
+}
+.feature-body {
+  color: var(--muted);
+  font-size: .9rem;
+  margin-top: .2rem;
+  line-height: 1.5;
+}
+
+.feature-arrow {
+  flex-shrink: 0;
+  color: var(--stone);
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: opacity .3s cubic-bezier(.2,.7,.2,1), transform .3s cubic-bezier(.2,.7,.2,1);
+}
+.feature-row:hover .feature-arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ===================== How it works section ===================== */
+.how-section {
+  background: var(--cream);
+  border-top: 1px solid var(--ink);
+  padding-block: clamp(3rem, 7vw, 6rem);
+}
+
+.how-list { margin-top: 0; }
+
+.how-row {
+  transition: background .25s ease;
+}
+.how-row:hover { background: var(--sand); }
+
+.how-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 2rem;
+  padding: 1.75rem 0;
+  border-bottom: 1px solid var(--ink);
+}
+.how-list .how-row:first-child .how-item { border-top: 1px solid var(--ink); }
+
+.how-num {
+  font-family: var(--font-heading);
+  font-weight: 900;
+  font-size: clamp(3rem, 7vw, 5rem);
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--stone);
+  min-width: 5rem;
+  user-select: none;
+  transition: color .3s ease;
+  flex-shrink: 0;
+}
+.how-row:hover .how-num { color: var(--ink); }
+
+.how-text { flex: 1; padding-top: .5rem; }
+.how-title {
+  font-family: var(--font-heading);
+  font-weight: 900;
+  font-size: 1.4rem;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+.how-body {
+  color: var(--muted);
+  margin-top: .4rem;
+  line-height: 1.55;
+}
+
+/* ===================== CTA — full edge to edge ===================== */
+.cta-fullbleed {
+  background: var(--ink);
+  width: 100%;
+  padding: clamp(4rem, 9vw, 7rem) clamp(1.5rem, 4vw, 4rem);
+  text-align: center;
+  border-top: 1px solid rgba(248,236,228,.12);
+}
+.cta-heading {
+  font-family: var(--font-heading);
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: clamp(2.2rem, 6vw, 5rem);
+  letter-spacing: -0.025em;
+  line-height: .95;
+  color: var(--cream);
+}
+.cta-sub {
+  color: var(--stone);
+  margin-top: .75rem;
+  font-size: 1.05rem;
+}
