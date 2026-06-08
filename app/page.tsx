@@ -20,27 +20,23 @@ const steps = [
 export default function Home() {
   return (
     <div>
-      {/* Hero — full logo as background, content centred over it */}
+      {/* Hero — fullscreen video, buttons at the bottom */}
       <section className="hero-bg">
         <h1 className="sr-only">MyAIDiary — your private, AI-powered journal.</h1>
-
-        {/* Full logo fills the hero as background */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/myaidiary-fulllogo.png" alt="" aria-hidden="true" className="hero-bg-logo" />
-
-        {/* Light overlay so text stays readable */}
-        <div className="hero-bg-overlay" />
-
-        <div className="hero-body">
-          <p className="hero-sub">Write your day. Let AI summarise, track your mood, and chat with your past self.</p>
-          <div className="hero-cta-row">
-            <Link href="/auth?mode=signup" className="btn">Start journaling</Link>
-            <Link href="/auth" className="btn btn-outline">I have an account</Link>
-          </div>
-        </div>
-
-        <div className="hero-scroll-hint" aria-hidden="true">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        <video
+          className="hero-video"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+        >
+          <source src="/myaidiary-vid.mp4" type="video/mp4" />
+        </video>
+        <div className="hero-video-overlay" />
+        <div className="hero-cta-bottom">
+          <Link href="/auth?mode=signup" className="btn btn-light">Start journaling</Link>
+          <Link href="/auth" className="btn btn-ghost-light">I have an account</Link>
         </div>
       </section>
 
