@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { BookOpen, Sparkles, LineChart, MessageCircleHeart, Lock, Mic } from "lucide-react";
-import { HeroSlider } from "@/components/HeroSlider";
 
 const features = [
   { icon: Sparkles, title: "AI summary & title", body: "Write freely — AI distils each entry into a tidy summary and a title." },
@@ -20,10 +19,17 @@ const steps = [
 export default function Home() {
   return (
     <div>
-      {/* Hero — full-screen crossfade slider, hover reveals CTAs */}
-      <h1 className="sr-only">MyAIDiary — your private, AI-powered journal. Write your day and reflect with AI.</h1>
-      <section className="hero-section">
-        <HeroSlider />
+      {/* Hero — full-screen background image, always-visible CTAs */}
+      <section className="hero-bg">
+        <h1 className="sr-only">MyAIDiary — your private, AI-powered journal.</h1>
+        <div className="hero-body">
+          <p className="hero-tagline">Your private<br />AI journal.</p>
+          <p className="hero-sub">Write your day. Let AI summarise, track your mood, and chat with your past self.</p>
+          <div className="hero-cta-row">
+            <Link href="/auth?mode=signup" className="btn btn-light">Start journaling</Link>
+            <Link href="/auth" className="btn btn-ghost-light">I have an account</Link>
+          </div>
+        </div>
       </section>
 
       {/* Features */}
