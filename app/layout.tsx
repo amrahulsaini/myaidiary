@@ -3,6 +3,7 @@ import { Montserrat, Inconsolata } from "next/font/google";
 import "./globals.css";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
+import { HeaderScroll } from "@/components/HeaderScroll";
 
 const montserrat = Montserrat({ variable: "--font-montserrat", weight: ["700", "900"], subsets: ["latin"], display: "swap" });
 const inconsolata = Inconsolata({ variable: "--font-inconsolata", weight: ["400", "500", "600"], subsets: ["latin"], display: "swap" });
@@ -31,6 +32,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <feDisplacementMap in="SourceGraphic" in2="noise" scale="6" />
           </filter>
         </svg>
+        <HeaderScroll />
         <SiteHeader />
         <main>{children}</main>
         <SiteFooter />

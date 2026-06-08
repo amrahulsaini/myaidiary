@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BookOpen, Sparkles, LineChart, MessageCircleHeart, Lock, Mic } from "lucide-react";
+import { ScrollReveal } from "@/components/ScrollReveal";
 
 const features = [
   { icon: Sparkles, title: "AI summary & title", body: "Write freely — AI distils each entry into a tidy summary and a title." },
@@ -19,7 +20,7 @@ const steps = [
 export default function Home() {
   return (
     <div>
-      {/* Hero — full-screen background image, always-visible CTAs */}
+      {/* Hero — full 100svh, image behind transparent fixed header */}
       <section className="hero-bg">
         <h1 className="sr-only">MyAIDiary — your private, AI-powered journal.</h1>
         <div className="hero-body">
@@ -30,22 +31,29 @@ export default function Home() {
             <Link href="/auth" className="btn btn-ghost-light">I have an account</Link>
           </div>
         </div>
+        <div className="hero-scroll-hint" aria-hidden="true">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
       </section>
 
       {/* Features */}
       <section id="features" className="section" style={{ borderTop: "1px solid var(--ink)", background: "var(--sand)" }}>
         <div className="container">
-          <span className="eyebrow" style={{ background: "var(--cream)" }}>What it does</span>
-          <h2 className="section-title" style={{ marginTop: "1rem" }}>A journal that thinks with you.</h2>
+          <ScrollReveal>
+            <span className="eyebrow" style={{ background: "var(--cream)" }}>What it does</span>
+            <h2 className="section-title" style={{ marginTop: "1rem" }}>A journal that thinks with you.</h2>
+          </ScrollReveal>
           <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 300px), 1fr))", gap: "1.25rem", marginTop: "2rem" }}>
-            {features.map(({ icon: Icon, title, body }) => (
-              <div key={title} className="card card-pad hover-lift" style={{ background: "var(--cream)" }}>
-                <span className="inline-flex" style={{ width: 46, height: 46, border: "1px solid var(--ink)", background: "var(--paper)", alignItems: "center", justifyContent: "center", boxShadow: "var(--shadow-sm)" }}>
-                  <Icon size={22} strokeWidth={1.75} />
-                </span>
-                <h3 style={{ fontSize: "1.3rem", marginTop: "1rem" }}>{title}</h3>
-                <p className="muted" style={{ marginTop: ".5rem" }}>{body}</p>
-              </div>
+            {features.map(({ icon: Icon, title, body }, i) => (
+              <ScrollReveal key={title} delay={i * 60}>
+                <div className="card card-pad hover-lift" style={{ background: "var(--cream)", height: "100%" }}>
+                  <span className="inline-flex" style={{ width: 46, height: 46, border: "1px solid var(--ink)", background: "var(--paper)", alignItems: "center", justifyContent: "center", boxShadow: "var(--shadow-sm)" }}>
+                    <Icon size={22} strokeWidth={1.75} />
+                  </span>
+                  <h3 style={{ fontSize: "1.3rem", marginTop: "1rem" }}>{title}</h3>
+                  <p className="muted" style={{ marginTop: ".5rem" }}>{body}</p>
+                </div>
+              </ScrollReveal>
             ))}
           </div>
         </div>
@@ -53,28 +61,34 @@ export default function Home() {
 
       {/* How it works */}
       <section id="how" className="container section">
-        <span className="eyebrow">How it works</span>
-        <h2 className="section-title" style={{ marginTop: "1rem" }}>Three calm steps.</h2>
+        <ScrollReveal>
+          <span className="eyebrow">How it works</span>
+          <h2 className="section-title" style={{ marginTop: "1rem" }}>Three calm steps.</h2>
+        </ScrollReveal>
         <div className="grid md:grid-cols-3" style={{ gap: "1.25rem", marginTop: "2rem" }}>
           {steps.map(([t, b], i) => (
-            <div key={t} className="card card-pad">
-              <div className="display" style={{ fontSize: "3rem", color: "var(--stone)" }}>{String(i + 1).padStart(2, "0")}</div>
-              <h3 style={{ fontSize: "1.4rem", marginTop: ".5rem" }}>{t}</h3>
-              <p className="muted" style={{ marginTop: ".4rem" }}>{b}</p>
-            </div>
+            <ScrollReveal key={t} delay={i * 100}>
+              <div className="card card-pad" style={{ height: "100%" }}>
+                <div className="display" style={{ fontSize: "3rem", color: "var(--stone)" }}>{String(i + 1).padStart(2, "0")}</div>
+                <h3 style={{ fontSize: "1.4rem", marginTop: ".5rem" }}>{t}</h3>
+                <p className="muted" style={{ marginTop: ".4rem" }}>{b}</p>
+              </div>
+            </ScrollReveal>
           ))}
         </div>
       </section>
 
       {/* CTA */}
       <section className="container" style={{ paddingBottom: "clamp(3rem,6vw,5rem)" }}>
-        <div className="card card-pad" style={{ background: "var(--ink)", textAlign: "center", padding: "clamp(2.5rem,5vw,4rem)" }}>
-          <h2 className="section-title" style={{ color: "var(--cream)" }}>Start your journal today.</h2>
-          <p style={{ color: "var(--stone)", marginTop: ".6rem" }}>Free to begin. Your story, with a little AI by your side.</p>
-          <div style={{ marginTop: "1.6rem" }}>
-            <Link href="/auth?mode=signup" className="btn btn-sand">Create your journal</Link>
+        <ScrollReveal>
+          <div className="card card-pad" style={{ background: "var(--ink)", textAlign: "center", padding: "clamp(2.5rem,5vw,4rem)" }}>
+            <h2 className="section-title" style={{ color: "var(--cream)" }}>Start your journal today.</h2>
+            <p style={{ color: "var(--stone)", marginTop: ".6rem" }}>Free to begin. Your story, with a little AI by your side.</p>
+            <div style={{ marginTop: "1.6rem" }}>
+              <Link href="/auth?mode=signup" className="btn btn-sand">Create your journal</Link>
+            </div>
           </div>
-        </div>
+        </ScrollReveal>
       </section>
     </div>
   );
