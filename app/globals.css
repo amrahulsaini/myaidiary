@@ -137,6 +137,7 @@ textarea.field { height: auto; padding: .7rem .85rem; resize: vertical; }
   min-height: 480px;
   overflow: hidden;
   background: var(--ink);
+  margin-top: -70px; /* cancel layout padding so hero still fills full viewport */
 }
 
 /* Video fills the full screen */

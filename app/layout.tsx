@@ -30,7 +30,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         </svg>
         <HeaderScroll />
         <SiteHeader />
-        <main>{children}</main>
+        <main style={{ paddingTop: 70 }}>{children}</main>
         <SiteFooter />
       </body>
     </html>
