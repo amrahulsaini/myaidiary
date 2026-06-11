@@ -200,12 +200,16 @@ textarea.field { height: auto; padding: .7rem .85rem; resize: vertical; }
 @media (max-width: 767px) {
   .hero-desktop-only { display: none !important; }
   .hero-mobile-logo { display: block; }
+  .hero-bg { background: var(--cream); }
+  .hero-video-overlay { display: none; }
   .hero-cta-bottom {
     flex-direction: column;
     width: calc(100% - 3rem);
     white-space: normal;
   }
   .hero-cta-bottom .btn { width: 100%; justify-content: center; }
+  .hero-cta-bottom .btn-light { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+  .hero-cta-bottom .btn-ghost-light { color: var(--ink); border-color: var(--ink); }
 }
 
 @media (min-width: 768px) {
