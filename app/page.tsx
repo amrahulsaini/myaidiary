@@ -23,9 +23,16 @@ export default function Home() {
       {/* Hero — fullscreen video, buttons at the bottom */}
       <section className="hero-bg">
         <h1 className="sr-only">MyAIDiary — your private, AI-powered journal.</h1>
-        <video className="hero-video" autoPlay muted loop playsInline preload="auto">
+        {/* Desktop: video */}
+        <video className="hero-video hero-desktop-only" autoPlay muted loop playsInline preload="auto">
           <source src="/myaidiary-vid.mp4" type="video/mp4" />
         </video>
+        {/* Mobile: logo edge to edge */}
+        <img
+          src="/myaidiary-fulllogo-withoutbg.png"
+          alt="MyAIDiary"
+          className="hero-mobile-logo"
+        />
         <div className="hero-video-overlay" />
         <div className="hero-cta-bottom">
           <Link href="/auth?mode=signup" className="btn btn-light">Start journaling</Link>
