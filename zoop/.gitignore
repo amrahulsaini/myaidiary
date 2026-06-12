@@ -1,0 +1,9 @@
+node_modules/
+.env
+auth/
+data/
+*.log
+npm-debug.log*
+OPERATIONS.md
+zoop*.tgz
+zoop*.tar.gz

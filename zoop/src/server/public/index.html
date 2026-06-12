@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Zoop · WhatsApp AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Login / Signup -->
+  <div id="login" class="login hidden">
+    <div class="login-card">
+      <div class="logo">⚡ <span>Zoop</span></div>
+      <p class="muted">Your WhatsApp AI assistant</p>
+      <input id="email" type="email" placeholder="Email" autocomplete="username" />
+      <input id="pw" type="password" placeholder="Password" autocomplete="current-password" />
+      <button id="loginBtn">Log in</button>
+      <button id="signupBtn" class="ghost full">Create account</button>
+      <div id="loginErr" class="err"></div>
+    </div>
+  </div>
+
+  <!-- Onboarding wizard -->
+  <div id="onboard" class="onboard hidden">
+    <div class="onboard-card">
+      <div class="onboard-head">
+        <div class="logo">⚡ <span>Zoop</span></div>
+        <p class="muted" id="obSub">Let's set up how your AI talks to people</p>
+        <div class="progress"><div id="obProgress" class="bar"></div></div>
+      </div>
+      <div id="obBody" class="onboard-body"></div>
+      <div class="onboard-foot">
+        <button id="obBack" class="ghost">‹ Back</button>
+        <div class="spacer"></div>
+        <button id="obSkip" class="ghost">Skip</button>
+        <button id="obNext">Next ›</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- App -->
+  <div id="app" class="hidden">
+    <header>
+      <div class="brand">⚡ <span>Zoop</span></div>
+      <div class="status-pill" id="connPill">…</div>
+      <div class="spacer"></div>
+      <label class="mode"><select id="modeSel">
+        <option value="auto">⚡ Auto</option>
+        <option value="approval">✍️ Approval</option>
+        <option value="off">⏸ Off</option>
+      </select></label>
+      <button id="logoutBtn" class="ghost">Logout</button>
+    </header>
+
+    <nav>
+      <button class="tab active" data-tab="chats">Chats</button>
+      <button class="tab" data-tab="groups">Groups</button>
+      <button class="tab" data-tab="agent">🤖 Agent</button>
+      <button class="tab" data-tab="approvals">Approvals <span id="pendCount" class="badge hidden">0</span></button>
+      <button class="tab" data-tab="persona">Persona</button>
+      <button class="tab" data-tab="logs">Logs</button>
+      <button class="tab" data-tab="connect">Connect</button>
+    </nav>
+
+    <!-- Chats -->
+    <section id="tab-chats" class="tab-pane">
+      <div class="split" id="split">
+        <div class="listwrap">
+          <div class="listtools">
+            <input id="search" class="search" type="text" placeholder="🔍 Search contacts…" />
+            <button id="importBtn" class="ghost sync-btn" title="Import contacts from a vCard file">📥 Import</button>
+            <button id="syncBtn" class="ghost sync-btn" title="Pull saved names from your phonebook">🔄 Sync</button>
+          </div>
+          <div class="blocknum">
+            <input id="blockNumInput" type="text" placeholder="Block a number (e.g. 9637…)" />
+            <button id="blockNumBtn" class="ghost">🚫 Block</button>
+          </div>
+          <div class="list" id="contactList"></div>
+        </div>
+        <div class="convo" id="convo">
+          <div class="convo-header" id="convoHeader">
+            <button class="back" id="backBtn" aria-label="Back">‹</button>
+            <div class="peer" id="convoPeer"><span class="muted">Select a chat</span></div>
+            <div class="spacer"></div>
+            <button id="renameBtn" class="chip hidden" title="Rename this contact">✏️ Rename</button>
+            <button id="voiceModeBtn" class="chip hidden" title="Voice note mode for this chat">🎤 Voice</button>
+            <button id="tuneBtn" class="chip hidden" title="Custom AI instructions for this chat">🎛️ Tune</button>
+            <button id="summaryBtn" class="chip hidden">🧠 Summary</button>
+          </div>
+          <div id="messages" class="messages"><div class="empty">Pick a chat to see the conversation</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Agent command channel -->
+    <section id="tab-agent" class="tab-pane hidden">
+      <div class="agent-wrap">
+        <div class="agent-tools">
+          <div class="danger-zone">
+            <div class="dz-label">⚠️ Danger zone — sends real follow-up messages to many quiet chats at once. Password required.</div>
+            <button id="followupBtn" class="danger-btn">📨 Follow up on incomplete chats</button>
+          </div>
+        </div>
+        <div id="agentLog" class="agent-log">
+          <div class="abub zoop">👋 I'm your agent. Tell me things like:<br>• <b>"text Aditi: running 10 min late"</b><br>• <b>"reply to Harshit: chill bro"</b><br>• <b>"what did Rajat say today?"</b><br>I'll send messages on your behalf or tell you what people said.</div>
+        </div>
+        <div class="agent-input">
+          <input id="agentInput" type="text" placeholder='Tell Zoop what to do…' />
+          <button id="agentSend">Send</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Approvals -->
+    <section id="tab-approvals" class="tab-pane hidden"><div id="pendingList" class="pending-list"></div></section>
+
+    <!-- Persona -->
+    <section id="tab-persona" class="tab-pane hidden">
+      <div class="persona-scroll">
+        <h3 class="sec-title">🎭 Persona &amp; tone</h3>
+        <p class="muted">The exact system prompt Zoop uses when replying. Edit freely.</p>
+        <textarea id="personaText" spellcheck="false"></textarea>
+        <div class="row">
+          <button id="savePersona">Save persona</button>
+          <button id="resetPersona" class="ghost">Reset default</button>
+          <button id="rerunSetup" class="ghost">↻ Re-run setup wizard</button>
+          <span id="personaMsg" class="ok"></span>
+        </div>
+
+        <h3 class="sec-title">🧠 About you</h3>
+        <p class="muted">Facts Zoop can use to answer smartly — your work, schedule, common answers, what to say/avoid.</p>
+        <textarea id="aboutText" class="about" spellcheck="false" placeholder="e.g. I'm a founder building AI apps. Free after 7pm. Office in Jaipur. Don't commit to meetings without checking me."></textarea>
+        <div class="row"><button id="saveAbout">Save about</button><span id="aboutMsg" class="ok"></span></div>
+
+        <h3 class="sec-title">⚙️ Settings</h3>
+        <label class="field">💬 Group replies
+          <select id="groupMode">
+            <option value="off">Off — ignore groups</option>
+            <option value="mention">Only when @mentioned or replied to</option>
+            <option value="smart">Active — reply to every group message</option>
+          </select>
+        </label>
+        <p class="muted" style="margin-top:4px">⚠️ Active mode replies to every message in groups Zoop is in — highest ban risk by far. Use only where it's welcome, and switch off at the first WhatsApp warning.</p>
+        <label class="field chk2" style="margin-top:14px"><input type="checkbox" id="autoFollowup" /> 📨 Auto follow-up on incomplete chats <span class="muted">(every few hours, Zoop nudges quiet chats on its own — convenient but raises ban risk; leave off to do it manually from the Agent tab)</span></label>
+
+        <h3 class="sec-title">🎙️ Voice notes</h3>
+        <p class="muted">Zoop can reply with a human-sounding AI voice note instead of text — in both DMs and groups. It always voices long replies, plus a random share of shorter ones. Each voice note costs a little Gemini usage (~1–2¢) and takes a few seconds longer. ⚠️ In active groups this can add up fast and raises ban risk — keep the chance modest there.</p>
+        <label class="field chk2"><input type="checkbox" id="voiceEnabled" /> 🎤 Send voice notes</label>
+        <label class="field">🎲 Random chance for short replies
+          <input id="voiceProb" type="range" min="0" max="100" step="5" style="flex:1" />
+          <span id="voiceProbVal" class="muted" style="min-width:42px;text-align:right">25%</span>
+        </label>
+        <label class="field">🗣️ Voice
+          <select id="voiceName">
+            <option value="Puck">Puck — upbeat, young (default)</option>
+            <option value="Charon">Charon — deep, calm male</option>
+            <option value="Fenrir">Fenrir — energetic male</option>
+            <option value="Kore">Kore — warm female</option>
+            <option value="Aoede">Aoede — bright female</option>
+            <option value="Leda">Leda — youthful female</option>
+            <option value="Orus">Orus — mature male</option>
+          </select>
+          <button id="saveVoice" class="ghost">Save</button>
+          <span id="voiceMsg" class="ok"></span>
+        </label>
+        <label class="field">Model
+          <select id="modelInput">
+            <option value="gemini-2.5-flash">gemini-2.5-flash (recommended)</option>
+            <option value="gemini-2.5-flash-lite">gemini-2.5-flash-lite (fastest/cheapest)</option>
+            <option value="gemini-2.5-pro">gemini-2.5-pro (smartest, pricier)</option>
+          </select>
+          <button id="saveModel" class="ghost">Save</button>
+        </label>
+        <label class="field">🔔 Alert number <input id="alertInput" type="text" placeholder="916377362603 (blank = your own number)" /><button id="saveAlert" class="ghost">Save</button></label>
+
+        <h3 class="sec-title danger-title">⚠️ Danger zone</h3>
+        <p class="muted">Deleting your account unlinks WhatsApp and permanently wipes all your data. This cannot be undone.</p>
+        <div class="row"><button id="deleteAccountBtn" class="danger-btn">Delete my account</button></div>
+      </div>
+    </section>
+
+    <!-- Logs -->
+    <section id="tab-logs" class="tab-pane hidden">
+      <div class="row"><label class="chk"><input type="checkbox" id="autoLogs" checked /> Live</label></div>
+      <div id="logBox" class="logs"></div>
+    </section>
+
+    <!-- Connect -->
+    <section id="tab-connect" class="tab-pane hidden">
+      <div class="connect-card">
+        <div id="connInfo" class="muted"></div>
+        <img id="qrImg" class="qr hidden" alt="QR" />
+        <p class="muted">WhatsApp → Settings → Linked devices → Link a device → scan.</p>
+        <button id="reconnectBtn" class="ghost" style="margin-top:10px">🔄 Generate fresh QR</button>
+        <button id="relinkBtn" class="ghost" style="margin-top:10px">🩹 Fix dropped messages (relink)</button>
+        <p class="muted" style="margin-top:6px;font-size:12px">Use “relink” if messages show in WhatsApp but not here — it resets a corrupted session. Your chats stay; you just scan a new QR.</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- Import contacts modal -->
+  <div id="importModal" class="modal hidden">
+    <div class="modal-backdrop" id="imBackdrop"></div>
+    <div class="modal-card">
+      <div class="modal-head"><div>📥 Import contacts</div><button id="imClose" class="iconbtn">✕</button></div>
+      <div class="modal-body">
+        <p class="muted">Export your contacts from your phone as a <b>vCard (.vcf)</b> — e.g. <b>Contacts app → Export</b>, or <b>Google Contacts → Export → vCard</b> — then upload the file or paste it below. You can also paste plain lines like <b>Aditi, +91 86196 03117</b>.</p>
+        <input type="file" id="imFile" accept=".vcf,.csv,.txt,text/vcard" style="margin:10px 0; width:100%" />
+        <textarea id="imText" class="about" placeholder="Paste vCard content, or lines like:&#10;Aditi, +918619603117&#10;Rishi, 9782428865"></textarea>
+        <div class="row"><button id="imImport">Import contacts</button><span id="imMsg" class="muted"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Voice mode modal: per-chat voice-note behaviour -->
+  <div id="voiceModal" class="modal hidden">
+    <div class="modal-backdrop" id="vmBackdrop"></div>
+    <div class="modal-card">
+      <div class="modal-head"><div id="vmTitle">🎤 Voice notes for this chat</div><button id="vmClose" class="iconbtn">✕</button></div>
+      <div class="modal-body">
+        <p class="muted">Choose how Zoop replies in <b>this chat</b>. Overrides your global voice setting. (Tip: if the person asks Zoop to "talk in voice/audio", it switches to voice automatically anyway.)</p>
+        <div class="vm-opts">
+          <label class="vm-opt"><input type="radio" name="vmode" value="default"><div><b>Default</b><span>Follow your global voice setting</span></div></label>
+          <label class="vm-opt"><input type="radio" name="vmode" value="text"><div><b>Text only</b><span>Never send voice notes here</span></div></label>
+          <label class="vm-opt"><input type="radio" name="vmode" value="voice"><div><b>Voice only</b><span>Reply with a voice note every time</span></div></label>
+          <label class="vm-opt"><input type="radio" name="vmode" value="mixed"><div><b>Mixed</b><span>Some text, some voice — set the chance below</span></div></label>
+        </div>
+        <div id="vmProbRow" class="field" style="margin-top:14px">🎲 Voice chance
+          <input id="vmProb" type="range" min="0" max="100" step="5" style="flex:1" />
+          <span id="vmProbVal" class="muted" style="min-width:42px;text-align:right">25%</span>
+        </div>
+        <div class="row"><button id="vmSave">Save</button><span id="vmMsg" class="ok"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tune modal: per-chat custom AI instructions -->
+  <div id="tuneModal" class="modal hidden">
+    <div class="modal-backdrop" id="tuneBackdrop"></div>
+    <div class="modal-card">
+      <div class="modal-head"><div id="tuneTitle">🎛️ Tune this chat</div><button id="tuneClose" class="iconbtn">✕</button></div>
+      <div class="modal-body">
+        <p class="muted">Type custom instructions Zoop will follow <b>only in this chat</b> — on top of your global persona. e.g. <i>"Always reply in pure Hindi", "Be extra flirty with her", "Never discuss work here", "Call him bhai", "Keep replies one line"</i>. It's also used as context when composing messages here.</p>
+        <textarea id="tuneText" class="about" spellcheck="false" placeholder="e.g. Talk to her in a sweet, caring way. Use her nickname 'Anu'. Never mention money."></textarea>
+        <div class="row"><button id="tuneSave">Save</button><button id="tuneClear" class="ghost">Clear</button><span id="tuneMsg" class="ok"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary modal -->
+  <div id="summaryModal" class="modal hidden">
+    <div class="modal-backdrop" id="smBackdrop"></div>
+    <div class="modal-card">
+      <div class="modal-head">
+        <div id="smTitle">🧠 What Zoop knows</div>
+        <button id="smClose" class="iconbtn">✕</button>
+      </div>
+      <div id="smBody" class="modal-body"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

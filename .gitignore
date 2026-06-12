@@ -34,13 +34,19 @@ yarn-error.log*
 .env*
 !.env.example
 
-# private secrets / credentials docs — NEVER commit
+# private secrets / credentials / ops docs — NEVER commit
 SECRETS.local.md
+OPERATIONS.md
 *.secret.md
 /secrets/
 
 # vercel
 .vercel
+
+# Zoop runtime data (never commit)
+/zoop/data/
+/zoop/auth/
+/zoop/node_modules/
 
 # typescript
 *.tsbuildinfo

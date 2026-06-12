@@ -1,0 +1,18 @@
+[Unit]
+Description=Zoop WhatsApp AI agent
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=DELL
+WorkingDirectory=/home/DELL/zoop
+ExecStart=/usr/bin/npm start
+Restart=always
+RestartSec=5
+Environment=NODE_ENV=production
+StandardOutput=append:/home/DELL/zoop/zoop.out.log
+StandardError=append:/home/DELL/zoop/zoop.err.log
+
+[Install]
+WantedBy=multi-user.target
