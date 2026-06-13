@@ -1,6 +1,10 @@
 import { GoogleGenAI } from '@google/genai';
 import { config } from './config.js';
 import { clog } from './logger.js';
+import { usageOf, type Usage } from './billing.js';
+
+// Optional metering hook — callers (session.ts) pass a closure that charges the tenant's wallet.
+export type OnUsage = (u: Usage) => void;
 
 const ai = new GoogleGenAI({ apiKey: config.gemini.apiKey });
 
@@ -96,7 +100,7 @@ export interface GenResult {
   shouldReply: boolean;
 }
 
-export async function generateReply(ctx: ReplyContext): Promise<GenResult> {
+export async function generateReply(ctx: ReplyContext, onUsage?: OnUsage): Promise<GenResult> {
   const contents = ctx.history.map((m) => ({
     role: m.direction === 'in' ? 'user' : 'model',
     parts: [{ text: m.body }],
@@ -156,6 +160,7 @@ export async function generateReply(ctx: ReplyContext): Promise<GenResult> {
       20000,
       'generateReply'
     );
+    onUsage?.(usageOf(res, ctx.model));
     const raw = (res.text || '').trim();
     const fail = { text: '', ok: false, important: false, reason: '', shouldReply: false };
     if (!raw) return fail;
@@ -184,7 +189,7 @@ export interface SummaryContext {
   prev: string;
   history: { direction: 'in' | 'out'; body: string }[];
 }
-export async function summarize(ctx: SummaryContext): Promise<string> {
+export async function summarize(ctx: SummaryContext, onUsage?: OnUsage): Promise<string> {
   if (!ctx.history.length) return ctx.prev;
   const transcript = ctx.history.map((m) => `${m.direction === 'in' ? 'Them' : 'Me'}: ${m.body}`).join('\n');
   const prompt = `${ctx.prev ? `Existing summary:\n${ctx.prev}\n\n` : ''}Recent conversation:
@@ -203,6 +208,7 @@ Output ONLY the summary text itself — no "Here's a summary" preamble, no markd
       20000,
       'summarize'
     );
+    onUsage?.(usageOf(res, ctx.model));
     return (res.text || ctx.prev).trim();
   } catch (err: any) {
     clog('error', 'ai', 'summarize failed: ' + String(err?.message || err));
@@ -210,7 +216,7 @@ Output ONLY the summary text itself — no "Here's a summary" preamble, no markd
   }
 }
 
-export async function understandMedia(data: Buffer, mimeType: string, kind: 'image' | 'audio' | 'video', model: string): Promise<string> {
+export async function understandMedia(data: Buffer, mimeType: string, kind: 'image' | 'audio' | 'video', model: string, onUsage?: OnUsage): Promise<string> {
   const prompt =
     kind === 'audio'
       ? 'Transcribe this voice message in its original language. Output ONLY the transcription text.'
@@ -227,6 +233,7 @@ export async function understandMedia(data: Buffer, mimeType: string, kind: 'ima
       30000,
       'understandMedia'
     );
+    onUsage?.(usageOf(res, model));
     return (res.text || '').trim();
   } catch (err: any) {
     clog('error', 'ai', 'understandMedia failed: ' + String(err?.message || err));
@@ -240,7 +247,8 @@ export async function synthesizeSpeech(
   text: string,
   voiceName = 'Puck',
   styleHint = '',
-  model = 'gemini-2.5-flash-preview-tts'
+  model = 'gemini-2.5-flash-preview-tts',
+  onUsage?: OnUsage
 ): Promise<Buffer | null> {
   const directive =
     styleHint ||
@@ -267,6 +275,7 @@ export async function synthesizeSpeech(
         clog('warn', 'ai', 'TTS returned no audio');
         return null;
       }
+      onUsage?.(usageOf(res, model));
       return Buffer.from(b64, 'base64');
     } catch (err: any) {
       const msg = String(err?.message || err);
@@ -301,7 +310,7 @@ export interface Command {
   text: string;
   voice?: boolean; // owner wants this sent as a voice note
 }
-export async function interpretCommand(model: string, command: string, contactNames: string[], history: { role: 'owner' | 'agent'; text: string }[] = []): Promise<Command> {
+export async function interpretCommand(model: string, command: string, contactNames: string[], history: { role: 'owner' | 'agent'; text: string }[] = [], onUsage?: OnUsage): Promise<Command> {
   const sys = `You parse instructions Rahul (the owner) gives to his WhatsApp assistant via a chat console.
 Use the prior conversation to resolve references like "it", "same group", "make it rhyming", "harsher", "send it again". Carry over the contact/group from the previous turn if Rahul doesn't repeat it.
 Decide intent:
@@ -331,6 +340,7 @@ Known contacts & groups (for reference): ${contactNames.slice(0, 250).join(', ')
         responseSchema: { type: 'object', properties: { intent: { type: 'string' }, contact: { type: 'string' }, text: { type: 'string' }, voice: { type: 'boolean' } }, required: ['intent'] },
       },
     });
+    onUsage?.(usageOf(res, model));
     const j = JSON.parse(res.text || '{}');
     return { intent: (j.intent || 'none') as any, contact: String(j.contact || ''), text: String(j.text || ''), voice: !!j.voice };
   } catch (e: any) {
@@ -342,7 +352,7 @@ Known contacts & groups (for reference): ${contactNames.slice(0, 250).join(', ')
 // Compose a message the owner asked Zoop to write (e.g. a roast), in Zoop's voice + chat context.
 // Retries (with progressively cleaner framing) because the model sometimes returns empty on the
 // first try for spicy/roast requests in heavily-abusive chats.
-export async function composeMessage(model: string, persona: string, about: string, contactName: string, brief: string, transcript: string, group: boolean): Promise<string> {
+export async function composeMessage(model: string, persona: string, about: string, contactName: string, brief: string, transcript: string, group: boolean, onUsage?: OnUsage): Promise<string> {
   const where = group ? `the group "${contactName}"` : `the chat with "${contactName}"`;
   const tail = `\nOutput ONLY the final message itself — the exact words to send or speak — in the right language (Hinglish if appropriate). No quotes, no preamble, no explanation, no stage directions. NEVER include Rahul's instruction words (like "make a scenario", "as i said", "send", "voice note", "elaborate") in the output. If roasting/clapping back, be witty but no slurs, threats or explicit words.`;
   const sysVariants = [
@@ -364,6 +374,7 @@ export async function composeMessage(model: string, persona: string, about: stri
         model, contents: brief || 'Write the message as instructed.',
         config: { systemInstruction: sys, temperature: 0.95, maxOutputTokens: 300, thinkingConfig: { thinkingBudget: 0 }, safetySettings: SAFETY },
       });
+      onUsage?.(usageOf(res, model));
       const out = stripQuotes((res.text || '').trim());
       if (out) return out;
     } catch (e: any) {
@@ -373,7 +384,7 @@ export async function composeMessage(model: string, persona: string, about: stri
   return '';
 }
 
-export async function answerAboutChat(model: string, question: string, history: { direction: 'in' | 'out'; body: string }[], contactName = 'this contact'): Promise<string> {
+export async function answerAboutChat(model: string, question: string, history: { direction: 'in' | 'out'; body: string }[], contactName = 'this contact', onUsage?: OnUsage): Promise<string> {
   const transcript = history.map((m) => `${m.direction === 'in' ? contactName : 'Me/Zoop'}: ${m.body}`).join('\n');
   try {
     const res = await genContent({
@@ -381,6 +392,7 @@ export async function answerAboutChat(model: string, question: string, history: 
       contents: `Chat with ${contactName}:\n${transcript || '(no messages yet)'}\n\nRahul asks you: "${question}"\n\nAnswer Rahul concisely and factually, summarising what ${contactName} said that's relevant — based ONLY on the chat above. Keep YOUR own wording clean and neutral; do NOT copy their profanity or adopt a rude tone. If the answer isn't in the chat, say so.`,
       config: { temperature: 0.3, maxOutputTokens: 350, thinkingConfig: { thinkingBudget: 0 }, safetySettings: SAFETY },
     });
+    onUsage?.(usageOf(res, model));
     return (res.text || '').trim() || "I couldn't find anything about that.";
   } catch (e: any) {
     clog('error', 'ai', 'answerAboutChat failed: ' + String(e?.message || e));
@@ -389,7 +401,7 @@ export async function answerAboutChat(model: string, question: string, history: 
 }
 
 // Decide whether a quiet/"incomplete" chat deserves a proactive follow-up, and write one.
-export async function followUpDecision(model: string, persona: string, about: string, contactName: string, transcript: string, idleHours: number): Promise<{ followUp: boolean; message: string }> {
+export async function followUpDecision(model: string, persona: string, about: string, contactName: string, transcript: string, idleHours: number, onUsage?: OnUsage): Promise<{ followUp: boolean; message: string }> {
   const sys = [
     persona,
     about ? `\nAbout Rahul:\n${about}` : '',
@@ -410,6 +422,7 @@ export async function followUpDecision(model: string, persona: string, about: st
         responseSchema: { type: 'object', properties: { followUp: { type: 'boolean' }, message: { type: 'string' } }, required: ['followUp'] },
       },
     });
+    onUsage?.(usageOf(res, model));
     const j = JSON.parse(res.text || '{}');
     return { followUp: !!j.followUp, message: stripQuotes(String(j.message || '').trim()) };
   } catch (e: any) {
