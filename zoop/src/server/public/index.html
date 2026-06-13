@@ -16,7 +16,7 @@
   <!-- Login / Signup -->
   <div id="login" class="login hidden">
     <div class="login-card">
-      <div class="logo">⚡ <span>Zoop</span></div>
+      <div class="logo"><i data-lucide="zap"></i> <span>Zoop</span></div>
       <p class="muted">Your WhatsApp AI assistant</p>
       <input id="email" type="email" placeholder="Email" autocomplete="username" />
       <input id="pw" type="password" placeholder="Password" autocomplete="current-password" />
@@ -30,16 +30,16 @@
   <div id="onboard" class="onboard hidden">
     <div class="onboard-card">
       <div class="onboard-head">
-        <div class="logo">⚡ <span>Zoop</span></div>
+        <div class="logo"><i data-lucide="zap"></i> <span>Zoop</span></div>
         <p class="muted" id="obSub">Let's set up how your AI talks to people</p>
         <div class="progress"><div id="obProgress" class="bar"></div></div>
       </div>
       <div id="obBody" class="onboard-body"></div>
       <div class="onboard-foot">
-        <button id="obBack" class="ghost">‹ Back</button>
+        <button id="obBack" class="ghost"><i data-lucide="chevron-left"></i> Back</button>
         <div class="spacer"></div>
         <button id="obSkip" class="ghost">Skip</button>
-        <button id="obNext">Next ›</button>
+        <button id="obNext">Next <i data-lucide="chevron-right"></i></button>
       </div>
     </div>
   </div>
@@ -47,25 +47,27 @@
   <!-- App -->
   <div id="app" class="hidden">
     <header>
-      <div class="brand">⚡ <span>Zoop</span></div>
+      <div class="brand"><i data-lucide="zap"></i> <span>Zoop</span></div>
       <div class="status-pill" id="connPill">…</div>
       <div class="spacer"></div>
+      <div class="balance-pill" id="balancePill" title="Your credit balance"><i data-lucide="wallet"></i> <span id="balanceText">₹—</span></div>
       <label class="mode"><select id="modeSel">
-        <option value="auto">⚡ Auto</option>
-        <option value="approval">✍️ Approval</option>
-        <option value="off">⏸ Off</option>
+        <option value="auto">Auto</option>
+        <option value="approval">Approval</option>
+        <option value="off">Off</option>
       </select></label>
       <button id="logoutBtn" class="ghost">Logout</button>
     </header>
 
     <nav>
-      <button class="tab active" data-tab="chats">Chats</button>
-      <button class="tab" data-tab="groups">Groups</button>
-      <button class="tab" data-tab="agent">🤖 Agent</button>
-      <button class="tab" data-tab="approvals">Approvals <span id="pendCount" class="badge hidden">0</span></button>
-      <button class="tab" data-tab="persona">Persona</button>
-      <button class="tab" data-tab="logs">Logs</button>
-      <button class="tab" data-tab="connect">Connect</button>
+      <button class="tab active" data-tab="chats"><i data-lucide="message-square"></i> Chats</button>
+      <button class="tab" data-tab="groups"><i data-lucide="users"></i> Groups</button>
+      <button class="tab" data-tab="agent"><i data-lucide="bot"></i> Agent</button>
+      <button class="tab" data-tab="approvals"><i data-lucide="check-check"></i> Approvals <span id="pendCount" class="badge hidden">0</span></button>
+      <button class="tab" data-tab="wallet"><i data-lucide="wallet"></i> Credits</button>
+      <button class="tab" data-tab="persona"><i data-lucide="drama"></i> Persona</button>
+      <button class="tab" data-tab="logs"><i data-lucide="scroll-text"></i> Logs</button>
+      <button class="tab" data-tab="connect"><i data-lucide="qr-code"></i> Connect</button>
     </nav>
 
     <!-- Chats -->
@@ -73,25 +75,25 @@
       <div class="split" id="split">
         <div class="listwrap">
           <div class="listtools">
-            <input id="search" class="search" type="text" placeholder="🔍 Search contacts…" />
-            <button id="importBtn" class="ghost sync-btn" title="Import contacts from a vCard file">📥 Import</button>
-            <button id="syncBtn" class="ghost sync-btn" title="Pull saved names from your phonebook">🔄 Sync</button>
+            <input id="search" class="search" type="text" placeholder="Search contacts…" />
+            <button id="importBtn" class="ghost sync-btn" title="Import contacts from a vCard file"><i data-lucide="download"></i> Import</button>
+            <button id="syncBtn" class="ghost sync-btn" title="Pull saved names from your phonebook"><i data-lucide="refresh-cw"></i> Sync</button>
           </div>
           <div class="blocknum">
             <input id="blockNumInput" type="text" placeholder="Block a number (e.g. 9637…)" />
-            <button id="blockNumBtn" class="ghost">🚫 Block</button>
+            <button id="blockNumBtn" class="ghost"><i data-lucide="ban"></i> Block</button>
           </div>
           <div class="list" id="contactList"></div>
         </div>
         <div class="convo" id="convo">
           <div class="convo-header" id="convoHeader">
-            <button class="back" id="backBtn" aria-label="Back">‹</button>
+            <button class="back" id="backBtn" aria-label="Back"><i data-lucide="chevron-left"></i></button>
             <div class="peer" id="convoPeer"><span class="muted">Select a chat</span></div>
             <div class="spacer"></div>
-            <button id="renameBtn" class="chip hidden" title="Rename this contact">✏️ Rename</button>
-            <button id="voiceModeBtn" class="chip hidden" title="Voice note mode for this chat">🎤 Voice</button>
-            <button id="tuneBtn" class="chip hidden" title="Custom AI instructions for this chat">🎛️ Tune</button>
-            <button id="summaryBtn" class="chip hidden">🧠 Summary</button>
+            <button id="renameBtn" class="chip hidden" title="Rename this contact"><i data-lucide="pencil"></i> Rename</button>
+            <button id="voiceModeBtn" class="chip hidden" title="Voice note mode for this chat"><i data-lucide="mic"></i> Voice</button>
+            <button id="tuneBtn" class="chip hidden" title="Custom AI instructions for this chat"><i data-lucide="sliders-horizontal"></i> Tune</button>
+            <button id="summaryBtn" class="chip hidden"><i data-lucide="brain"></i> Summary</button>
           </div>
           <div id="messages" class="messages"><div class="empty">Pick a chat to see the conversation</div></div>
         </div>
@@ -103,16 +105,16 @@
       <div class="agent-wrap">
         <div class="agent-tools">
           <div class="danger-zone">
-            <div class="dz-label">⚠️ Danger zone — sends real follow-up messages to many quiet chats at once. Password required.</div>
-            <button id="followupBtn" class="danger-btn">📨 Follow up on incomplete chats</button>
+            <div class="dz-label"><i data-lucide="triangle-alert"></i> <span>Danger zone — sends real follow-up messages to many quiet chats at once. Password required.</span></div>
+            <button id="followupBtn" class="danger-btn"><i data-lucide="send"></i> Follow up on incomplete chats</button>
           </div>
         </div>
         <div id="agentLog" class="agent-log">
-          <div class="abub zoop">👋 I'm your agent. Tell me things like:<br>• <b>"text Aditi: running 10 min late"</b><br>• <b>"reply to Harshit: chill bro"</b><br>• <b>"what did Rajat say today?"</b><br>I'll send messages on your behalf or tell you what people said.</div>
+          <div class="abub zoop">I'm your agent. Tell me things like:<br>• <b>"text Aditi: running 10 min late"</b><br>• <b>"reply to Harshit: chill bro"</b><br>• <b>"what did Rajat say today?"</b><br>I'll send messages on your behalf or tell you what people said.</div>
         </div>
         <div class="agent-input">
-          <input id="agentInput" type="text" placeholder='Tell Zoop what to do…' />
-          <button id="agentSend">Send</button>
+          <input id="agentInput" type="text" placeholder="Tell Zoop what to do…" />
+          <button id="agentSend"><i data-lucide="send"></i> Send</button>
         </div>
       </div>
     </section>
@@ -120,43 +122,67 @@
     <!-- Approvals -->
     <section id="tab-approvals" class="tab-pane hidden"><div id="pendingList" class="pending-list"></div></section>
 
+    <!-- Credits / Wallet -->
+    <section id="tab-wallet" class="tab-pane hidden">
+      <div class="wallet-scroll">
+        <div class="wallet-hero">
+          <div>
+            <div class="bal-label">Credit balance</div>
+            <div class="bal-amount" id="walletBalance">₹—</div>
+            <div class="bal-sub" id="walletSub">Every AI reply, voice note and photo read uses credits.</div>
+          </div>
+          <div class="recharge-box">
+            <div class="recharge-note"><i data-lucide="clock"></i> Recharge coming soon</div>
+            <div class="amt-options">
+              <button class="amt-opt" disabled>₹100</button>
+              <button class="amt-opt" disabled>₹500</button>
+              <button class="amt-opt" disabled>₹1000</button>
+            </div>
+            <button id="rechargeBtn" disabled><i data-lucide="credit-card"></i> Add credits</button>
+          </div>
+        </div>
+        <h3 class="sec-title"><i data-lucide="receipt-text"></i> Usage &amp; history</h3>
+        <div class="ledger" id="ledger"><div class="empty" style="padding:24px">No usage yet.</div></div>
+      </div>
+    </section>
+
     <!-- Persona -->
     <section id="tab-persona" class="tab-pane hidden">
       <div class="persona-scroll">
-        <h3 class="sec-title">🎭 Persona &amp; tone</h3>
+        <h3 class="sec-title"><i data-lucide="drama"></i> Persona &amp; tone</h3>
         <p class="muted">The exact system prompt Zoop uses when replying. Edit freely.</p>
         <textarea id="personaText" spellcheck="false"></textarea>
         <div class="row">
           <button id="savePersona">Save persona</button>
           <button id="resetPersona" class="ghost">Reset default</button>
-          <button id="rerunSetup" class="ghost">↻ Re-run setup wizard</button>
+          <button id="rerunSetup" class="ghost"><i data-lucide="rotate-ccw"></i> Re-run setup wizard</button>
           <span id="personaMsg" class="ok"></span>
         </div>
 
-        <h3 class="sec-title">🧠 About you</h3>
+        <h3 class="sec-title"><i data-lucide="brain"></i> About you</h3>
         <p class="muted">Facts Zoop can use to answer smartly — your work, schedule, common answers, what to say/avoid.</p>
         <textarea id="aboutText" class="about" spellcheck="false" placeholder="e.g. I'm a founder building AI apps. Free after 7pm. Office in Jaipur. Don't commit to meetings without checking me."></textarea>
         <div class="row"><button id="saveAbout">Save about</button><span id="aboutMsg" class="ok"></span></div>
 
-        <h3 class="sec-title">⚙️ Settings</h3>
-        <label class="field">💬 Group replies
+        <h3 class="sec-title"><i data-lucide="settings"></i> Settings</h3>
+        <label class="field"><i data-lucide="message-circle"></i> Group replies
           <select id="groupMode">
             <option value="off">Off — ignore groups</option>
             <option value="mention">Only when @mentioned or replied to</option>
             <option value="smart">Active — reply to every group message</option>
           </select>
         </label>
-        <p class="muted" style="margin-top:4px">⚠️ Active mode replies to every message in groups Zoop is in — highest ban risk by far. Use only where it's welcome, and switch off at the first WhatsApp warning.</p>
-        <label class="field chk2" style="margin-top:14px"><input type="checkbox" id="autoFollowup" /> 📨 Auto follow-up on incomplete chats <span class="muted">(every few hours, Zoop nudges quiet chats on its own — convenient but raises ban risk; leave off to do it manually from the Agent tab)</span></label>
+        <p class="muted" style="margin-top:4px">Active mode replies to every message in groups Zoop is in — highest ban risk by far. Use only where it's welcome, and switch off at the first WhatsApp warning.</p>
+        <label class="field chk2" style="margin-top:14px"><input type="checkbox" id="autoFollowup" /> <span>Auto follow-up on incomplete chats <span class="muted">(every few hours, Zoop nudges quiet chats on its own — convenient but raises ban risk; leave off to do it manually from the Agent tab)</span></span></label>
 
-        <h3 class="sec-title">🎙️ Voice notes</h3>
-        <p class="muted">Zoop can reply with a human-sounding AI voice note instead of text — in both DMs and groups. It always voices long replies, plus a random share of shorter ones. Each voice note costs a little Gemini usage (~1–2¢) and takes a few seconds longer. ⚠️ In active groups this can add up fast and raises ban risk — keep the chance modest there.</p>
-        <label class="field chk2"><input type="checkbox" id="voiceEnabled" /> 🎤 Send voice notes</label>
-        <label class="field">🎲 Random chance for short replies
+        <h3 class="sec-title"><i data-lucide="mic"></i> Voice notes</h3>
+        <p class="muted">Zoop can reply with a human-sounding AI voice note instead of text — in both DMs and groups. It always voices long replies, plus a random share of shorter ones. Each voice note uses credits and takes a few seconds longer. In active groups this can add up fast and raises ban risk — keep the chance modest there.</p>
+        <label class="field chk2"><input type="checkbox" id="voiceEnabled" /> <span>Send voice notes</span></label>
+        <label class="field"><i data-lucide="dices"></i> Random chance for short replies
           <input id="voiceProb" type="range" min="0" max="100" step="5" style="flex:1" />
           <span id="voiceProbVal" class="muted" style="min-width:42px;text-align:right">25%</span>
         </label>
-        <label class="field">🗣️ Voice
+        <label class="field"><i data-lucide="audio-lines"></i> Voice
           <select id="voiceName">
             <option value="Puck">Puck — upbeat, young (default)</option>
             <option value="Charon">Charon — deep, calm male</option>
@@ -169,7 +195,7 @@
           <button id="saveVoice" class="ghost">Save</button>
           <span id="voiceMsg" class="ok"></span>
         </label>
-        <label class="field">Model
+        <label class="field"><i data-lucide="cpu"></i> Model
           <select id="modelInput">
             <option value="gemini-2.5-flash">gemini-2.5-flash (recommended)</option>
             <option value="gemini-2.5-flash-lite">gemini-2.5-flash-lite (fastest/cheapest)</option>
@@ -177,9 +203,9 @@
           </select>
           <button id="saveModel" class="ghost">Save</button>
         </label>
-        <label class="field">🔔 Alert number <input id="alertInput" type="text" placeholder="916377362603 (blank = your own number)" /><button id="saveAlert" class="ghost">Save</button></label>
+        <label class="field"><i data-lucide="bell"></i> Alert number <input id="alertInput" type="text" placeholder="916377362603 (blank = your own number)" /><button id="saveAlert" class="ghost">Save</button></label>
 
-        <h3 class="sec-title danger-title">⚠️ Danger zone</h3>
+        <h3 class="sec-title danger-title"><i data-lucide="triangle-alert"></i> Danger zone</h3>
         <p class="muted">Deleting your account unlinks WhatsApp and permanently wipes all your data. This cannot be undone.</p>
         <div class="row"><button id="deleteAccountBtn" class="danger-btn">Delete my account</button></div>
       </div>
@@ -197,9 +223,9 @@
         <div id="connInfo" class="muted"></div>
         <img id="qrImg" class="qr hidden" alt="QR" />
         <p class="muted">WhatsApp → Settings → Linked devices → Link a device → scan.</p>
-        <button id="reconnectBtn" class="ghost" style="margin-top:10px">🔄 Generate fresh QR</button>
-        <button id="relinkBtn" class="ghost" style="margin-top:10px">🩹 Fix dropped messages (relink)</button>
-        <p class="muted" style="margin-top:6px;font-size:12px">Use “relink” if messages show in WhatsApp but not here — it resets a corrupted session. Your chats stay; you just scan a new QR.</p>
+        <button id="reconnectBtn" class="ghost" style="margin-top:10px"><i data-lucide="refresh-cw"></i> Generate fresh QR</button>
+        <button id="relinkBtn" class="ghost" style="margin-top:10px"><i data-lucide="bandage"></i> Fix dropped messages (relink)</button>
+        <p class="muted" style="margin-top:6px;font-size:12px">Use "relink" if messages show in WhatsApp but not here — it resets a corrupted session. Your chats stay; you just scan a new QR.</p>
       </div>
     </section>
   </div>
@@ -208,7 +234,7 @@
   <div id="importModal" class="modal hidden">
     <div class="modal-backdrop" id="imBackdrop"></div>
     <div class="modal-card">
-      <div class="modal-head"><div>📥 Import contacts</div><button id="imClose" class="iconbtn">✕</button></div>
+      <div class="modal-head"><div><i data-lucide="download"></i> Import contacts</div><button id="imClose" class="iconbtn"><i data-lucide="x"></i></button></div>
       <div class="modal-body">
         <p class="muted">Export your contacts from your phone as a <b>vCard (.vcf)</b> — e.g. <b>Contacts app → Export</b>, or <b>Google Contacts → Export → vCard</b> — then upload the file or paste it below. You can also paste plain lines like <b>Aditi, +91 86196 03117</b>.</p>
         <input type="file" id="imFile" accept=".vcf,.csv,.txt,text/vcard" style="margin:10px 0; width:100%" />
@@ -222,7 +248,7 @@
   <div id="voiceModal" class="modal hidden">
     <div class="modal-backdrop" id="vmBackdrop"></div>
     <div class="modal-card">
-      <div class="modal-head"><div id="vmTitle">🎤 Voice notes for this chat</div><button id="vmClose" class="iconbtn">✕</button></div>
+      <div class="modal-head"><div id="vmTitle"><i data-lucide="mic"></i> Voice notes for this chat</div><button id="vmClose" class="iconbtn"><i data-lucide="x"></i></button></div>
       <div class="modal-body">
         <p class="muted">Choose how Zoop replies in <b>this chat</b>. Overrides your global voice setting. (Tip: if the person asks Zoop to "talk in voice/audio", it switches to voice automatically anyway.)</p>
         <div class="vm-opts">
@@ -231,7 +257,7 @@
           <label class="vm-opt"><input type="radio" name="vmode" value="voice"><div><b>Voice only</b><span>Reply with a voice note every time</span></div></label>
           <label class="vm-opt"><input type="radio" name="vmode" value="mixed"><div><b>Mixed</b><span>Some text, some voice — set the chance below</span></div></label>
         </div>
-        <div id="vmProbRow" class="field" style="margin-top:14px">🎲 Voice chance
+        <div id="vmProbRow" class="field" style="margin-top:14px"><i data-lucide="dices"></i> Voice chance
           <input id="vmProb" type="range" min="0" max="100" step="5" style="flex:1" />
           <span id="vmProbVal" class="muted" style="min-width:42px;text-align:right">25%</span>
         </div>
@@ -244,7 +270,7 @@
   <div id="tuneModal" class="modal hidden">
     <div class="modal-backdrop" id="tuneBackdrop"></div>
     <div class="modal-card">
-      <div class="modal-head"><div id="tuneTitle">🎛️ Tune this chat</div><button id="tuneClose" class="iconbtn">✕</button></div>
+      <div class="modal-head"><div id="tuneTitle"><i data-lucide="sliders-horizontal"></i> Tune this chat</div><button id="tuneClose" class="iconbtn"><i data-lucide="x"></i></button></div>
       <div class="modal-body">
         <p class="muted">Type custom instructions Zoop will follow <b>only in this chat</b> — on top of your global persona. e.g. <i>"Always reply in pure Hindi", "Be extra flirty with her", "Never discuss work here", "Call him bhai", "Keep replies one line"</i>. It's also used as context when composing messages here.</p>
         <textarea id="tuneText" class="about" spellcheck="false" placeholder="e.g. Talk to her in a sweet, caring way. Use her nickname 'Anu'. Never mention money."></textarea>
@@ -258,13 +284,14 @@
     <div class="modal-backdrop" id="smBackdrop"></div>
     <div class="modal-card">
       <div class="modal-head">
-        <div id="smTitle">🧠 What Zoop knows</div>
-        <button id="smClose" class="iconbtn">✕</button>
+        <div id="smTitle"><i data-lucide="brain"></i> What Zoop knows</div>
+        <button id="smClose" class="iconbtn"><i data-lucide="x"></i></button>
       </div>
       <div id="smBody" class="modal-body"></div>
     </div>
   </div>
 
+  <script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

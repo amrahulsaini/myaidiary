@@ -11,6 +11,7 @@ import { config } from './config.js';
 import { TenantDB } from './tenant-db.js';
 import { generateReply, summarize, understandMedia, interpretCommand, answerAboutChat, composeMessage, followUpDecision, synthesizeSpeech, ttsQuotaBlockedUntil, DEFAULT_PERSONA } from './ai.js';
 import { clog } from './logger.js';
+import * as billing from './billing.js';
 import { spawn } from 'node:child_process';
 
 const waLogger = pino({ level: 'silent' });
@@ -87,6 +88,7 @@ export class TenantSession {
   private sendTimestamps: number[] = [];
   private lastSentPerContact = new Map<string, number>();
   private lastOwnerNotify = new Map<string, number>(); // cooldown for important alerts
+  private lastOutOfCreditsNotify = 0; // cooldown for the "you're out of credits" owner alert
   private lastInbound = new Map<string, any>(); // last raw msg per chat (for quote/swipe-reply)
   private agentLog: { role: 'owner' | 'agent'; text: string }[] = []; // agent console memory
   private chain: Promise<void> = Promise.resolve();
@@ -138,7 +140,7 @@ export class TenantSession {
     if (!this.sock || this.connectionState !== 'open') return '⚠️ WhatsApp not connected.';
     const contacts = this.db.listContacts();
     const names = contacts.map((c: any) => c.name || c.jid.split('@')[0]);
-    const cmd = await interpretCommand(this.model(), text, names, history);
+    const cmd = await interpretCommand(this.model(), text, names, history, billing.charger(this.db, 'agent'));
 
     if (cmd.intent === 'send' && cmd.text) {
       const c = this.db.resolveContactByQuery(cmd.contact);
@@ -159,7 +161,7 @@ export class TenantSession {
       const brief = (tune ? `[Special instructions for this chat — follow these: ${tune}]\n` : '') + (cmd.text || text);
       const composed = await composeMessage(
         this.model(), this.getPersona(), this.db.getSetting('about_owner', ''),
-        c.name || c.jid.split('@')[0], brief, transcript, isGroup
+        c.name || c.jid.split('@')[0], brief, transcript, isGroup, billing.charger(this.db, 'agent')
       );
       if (!composed) return `❌ Couldn't compose that. Try rephrasing.`;
       await this.sendManual(c.jid, composed, false, !!cmd.voice);
@@ -170,7 +172,7 @@ export class TenantSession {
       const c = this.db.resolveContactByQuery(cmd.contact);
       if (!c) return `❌ Which contact? I couldn't match "${cmd.contact}".`;
       const hist = this.db.recentMessages(c.jid, 30).map((m: any) => ({ direction: m.direction, body: m.body }));
-      return await answerAboutChat(this.model(), text, hist, c.name || c.jid.split('@')[0]);
+      return await answerAboutChat(this.model(), text, hist, c.name || c.jid.split('@')[0], billing.charger(this.db, 'agent'));
     }
     return "I can *send* a message (e.g. \"text Aditi: running 10 min late\") or tell you *what someone said* (e.g. \"what did Harshit say today?\"). What do you need?";
   }
@@ -222,7 +224,7 @@ export class TenantSession {
         .recentMessages(c.jid, 20)
         .map((m: any) => (m.direction === 'in' ? `Them: ${m.body}` : `Me/Zoop: ${m.body}`))
         .join('\n');
-      const d = await followUpDecision(this.model(), this.getPersona(), this.db.getSetting('about_owner', ''), c.name, transcript, idleH);
+      const d = await followUpDecision(this.model(), this.getPersona(), this.db.getSetting('about_owner', ''), c.name, transcript, idleH, billing.charger(this.db, 'followup'));
       if (d.followUp && d.message) {
         await this.rateLimitGate(c.jid);
         await this.sendManual(c.jid, d.message, true);
@@ -588,7 +590,7 @@ export class TenantSession {
     }
     const caption = this.extractText(msg);
     if (understand && buf) {
-      const understood = await understandMedia(buf, info.mime, info.kind, this.model());
+      const understood = await understandMedia(buf, info.mime, info.kind, this.model(), billing.charger(this.db, 'media'));
       const label = info.kind === 'audio' ? '🎤' : info.kind === 'image' ? '📷' : '🎬';
       if (info.kind === 'audio') return { text: understood ? `${label} ${understood}` : '🎤 (voice message)', mediaId };
       const parts = [`${label} ${understood || `(${info.kind})`}`];
@@ -788,8 +790,15 @@ export class TenantSession {
     const isGroup = jid.endsWith('@g.us');
     const mode = this.db.getSetting('mode', config.reply.mode);
 
+    // Credit gate: no balance → AI is paused (users can only use the service with credits).
+    if (!billing.canSpend(this.db)) {
+      this.notifyOutOfCredits();
+      this.log('warn', 'billing', `Out of credits — skipped reply to ${name}`);
+      return;
+    }
+
     if (mode === 'approval') {
-      const r = await generateReply(this.replyCtx(jid, name, 24, isGroup));
+      const r = await generateReply(this.replyCtx(jid, name, 24, isGroup), billing.charger(this.db, 'reply'));
       if (!r.ok || !r.text) return;
       if (r.important) await this.notifyOwner(jid, name, r.reason);
       this.db.addPending(jid, r.text);
@@ -798,7 +807,7 @@ export class TenantSession {
     }
 
     await this.pace(jid);
-    const r = await generateReply(this.replyCtx(jid, name, 24, isGroup));
+    const r = await generateReply(this.replyCtx(jid, name, 24, isGroup), billing.charger(this.db, 'reply'));
     if (!r.ok || !r.text) {
       this.log('warn', 'reply', `No reply generated for ${name}`);
       return;
@@ -828,6 +837,17 @@ export class TenantSession {
     } catch (err: any) {
       this.log('warn', 'reply', 'notifyOwner failed: ' + String(err?.message || err));
     }
+  }
+
+  // Tell the owner once (max once per 6h) that their credits ran out, so they know why Zoop went quiet.
+  private notifyOutOfCredits(): void {
+    const now = Date.now();
+    if (now - this.lastOutOfCreditsNotify < 6 * 3600 * 1000) return;
+    this.lastOutOfCreditsNotify = now;
+    const target = this.ownerJid;
+    if (!this.sock || !target) return;
+    const msg = `💳 *Zoop — out of credits*\nYour balance hit ₹0, so I've paused replying. Top up your credits in the Zoop dashboard to switch me back on.`;
+    withTimeout(this.sock.sendMessage(target, { text: msg }), 20000, 'notifyOutOfCredits').catch(() => {});
   }
 
   private async pace(jid: string): Promise<void> {
@@ -885,7 +905,8 @@ export class TenantSession {
     // Bigger chunks → fewer TTS API requests (the TTS model has a strict daily request quota).
     // Only long replies split; normal-length ones stay a single request.
     const chunks = chunkForTTS(spoken, 1200);
-    const pcms = await Promise.all(chunks.map((c) => synthesizeSpeech(c, voice, '', model)));
+    const onUsage = billing.charger(this.db, 'voice');
+    const pcms = await Promise.all(chunks.map((c) => synthesizeSpeech(c, voice, '', model, onUsage)));
     const good = pcms.filter((p): p is Buffer => !!p && p.length > 0); // keep order, drop any failed chunk
     if (!good.length) return null;
     const pcm = good.length === 1 ? good[0] : Buffer.concat(good); // raw PCM concatenates cleanly (same format)
@@ -954,7 +975,7 @@ export class TenantSession {
     const c = this.db.getContact(jid);
     if (c && c.msg_count_since_summary >= config.summarizeEveryN) {
       const history = this.db.recentMessages(jid, 40).map((m: any) => ({ direction: m.direction, body: m.body }));
-      const s = await summarize({ model: this.model(), prev: this.db.getSummary(jid), history });
+      const s = await summarize({ model: this.model(), prev: this.db.getSummary(jid), history }, billing.charger(this.db, 'summary'));
       if (s) {
         this.db.setSummary(jid, s);
         this.log('info', 'summary', `Updated summary for ${c.name || jid}`);

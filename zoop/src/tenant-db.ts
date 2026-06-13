@@ -34,6 +34,13 @@ CREATE TABLE IF NOT EXISTS pending (
   status TEXT NOT NULL DEFAULT 'pending', created_at INTEGER NOT NULL
 );
 CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT NOT NULL);
+-- credit/billing ledger: one row per AI charge, grant, or recharge (amount_inr signed)
+CREATE TABLE IF NOT EXISTS ledger (
+  id INTEGER PRIMARY KEY AUTOINCREMENT, kind TEXT NOT NULL, model TEXT,
+  tokens_in INTEGER NOT NULL DEFAULT 0, tokens_out INTEGER NOT NULL DEFAULT 0,
+  amount_inr REAL NOT NULL, balance_after REAL NOT NULL, note TEXT, created_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_ledger_id ON ledger(id);
 `;
 
 // Each tenant's data lives in its own SQLite file, with sensitive fields AES-encrypted at rest.
@@ -416,6 +423,20 @@ export class TenantDB {
       r.meta = r.meta ? this.dec(r.meta) : null;
     }
     return rows;
+  }
+
+  // ---- billing ledger (credit charges / grants / recharges) ----
+  addLedger(kind: string, model: string, tokensIn: number, tokensOut: number, amountInr: number, balanceAfter: number, note = ''): void {
+    try {
+      this.db
+        .prepare('INSERT INTO ledger(kind, model, tokens_in, tokens_out, amount_inr, balance_after, note, created_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?)')
+        .run(kind, model || null, Math.round(tokensIn) || 0, Math.round(tokensOut) || 0, amountInr, balanceAfter, note || null, Date.now());
+    } catch {
+      /* never let billing crash the engine */
+    }
+  }
+  recentLedger(limit = 50): any[] {
+    return this.db.prepare('SELECT * FROM ledger ORDER BY id DESC LIMIT ?').all(limit) as any[];
   }
 
   initSettings(defaults: Record<string, string>): void {

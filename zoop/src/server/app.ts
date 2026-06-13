@@ -13,6 +13,7 @@ import {
 import { manager } from '../manager.js';
 import { DEFAULT_PERSONA } from '../ai.js';
 import type { TenantDB } from '../tenant-db.js';
+import * as billing from '../billing.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -57,6 +58,12 @@ export function buildServer() {
     if (getTenantByEmail(email)) return res.status(409).json({ error: 'email already registered' });
     const t = createTenant(email, password);
     await manager.startTenant(t.id);
+    // Free trial credits so the new account can actually use Zoop (payment gateway is disabled).
+    try {
+      billing.grant(manager.getDb(t.id), billing.SIGNUP_GRANT_INR, 'signup bonus');
+    } catch {
+      /* ignore — wallet still defaults to 0 */
+    }
     req.session.tenantId = t.id;
     req.session.email = t.email;
     res.json({ ok: true });
@@ -91,6 +98,44 @@ export function buildServer() {
   app.get('/api/me', (req, res) =>
     res.json({ authed: !!req.session.tenantId, email: req.session.email || '' })
   );
+
+  // ---------- credits / wallet ----------
+  // Current balance (₹) + recent ledger. The UI shows this and gates actions on it.
+  app.get('/api/wallet', (req, res) => {
+    const db = tenantDb(req, res);
+    if (!db) return;
+    res.json({
+      balanceInr: billing.getBalance(db),
+      canSpend: billing.canSpend(db),
+      ledger: db.recentLedger(50).map((r: any) => ({
+        kind: r.kind, model: r.model, tokensIn: r.tokens_in, tokensOut: r.tokens_out,
+        amountInr: r.amount_inr, balanceAfter: r.balance_after, note: r.note, at: r.created_at,
+      })),
+      // payment gateway is intentionally disabled for now
+      rechargeEnabled: false,
+    });
+  });
+
+  // Recharge endpoint — payment gateway disabled, so this always reports "coming soon".
+  app.post('/api/recharge', (req, res) => {
+    if (!tenantDb(req, res)) return;
+    res.status(503).json({ error: 'Recharge is coming soon — the payment gateway is not enabled yet.' });
+  });
+
+  // Admin top-up (no PG yet): grant credits to any account by email. Guarded by ZOOP_ADMIN_TOKEN.
+  app.post('/api/admin/grant', (req, res) => {
+    const adminToken = process.env.ZOOP_ADMIN_TOKEN || '';
+    if (!adminToken || req.headers['x-admin-token'] !== adminToken) {
+      return res.status(403).json({ error: 'forbidden' });
+    }
+    const email = String(req.body?.email || '').trim().toLowerCase();
+    const inr = Number(req.body?.credits ?? req.body?.inr);
+    if (!email || !Number.isFinite(inr) || inr <= 0) return res.status(400).json({ error: 'email and positive credits required' });
+    const t = getTenantByEmail(email);
+    if (!t) return res.status(404).json({ error: 'no account with that email' });
+    const balance = billing.grant(manager.getDb(t.id), inr, 'admin top-up');
+    res.json({ ok: true, email, granted: inr, balanceInr: balance });
+  });
 
   // ---------- status / settings ----------
   app.get('/api/status', (req, res) => {

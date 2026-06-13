@@ -1,5 +1,10 @@
 const $ = (s) => document.querySelector(s);
 const enc = encodeURIComponent;
+// (re)render lucide <i data-lucide> placeholders into SVGs — call after any dynamic DOM insert
+function icons() { try { window.lucide && window.lucide.createIcons(); } catch {} }
+// ₹ formatting: 2 decimals for balances; tiny per-call amounts get more precision
+function inr2(n) { return '₹' + (Number(n) || 0).toFixed(2); }
+function inrPrecise(n) { const a = Math.abs(Number(n) || 0); return a < 1 ? a.toFixed(4).replace(/0+$/, '').replace(/\.$/, '') : a.toFixed(2); }
 const api = async (path, opts = {}) => {
   const res = await fetch('api' + path, {
     headers: { 'Content-Type': 'application/json' }, ...opts,
@@ -44,28 +49,28 @@ $('#logoutBtn').onclick = async () => { await fetch('api/logout', { method: 'POS
 const OB_STEPS = [
   { key: 'name', type: 'text', q: "What's your name?", hint: 'Zoop will introduce itself as your assistant.', placeholder: 'e.g. Rahul' },
   { key: 'tone', type: 'cards', q: 'Pick a tone', hint: 'How should the replies feel?', options: [
-    { v: 'friendly', ico: '😊', t: 'Friendly', d: 'Warm & casual, like a close friend' },
-    { v: 'professional', ico: '💼', t: 'Professional', d: 'Polite, clear, still warm' },
-    { v: 'flirty', ico: '😎', t: 'Playful', d: 'Witty, fun, a little flirty' },
-    { v: 'minimal', ico: '🧊', t: 'Chill', d: 'Short, relaxed, low-key' },
-    { v: 'caring', ico: '🤗', t: 'Caring', d: 'Warm & empathetic' },
-    { v: 'genz', ico: '🔥', t: 'Gen-Z', d: 'Slang, lowercase, vibey' },
+    { v: 'friendly', ico: 'smile', t: 'Friendly', d: 'Warm & casual, like a close friend' },
+    { v: 'professional', ico: 'briefcase', t: 'Professional', d: 'Polite, clear, still warm' },
+    { v: 'flirty', ico: 'glasses', t: 'Playful', d: 'Witty, fun, a little flirty' },
+    { v: 'minimal', ico: 'snowflake', t: 'Chill', d: 'Short, relaxed, low-key' },
+    { v: 'caring', ico: 'heart-handshake', t: 'Caring', d: 'Warm & empathetic' },
+    { v: 'genz', ico: 'flame', t: 'Gen-Z', d: 'Slang, lowercase, vibey' },
   ] },
   { key: 'emoji', type: 'cards', q: 'Emoji usage?', options: [
-    { v: 'lots', ico: '😄', t: 'Lots', d: 'Emoji-rich replies' },
-    { v: 'few', ico: '🙂', t: 'A few', d: 'Natural, occasional' },
-    { v: 'none', ico: '🚫', t: 'None', d: 'No emojis at all' },
+    { v: 'lots', ico: 'laugh', t: 'Lots', d: 'Emoji-rich replies' },
+    { v: 'few', ico: 'smile', t: 'A few', d: 'Natural, occasional' },
+    { v: 'none', ico: 'ban', t: 'None', d: 'No emojis at all' },
   ] },
   { key: 'lang', type: 'cards', q: 'Which language?', options: [
-    { v: 'match', ico: '🌐', t: 'Match them', d: 'Reply in whatever they use' },
-    { v: 'hinglish', ico: '🇮🇳', t: 'Hinglish', d: 'Hindi + English mix' },
-    { v: 'english', ico: '🔤', t: 'English', d: 'Always English' },
-    { v: 'hindi', ico: '🪔', t: 'Hindi', d: 'Always Hindi' },
+    { v: 'match', ico: 'globe', t: 'Match them', d: 'Reply in whatever they use' },
+    { v: 'hinglish', ico: 'languages', t: 'Hinglish', d: 'Hindi + English mix' },
+    { v: 'english', ico: 'type', t: 'English', d: 'Always English' },
+    { v: 'hindi', ico: 'speech', t: 'Hindi', d: 'Always Hindi' },
   ] },
   { key: 'length', type: 'cards', q: 'Reply length?', options: [
-    { v: 'one', ico: '⚡', t: 'One-liners', d: 'Super short' },
-    { v: 'short', ico: '💬', t: 'Short', d: '1–2 sentences' },
-    { v: 'detailed', ico: '📝', t: 'Detailed', d: 'More context when useful' },
+    { v: 'one', ico: 'zap', t: 'One-liners', d: 'Super short' },
+    { v: 'short', ico: 'message-square', t: 'Short', d: '1–2 sentences' },
+    { v: 'detailed', ico: 'align-left', t: 'Detailed', d: 'More context when useful' },
   ] },
   { key: 'about', type: 'textarea', q: 'Anything Zoop should know about you?', hint: 'Optional — work, schedule, common answers. Editable later.', placeholder: "e.g. I'm a founder. Free after 7pm. Don't commit to meetings without asking me." },
 ];
@@ -84,15 +89,17 @@ function renderOb() {
   let html = `<div class="ob-q">${esc(step.q)}</div>` + (step.hint ? `<div class="ob-hint">${esc(step.hint)}</div>` : '');
   if (step.type === 'text') html += `<input class="ob-input" id="obField" placeholder="${esc(step.placeholder || '')}" value="${esc(obAnswers[step.key] || '')}" />`;
   else if (step.type === 'textarea') html += `<textarea class="ob-input about" id="obField" placeholder="${esc(step.placeholder || '')}">${esc(obAnswers[step.key] || '')}</textarea>`;
-  else html += `<div class="ob-cards">${step.options.map((o) => `<div class="ob-card ${obAnswers[step.key] === o.v ? 'sel' : ''}" data-v="${o.v}"><div class="ico">${o.ico}</div><div class="t">${esc(o.t)}</div><div class="d">${esc(o.d)}</div></div>`).join('')}</div>`;
+  else html += `<div class="ob-cards">${step.options.map((o) => `<div class="ob-card ${obAnswers[step.key] === o.v ? 'sel' : ''}" data-v="${o.v}"><div class="ico"><i data-lucide="${o.ico}"></i></div><div class="t">${esc(o.t)}</div><div class="d">${esc(o.d)}</div></div>`).join('')}</div>`;
   body.innerHTML = html;
+  icons();
   if (step.type === 'cards') body.querySelectorAll('.ob-card').forEach((c) => (c.onclick = () => {
     obAnswers[step.key] = c.dataset.v;
     body.querySelectorAll('.ob-card').forEach((x) => x.classList.remove('sel'));
     c.classList.add('sel');
   }));
   $('#obBack').style.visibility = obIndex === 0 ? 'hidden' : 'visible';
-  $('#obNext').textContent = obIndex === OB_STEPS.length - 1 ? 'Finish ✓' : 'Next ›';
+  $('#obNext').innerHTML = obIndex === OB_STEPS.length - 1 ? 'Finish <i data-lucide="check"></i>' : 'Next <i data-lucide="chevron-right"></i>';
+  icons();
 }
 $('#obNext').onclick = async () => {
   const step = OB_STEPS[obIndex];
@@ -136,7 +143,7 @@ document.querySelectorAll('.tab').forEach((t) => {
     t.classList.add('active');
     if (tab === 'chats' || tab === 'groups') {
       listFilter = tab === 'groups' ? 'group' : 'dm';
-      $('#search').placeholder = tab === 'groups' ? '🔍 Search groups…' : '🔍 Search contacts…';
+      $('#search').placeholder = tab === 'groups' ? 'Search groups…' : 'Search contacts…';
       $('#tab-chats').classList.remove('hidden');
       renderContacts();
     } else {
@@ -144,6 +151,7 @@ document.querySelectorAll('.tab').forEach((t) => {
       if (tab === 'persona') loadPersona();
       if (tab === 'connect') loadStatus();
       if (tab === 'approvals') loadPending();
+      if (tab === 'wallet') loadWallet();
     }
   };
 });
@@ -165,16 +173,16 @@ async function loadStatus() {
 
 $('#reconnectBtn').onclick = async () => {
   const btn = $('#reconnectBtn');
-  btn.disabled = true; btn.textContent = '🔄 Generating…';
+  btn.disabled = true; btn.textContent = 'Generating…';
   await api('/reconnect', { method: 'POST' });
-  setTimeout(() => { loadStatus(); btn.disabled = false; btn.textContent = '🔄 Generate fresh QR'; }, 4000);
+  setTimeout(() => { loadStatus(); btn.disabled = false; btn.innerHTML = '<i data-lucide="refresh-cw"></i> Generate fresh QR'; icons(); }, 4000);
 };
 $('#relinkBtn').onclick = async () => {
   if (!confirm('Reset your WhatsApp session and scan a fresh QR?\n\nThis fixes messages that arrive in WhatsApp but go missing here. Your chats and contacts are kept.')) return;
   const btn = $('#relinkBtn');
-  btn.disabled = true; btn.textContent = '🩹 Resetting…';
+  btn.disabled = true; btn.textContent = 'Resetting…';
   await api('/relink', { method: 'POST' });
-  setTimeout(() => { loadStatus(); btn.disabled = false; btn.textContent = '🩹 Fix dropped messages (relink)'; }, 5000);
+  setTimeout(() => { loadStatus(); btn.disabled = false; btn.innerHTML = '<i data-lucide="bandage"></i> Fix dropped messages (relink)'; icons(); }, 5000);
 };
 
 // ---------- contacts ----------
@@ -201,22 +209,22 @@ $('#imImport').onclick = async () => {
   if (!data) { $('#imMsg').textContent = 'Paste or upload contacts first.'; return; }
   $('#imImport').disabled = true; $('#imMsg').textContent = 'Importing…';
   const r = await api('/import-contacts', { method: 'POST', body: { data } });
-  $('#imMsg').textContent = `✓ Imported ${r.imported ?? 0} of ${r.found ?? 0} found`;
+  $('#imMsg').textContent = `Imported ${r.imported ?? 0} of ${r.found ?? 0} found ✓`;
   $('#imImport').disabled = false;
   contactsSig = ''; loadContacts();
   setTimeout(() => $('#importModal').classList.add('hidden'), 1500);
 };
 $('#syncBtn').onclick = async () => {
   const btn = $('#syncBtn');
-  btn.disabled = true; btn.textContent = '⏳ Syncing…';
+  btn.disabled = true; btn.textContent = 'Syncing…';
   const r = await api('/sync', { method: 'POST' });
-  if (!r.ok) { btn.textContent = '⚠️ Connect first'; }
+  if (!r.ok) { btn.textContent = 'Connect first'; }
   else {
     // names trickle in over a few seconds — refresh the list shortly after
     setTimeout(() => { contactsSig = ''; loadContacts(); }, 4000);
-    btn.textContent = '✓ Synced';
+    btn.textContent = 'Synced ✓';
   }
-  setTimeout(() => { btn.textContent = '🔄 Sync'; btn.disabled = false; }, 4500);
+  setTimeout(() => { btn.innerHTML = '<i data-lucide="refresh-cw"></i> Sync'; btn.disabled = false; icons(); }, 4500);
 };
 
 async function loadContacts() {
@@ -273,7 +281,7 @@ function bubbleHTML(m) {
   const media = mediaHTML(m);
   // for media, the body is the AI's understanding/caption — show it as a small caption under the media
   const caption = media && m.body ? `<div class="media-cap">${esc(m.body)}</div>` : (media ? '' : esc(m.body));
-  return `<div class="bubble ${m.direction === 'in' ? 'in' : 'out'}${media ? ' has-media' : ''}">${media}${caption}<div class="meta">${new Date(m.created_at).toLocaleString()}${m.ai_generated ? ' · 🤖' : ''}</div></div>`;
+  return `<div class="bubble ${m.direction === 'in' ? 'in' : 'out'}${media ? ' has-media' : ''}">${media}${caption}<div class="meta">${new Date(m.created_at).toLocaleString()}${m.ai_generated ? ' · <i data-lucide="bot"></i>' : ''}</div></div>`;
 }
 async function openConvo(jid, name) {
   activeJid = jid; activeName = name; lastMsgTime = 0;
@@ -289,6 +297,7 @@ async function openConvo(jid, name) {
   activeSummary = data.summary || '';
   box.innerHTML = data.messages.length ? data.messages.map(bubbleHTML).join('') : '<div class="empty">No messages yet</div>';
   data.messages.forEach((m) => { if (m.created_at > lastMsgTime) lastMsgTime = m.created_at; });
+  icons();
   box.scrollTop = box.scrollHeight;
 }
 async function pollConvo() {
@@ -298,6 +307,7 @@ async function pollConvo() {
   const box = $('#messages'); const near = box.scrollHeight - box.scrollTop - box.clientHeight < 100;
   box.insertAdjacentHTML('beforeend', data.messages.map(bubbleHTML).join(''));
   data.messages.forEach((m) => { if (m.created_at > lastMsgTime) lastMsgTime = m.created_at; });
+  icons();
   if (near) box.scrollTop = box.scrollHeight;
 }
 $('#backBtn').onclick = () => { document.body.classList.remove('viewing'); activeJid = null; };
@@ -320,7 +330,7 @@ async function sendCommand() {
     const r = await api('/command', { method: 'POST', body: { text: t } });
     pending.remove();
     appendAgent('zoop', r.reply || '(no response)');
-  } catch { pending.remove(); appendAgent('zoop', '⚠️ Failed.'); }
+  } catch { pending.remove(); appendAgent('zoop', 'Failed to reach Zoop. Try again.'); }
 }
 $('#agentSend').onclick = sendCommand;
 $('#agentInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') sendCommand(); });
@@ -328,14 +338,14 @@ $('#followupBtn').onclick = async () => {
   const pw = prompt('⚠️ Danger zone\n\nThis sends real follow-up messages to multiple quiet chats at once.\nEnter your account password to confirm:');
   if (!pw) return;
   const btn = $('#followupBtn');
-  btn.disabled = true; btn.textContent = '📨 Scanning…';
+  btn.disabled = true; btn.textContent = 'Scanning…';
   appendAgent('you', 'Follow up on incomplete chats');
   const pending = appendAgent('zoop', '…', 'pending');
   const r = await api('/followup', { method: 'POST', body: { password: pw } });
   pending.remove();
-  if (r.error) appendAgent('zoop', '❌ ' + (r.error === 'wrong password' ? 'Wrong password — follow-up cancelled.' : r.error));
+  if (r.error) appendAgent('zoop', (r.error === 'wrong password' ? 'Wrong password — follow-up cancelled.' : r.error));
   else appendAgent('zoop', `Checked ${r.checked ?? 0} quiet chat(s) and sent ${r.sent ?? 0} follow-up${r.sent === 1 ? '' : 's'}.`);
-  btn.disabled = false; btn.textContent = '📨 Follow up on incomplete chats';
+  btn.disabled = false; btn.innerHTML = '<i data-lucide="send"></i> Follow up on incomplete chats'; icons();
 };
 
 $('#renameBtn').onclick = async () => {
@@ -353,7 +363,7 @@ $('#renameBtn').onclick = async () => {
 // ---------- summary modal ----------
 function openSummary() {
   const body = $('#smBody');
-  $('#smTitle').textContent = '🧠 What Zoop knows about ' + (activeName || 'this chat');
+  $('#smTitle').innerHTML = '<i data-lucide="brain"></i> What Zoop knows about ' + esc(activeName || 'this chat'); icons();
   if (activeSummary) body.innerHTML = `<div class="sm-meta">Built from your full chat history. Zoop uses this as context for every reply.</div>${esc(activeSummary)}`;
   else body.innerHTML = `<div class="sm-meta">Still learning…</div>Zoop builds a running summary after a few messages in a chat. Keep chatting and it'll appear here.`;
   $('#summaryModal').classList.remove('hidden');
@@ -366,7 +376,7 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { $('#summ
 // ---------- tune modal (per-chat custom instructions) ----------
 async function openTune() {
   if (!activeJid) return;
-  $('#tuneTitle').textContent = '🎛️ Tune chat with ' + (activeName || 'this chat');
+  $('#tuneTitle').innerHTML = '<i data-lucide="sliders-horizontal"></i> Tune chat with ' + esc(activeName || 'this chat'); icons();
   $('#tuneMsg').textContent = '';
   $('#tuneText').value = '…';
   $('#tuneModal').classList.remove('hidden');
@@ -390,7 +400,7 @@ function vmSyncProbRow() {
 }
 async function openVoiceMode() {
   if (!activeJid) return;
-  $('#vmTitle').textContent = '🎤 Voice notes — ' + (activeName || 'this chat');
+  $('#vmTitle').innerHTML = '<i data-lucide="mic"></i> Voice notes — ' + esc(activeName || 'this chat'); icons();
   $('#vmMsg').textContent = '';
   let v = { mode: 'default', prob: null };
   try { v = await api(`/contacts/${enc(activeJid)}/voice`); } catch {}
@@ -430,7 +440,7 @@ async function loadPersona() {
 }
 $('#voiceEnabled').onchange = async () => {
   await api('/settings', { method: 'POST', body: { voiceEnabled: $('#voiceEnabled').checked } });
-  flash('#personaMsg', $('#voiceEnabled').checked ? 'Voice notes ON 🎤' : 'Voice notes off');
+  flash('#personaMsg', $('#voiceEnabled').checked ? 'Voice notes on ✓' : 'Voice notes off');
 };
 $('#voiceProb').oninput = () => { $('#voiceProbVal').textContent = $('#voiceProb').value + '%'; };
 $('#voiceProb').onchange = async () => {
@@ -494,6 +504,45 @@ async function loadPending() {
   });
 }
 
+// ---------- credits / wallet ----------
+const LEDGER_ICON = { reply: 'message-square', voice: 'mic', media: 'image', summary: 'brain', agent: 'bot', followup: 'send', grant: 'gift', recharge: 'credit-card' };
+const LEDGER_LABEL = { reply: 'AI reply', voice: 'Voice note', media: 'Photo/voice read', summary: 'Chat summary', agent: 'Agent command', followup: 'Follow-up', grant: 'Credit added', recharge: 'Recharge' };
+
+function updateBalanceUI(bal, canSpend) {
+  const t = $('#balanceText'); if (t) t.textContent = inr2(bal);
+  const pill = $('#balancePill'); if (pill) pill.classList.toggle('low', !canSpend);
+}
+function ledgerRowHTML(r) {
+  const credit = r.amountInr > 0;
+  const ico = credit ? 'plus' : (LEDGER_ICON[r.kind] || 'sparkles');
+  const label = credit ? (r.note || LEDGER_LABEL[r.kind] || 'Credit added') : (LEDGER_LABEL[r.kind] || r.kind);
+  const sub = [credit ? '' : (r.model || ''), new Date(r.at).toLocaleString()].filter(Boolean).join(' · ');
+  const amt = (credit ? '+₹' : '−₹') + inrPrecise(r.amountInr);
+  return `<div class="ledger-row">
+    <div class="ledger-ico ${credit ? 'credit' : ''}"><i data-lucide="${ico}"></i></div>
+    <div class="ledger-main"><div class="ledger-kind">${esc(label)}</div><div class="ledger-sub">${esc(sub)}</div></div>
+    <div class="ledger-amt ${credit ? 'credit' : 'debit'}">${amt}</div>
+  </div>`;
+}
+async function loadWallet() {
+  let w;
+  try { w = await api('/wallet'); } catch { return; }
+  updateBalanceUI(w.balanceInr, w.canSpend);
+  $('#walletBalance').textContent = inr2(w.balanceInr);
+  $('#walletBalance').classList.toggle('low', !w.canSpend);
+  $('#walletSub').textContent = w.canSpend
+    ? 'Every AI reply, voice note and photo read uses credits.'
+    : "You're out of credits — Zoop has paused replying. Top up to resume.";
+  const box = $('#ledger');
+  box.innerHTML = (w.ledger && w.ledger.length) ? w.ledger.map(ledgerRowHTML).join('') : '<div class="empty" style="padding:24px">No usage yet.</div>';
+  icons();
+}
+// lightweight pill refresh (no ledger re-render) for the polling loop
+async function refreshBalance() {
+  try { const w = await api('/wallet'); updateBalanceUI(w.balanceInr, w.canSpend); } catch {}
+}
+$('#balancePill').onclick = () => { const t = document.querySelector('.tab[data-tab="wallet"]'); if (t) t.click(); };
+
 // ---------- helpers ----------
 function esc(s) { return String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
 function flash(sel, msg) { const e = $(sel); e.textContent = msg; setTimeout(() => (e.textContent = ''), 2200); }
@@ -501,15 +550,21 @@ function flash(sel, msg) { const e = $(sel); e.textContent = msg; setTimeout(() 
 // ---------- boot ----------
 function boot() {
   clearTimers();
-  loadStatus(); loadContacts(); loadLogs(true); loadPending();
+  icons();
+  loadStatus(); loadContacts(); loadLogs(true); loadPending(); refreshBalance();
   timers.push(setInterval(loadStatus, 4000));
   timers.push(setInterval(loadContacts, 4000));
   timers.push(setInterval(() => { if (!$('#tab-logs').classList.contains('hidden')) loadLogs(false); }, 3000));
   timers.push(setInterval(loadPending, 6000));
   timers.push(setInterval(pollConvo, 2000));
+  timers.push(setInterval(refreshBalance, 8000));
+  timers.push(setInterval(() => { if (!$('#tab-wallet').classList.contains('hidden')) loadWallet(); }, 6000));
 }
 
 (async () => {
-  const me = await api('/me');
+  icons(); // render all static <i data-lucide> placeholders (login/header/nav/modals)
+  let me;
+  try { me = await api('/me'); } catch { me = { authed: false }; }
   if (me.authed) showApp(); else showLogin();
+  icons();
 })();
