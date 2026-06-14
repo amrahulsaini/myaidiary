@@ -590,3 +590,39 @@ function boot() {
   if (me.authed) showApp(); else showLogin();
   icons();
 })();
+
+// ---------- TEMP DIAGNOSTIC: identify the mystery white box (top-left) ----------
+// Probes the region where the box appears and prints what element is actually there.
+function describeEl(el) {
+  if (!el) return 'null';
+  return el.tagName.toLowerCase()
+    + (el.id ? '#' + el.id : '')
+    + (typeof el.className === 'string' && el.className.trim() ? '.' + el.className.trim().split(/\s+/).join('.') : '');
+}
+setTimeout(() => {
+  const W = window.innerWidth;
+  // probe points across the top-left region (scaled a bit to viewport)
+  const pts = [[150, 120], [230, 150], [300, 180], [200, 210], [130, 90], [350, 130]];
+  const lines = [];
+  const seen = new Set();
+  for (const [x, y] of pts) {
+    const el = document.elementFromPoint(x, y);
+    if (!el) { continue; }
+    const chain = [];
+    let e = el;
+    for (let i = 0; i < 4 && e && e !== document.body; i++) { chain.push(describeEl(e)); e = e.parentElement; }
+    const r = el.getBoundingClientRect();
+    const cs = getComputedStyle(el);
+    const key = describeEl(el);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    lines.push(`(${x},${y}) ${chain.join(' < ')}  box=${Math.round(r.width)}x${Math.round(r.height)}@${Math.round(r.left)},${Math.round(r.top)} bg=${cs.backgroundColor} z=${cs.zIndex} pos=${cs.position}`);
+  }
+  const banner = document.createElement('div');
+  banner.id = 'zoopDiag';
+  banner.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:2147483647;background:#0b0b0b;color:#3fb950;font:11px/1.5 ui-monospace,monospace;padding:10px;white-space:pre-wrap;max-height:45vh;overflow:auto;border-top:2px solid #3fb950';
+  banner.textContent = 'ZOOP DIAG — what is at the top-left box (screenshot this whole bar):\n' + (lines.join('\n') || 'nothing found at probe points') +
+    '\n\nviewport=' + W + 'x' + window.innerHeight + '  — tap to dismiss';
+  banner.onclick = () => banner.remove();
+  document.body.appendChild(banner);
+}, 1800);
