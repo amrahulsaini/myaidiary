@@ -18,7 +18,7 @@ Auto-replies to your chats in *your* voice, understands photos & voice notes, se
 - 🎙️ **AI voice notes** — replies with natural, emotional voice notes via a **Gemini TTS → ffmpeg → Opus** pipeline (with laughs and emotion), not robotic text-to-speech.
 - 👁️ **Media understanding** — "sees" incoming photos and "hears" voice notes (Gemini multimodal) and replies in context.
 - 🧠 **Per-chat memory & tuning** — builds a running summary of every conversation, and lets you set custom instructions per contact ("be flirty here", "only Hindi", "roast him").
-- 💬 **Agent command channel** — talk to your assistant in natural language: *"send Rishi a voice note saying I'm running late"*, *"what did Rajat say today?"*
+- 💬 **Agent command channel** — talk to your assistant in natural language: *"send Alex a voice note saying I'm running late"*, *"what did Sam say today?"*
 - 👥 **Group handling** — configurable group replies (off / only-when-mentioned / active) with witty clap-back defense.
 - 🔔 **Important-message alerts** — flags urgent messages (money, emergencies) to your own number.
 - 📊 **Dashboard** — WhatsApp-style chat UI, approvals queue, live logs, persona editor, contact import.

@@ -174,7 +174,7 @@ export class TenantSession {
       const hist = this.db.recentMessages(c.jid, 30).map((m: any) => ({ direction: m.direction, body: m.body }));
       return await answerAboutChat(this.model(), text, hist, c.name || c.jid.split('@')[0], billing.charger(this.db, 'agent'));
     }
-    return "I can *send* a message (e.g. \"text Aditi: running 10 min late\") or tell you *what someone said* (e.g. \"what did Harshit say today?\"). What do you need?";
+    return "I can *send* a message (e.g. \"text Alex: running 10 min late\") or tell you *what someone said* (e.g. \"what did Sam say today?\"). What do you need?";
   }
 
   private resolveContact(contacts: any[], name: string): any {

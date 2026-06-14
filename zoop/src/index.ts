@@ -18,7 +18,7 @@ function migrateLegacy(): void {
   const hasDb = fs.existsSync(legacyDb);
   if (!hasAuth && !hasDb) return;
 
-  const email = (process.env.LEGACY_EMAIL || 'rahul@loopwar.dev').toLowerCase();
+  const email = (process.env.LEGACY_EMAIL || 'owner@example.com').toLowerCase();
   const password = process.env.LEGACY_PASSWORD || 'zoop-admin';
   const t = createTenant(email, password);
   clog('info', 'migrate', `Migrating legacy install → tenant ${t.id} (${email})`);
@@ -51,7 +51,7 @@ function migrateLegacy(): void {
   }
   // owner name for the migrated tenant
   const db = new TenantDB(t.id);
-  if (!db.getSetting('owner_name')) db.setSetting('owner_name', 'Rahul');
+  if (!db.getSetting('owner_name')) db.setSetting('owner_name', 'the owner');
   clog('info', 'migrate', `Legacy migration complete. Login: ${email} / password: ${password}`);
 }
 

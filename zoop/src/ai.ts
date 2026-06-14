@@ -311,18 +311,18 @@ export interface Command {
   voice?: boolean; // owner wants this sent as a voice note
 }
 export async function interpretCommand(model: string, command: string, contactNames: string[], history: { role: 'owner' | 'agent'; text: string }[] = [], onUsage?: OnUsage): Promise<Command> {
-  const sys = `You parse instructions Rahul (the owner) gives to his WhatsApp assistant via a chat console.
-Use the prior conversation to resolve references like "it", "same group", "make it rhyming", "harsher", "send it again". Carry over the contact/group from the previous turn if Rahul doesn't repeat it.
+  const sys = `You parse instructions the owner gives to their WhatsApp assistant via a chat console.
+Use the prior conversation to resolve references like "it", "same group", "make it rhyming", "harsher", "send it again". Carry over the contact/group from the previous turn if the owner doesn't repeat it.
 Decide intent:
-- "send": Rahul gave the EXACT, ready-to-send words and NOTHING else — no instruction about style, scenario, or elaboration. Put them verbatim in "text".
-- "compose": Rahul wants YOU to write/generate/elaborate/MODIFY a message, OR to turn a rough idea / seed words / SCENARIO into a proper message (e.g. "roast Khetan", "make it rhyming", "reply politely", "talk to Rishi", "message Rajat and ask how he is", "make a scenario of this: …", "in romantic style say …", "elaborate this", "isko aise bol …", "scene banake bhej", "as if X is saying …"). Put a CLEAR brief in "text" describing WHAT to write AND the scenario/style AND any seed words Rahul gave — phrased as an instruction to a writer, e.g. "Write a heartfelt voice-note as if Anushka is speaking to Nakul, confessing love; base it on these words: '…'". If NO content is given (e.g. "talk to Rishi"), use "start a friendly, casual conversation — say hi and check in".
-- "ask": Rahul is asking what someone said / about a chat. Leave "text" empty.
+- "send": the owner gave the EXACT, ready-to-send words and NOTHING else — no instruction about style, scenario, or elaboration. Put them verbatim in "text".
+- "compose": the owner wants YOU to write/generate/elaborate/MODIFY a message, OR to turn a rough idea / seed words / SCENARIO into a proper message (e.g. "roast Sam", "make it rhyming", "reply politely", "talk to Riya", "message Aman and ask how he is", "make a scenario of this: …", "in romantic style say …", "elaborate this", "isko aise bol …", "scene banake bhej", "as if X is saying …"). Put a CLEAR brief in "text" describing WHAT to write AND the scenario/style AND any seed words the owner gave — phrased as an instruction to a writer, e.g. "Write a heartfelt voice-note as if Riya is speaking to Sam, confessing love; base it on these words: '…'". If NO content is given (e.g. "talk to Riya"), use "start a friendly, casual conversation — say hi and check in".
+- "ask": the owner is asking what someone said / about a chat. Leave "text" empty.
 
-CRITICAL — instruction vs content: Rahul's words about HOW to write/send (e.g. "make a scenario of this", "as i said", "means …", "and send it", "voice note bhej", "elaborate", "in X style") are META-INSTRUCTIONS, NEVER the message itself. If he gives seed words PLUS any such instruction, the intent is "compose" (NOT "send"), and you must fold BOTH the seed words and the instruction into the "text" brief — never copy the instruction words into a verbatim send.
-Example — input: "send nakul a voice note as 'yaar nakul sun na m anushka bol rahee ho or m tumse bahut pyaar krtee ho' means make a scenario of this as i said and send" → intent "compose", contact "nakul", voice true, text "Write a warm, heartfelt voice-note as if Anushka is speaking to Nakul, telling him she loves him. Base it on Rahul's seed words: 'yaar nakul sun na, main Anushka bol rahi hoon, main tumse bahut pyaar karti hoon'. Natural Hinglish, a little emotional."
+CRITICAL — instruction vs content: the owner's words about HOW to write/send (e.g. "make a scenario of this", "as i said", "means …", "and send it", "voice note bhej", "elaborate", "in X style") are META-INSTRUCTIONS, NEVER the message itself. If they give seed words PLUS any such instruction, the intent is "compose" (NOT "send"), and you must fold BOTH the seed words and the instruction into the "text" brief — never copy the instruction words into a verbatim send.
+Example — input: "send sam a voice note as 'yaar sam sun na m riya bol rahee ho or m tumse bahut pyaar krtee ho' means make a scenario of this as i said and send" → intent "compose", contact "sam", voice true, text "Write a warm, heartfelt voice-note as if Riya is speaking to Sam, telling him she loves him. Base it on the owner's seed words: 'yaar sam sun na, main Riya bol rahi hoon, main tumse bahut pyaar karti hoon'. Natural Hinglish, a little emotional."
 - "none": only greetings/meta with no actionable request.
-Set "voice" to true if Rahul wants it sent as a VOICE NOTE / voice message / audio (e.g. "send a voice note", "voice message Rishi", "reply with audio", "bolke bhej", "voice me bhej"). The phrase "voice note" is an INSTRUCTION about HOW to send — it is NEVER the message content. Default false.
-For send/compose/ask, put the target's name in "contact" EXACTLY as Rahul referred to them (e.g. "Rishi") — even if it's not in the known list below.
+Set "voice" to true if the owner wants it sent as a VOICE NOTE / voice message / audio (e.g. "send a voice note", "voice message Riya", "reply with audio", "bolke bhej", "voice me bhej"). The phrase "voice note" is an INSTRUCTION about HOW to send — it is NEVER the message content. Default false.
+For send/compose/ask, put the target's name in "contact" EXACTLY as the owner referred to them (e.g. "Riya") — even if it's not in the known list below.
 Known contacts & groups (for reference): ${contactNames.slice(0, 250).join(', ')}.`;
   // build multi-turn contents (must start with a 'user' turn)
   const contents: any[] = [
@@ -354,19 +354,19 @@ Known contacts & groups (for reference): ${contactNames.slice(0, 250).join(', ')
 // first try for spicy/roast requests in heavily-abusive chats.
 export async function composeMessage(model: string, persona: string, about: string, contactName: string, brief: string, transcript: string, group: boolean, onUsage?: OnUsage): Promise<string> {
   const where = group ? `the group "${contactName}"` : `the chat with "${contactName}"`;
-  const tail = `\nOutput ONLY the final message itself — the exact words to send or speak — in the right language (Hinglish if appropriate). No quotes, no preamble, no explanation, no stage directions. NEVER include Rahul's instruction words (like "make a scenario", "as i said", "send", "voice note", "elaborate") in the output. If roasting/clapping back, be witty but no slurs, threats or explicit words.`;
+  const tail = `\nOutput ONLY the final message itself — the exact words to send or speak — in the right language (Hinglish if appropriate). No quotes, no preamble, no explanation, no stage directions. NEVER include the owner's instruction words (like "make a scenario", "as i said", "send", "voice note", "elaborate") in the output. If roasting/clapping back, be witty but no slurs, threats or explicit words.`;
   const sysVariants = [
     // faithful writer FIRST — turns a brief / seed words / role-play scenario into the actual message,
     // even pretend scenarios (e.g. speak AS a named person). This is what "make a scenario of X" needs.
     [
-      `You ghost-write WhatsApp messages and voice-note scripts for Rahul, following his instruction EXACTLY — including playful pretend/role-play scenarios where the message is written as if spoken by a named person.`,
+      `You ghost-write WhatsApp messages and voice-note scripts for the owner, following his instruction EXACTLY — including playful pretend/role-play scenarios where the message is written as if spoken by a named person.`,
       `\nYou are writing a message for ${where}.`,
       transcript ? `Recent messages there (for tone/context):\n${transcript}` : '',
-      `\nRahul's instruction (turn this into the actual message): ${brief}`,
+      `\nthe owner's instruction (turn this into the actual message): ${brief}`,
       tail,
     ].join('\n'),
-    [persona, about ? `\nAbout Rahul:\n${about}` : '', `\nYou are writing a message to send into ${where}.`, `Recent messages there:\n${transcript || '(none)'}`, `\nRahul's instruction: ${brief}`, tail].join('\n'),
-    [`You are Zoop, Rahul's witty WhatsApp assistant, in ${where} — a friendly group/chat where people tease each other for fun.`, `\nRahul's instruction: ${brief}`, tail].join('\n'),
+    [persona, about ? `\nAbout the owner:\n${about}` : '', `\nYou are writing a message to send into ${where}.`, `Recent messages there:\n${transcript || '(none)'}`, `\nthe owner's instruction: ${brief}`, tail].join('\n'),
+    [`You are Zoop, the owner's witty WhatsApp assistant, in ${where} — a friendly group/chat where people tease each other for fun.`, `\nthe owner's instruction: ${brief}`, tail].join('\n'),
   ];
   for (const sys of sysVariants) {
     try {
@@ -389,7 +389,7 @@ export async function answerAboutChat(model: string, question: string, history: 
   try {
     const res = await genContent({
       model,
-      contents: `Chat with ${contactName}:\n${transcript || '(no messages yet)'}\n\nRahul asks you: "${question}"\n\nAnswer Rahul concisely and factually, summarising what ${contactName} said that's relevant — based ONLY on the chat above. Keep YOUR own wording clean and neutral; do NOT copy their profanity or adopt a rude tone. If the answer isn't in the chat, say so.`,
+      contents: `Chat with ${contactName}:\n${transcript || '(no messages yet)'}\n\nthe owner asks you: "${question}"\n\nAnswer the owner concisely and factually, summarising what ${contactName} said that's relevant — based ONLY on the chat above. Keep YOUR own wording clean and neutral; do NOT copy their profanity or adopt a rude tone. If the answer isn't in the chat, say so.`,
       config: { temperature: 0.3, maxOutputTokens: 350, thinkingConfig: { thinkingBudget: 0 }, safetySettings: SAFETY },
     });
     onUsage?.(usageOf(res, model));
@@ -404,7 +404,7 @@ export async function answerAboutChat(model: string, question: string, history: 
 export async function followUpDecision(model: string, persona: string, about: string, contactName: string, transcript: string, idleHours: number, onUsage?: OnUsage): Promise<{ followUp: boolean; message: string }> {
   const sys = [
     persona,
-    about ? `\nAbout Rahul:\n${about}` : '',
+    about ? `\nAbout the owner:\n${about}` : '',
     `\nYou're reviewing your WhatsApp chat with "${contactName}". It's been quiet for ~${idleHours} hours.`,
     `Recent messages:\n${transcript || '(none)'}`,
     `\nDecide if a natural, casual follow-up would genuinely help — e.g. the conversation was left`,

@@ -80,7 +80,7 @@
             <button id="syncBtn" class="ghost sync-btn" title="Pull saved names from your phonebook"><i data-lucide="refresh-cw"></i> Sync</button>
           </div>
           <div class="blocknum">
-            <input id="blockNumInput" type="text" placeholder="Block a number (e.g. 9637…)" />
+            <input id="blockNumInput" type="text" placeholder="Block a number (e.g. 98765…)" />
             <button id="blockNumBtn" class="ghost"><i data-lucide="ban"></i> Block</button>
           </div>
           <div class="list" id="contactList"></div>
@@ -110,7 +110,7 @@
           </div>
         </div>
         <div id="agentLog" class="agent-log">
-          <div class="abub zoop">I'm your agent. Tell me things like:<br>• <b>"text Aditi: running 10 min late"</b><br>• <b>"reply to Harshit: chill bro"</b><br>• <b>"what did Rajat say today?"</b><br>I'll send messages on your behalf or tell you what people said.</div>
+          <div class="abub zoop">I'm your agent. Tell me things like:<br>• <b>"text Alex: running 10 min late"</b><br>• <b>"reply to Sam: chill bro"</b><br>• <b>"what did Jordan say today?"</b><br>I'll send messages on your behalf or tell you what people said.</div>
         </div>
         <div class="agent-input">
           <input id="agentInput" type="text" placeholder="Tell Zoop what to do…" />
@@ -203,7 +203,7 @@
           </select>
           <button id="saveModel" class="ghost">Save</button>
         </label>
-        <label class="field"><i data-lucide="bell"></i> Alert number <input id="alertInput" type="text" placeholder="916377362603 (blank = your own number)" /><button id="saveAlert" class="ghost">Save</button></label>
+        <label class="field"><i data-lucide="bell"></i> Alert number <input id="alertInput" type="text" placeholder="e.g. 919876543210 (blank = your own number)" /><button id="saveAlert" class="ghost">Save</button></label>
 
         <h3 class="sec-title danger-title"><i data-lucide="triangle-alert"></i> Danger zone</h3>
         <p class="muted">Deleting your account unlinks WhatsApp and permanently wipes all your data. This cannot be undone.</p>
@@ -236,9 +236,9 @@
     <div class="modal-card">
       <div class="modal-head"><div><i data-lucide="download"></i> Import contacts</div><button id="imClose" class="iconbtn"><i data-lucide="x"></i></button></div>
       <div class="modal-body">
-        <p class="muted">Export your contacts from your phone as a <b>vCard (.vcf)</b> — e.g. <b>Contacts app → Export</b>, or <b>Google Contacts → Export → vCard</b> — then upload the file or paste it below. You can also paste plain lines like <b>Aditi, +91 86196 03117</b>.</p>
+        <p class="muted">Export your contacts from your phone as a <b>vCard (.vcf)</b> — e.g. <b>Contacts app → Export</b>, or <b>Google Contacts → Export → vCard</b> — then upload the file or paste it below. You can also paste plain lines like <b>Alex, +91 98765 43210</b>.</p>
         <input type="file" id="imFile" accept=".vcf,.csv,.txt,text/vcard" style="margin:10px 0; width:100%" />
-        <textarea id="imText" class="about" placeholder="Paste vCard content, or lines like:&#10;Aditi, +918619603117&#10;Rishi, 9782428865"></textarea>
+        <textarea id="imText" class="about" placeholder="Paste vCard content, or lines like:&#10;Alex, +919876543210&#10;Sam, 9876501234"></textarea>
         <div class="row"><button id="imImport">Import contacts</button><span id="imMsg" class="muted"></span></div>
       </div>
     </div>
@@ -273,7 +273,7 @@
       <div class="modal-head"><div id="tuneTitle"><i data-lucide="sliders-horizontal"></i> Tune this chat</div><button id="tuneClose" class="iconbtn"><i data-lucide="x"></i></button></div>
       <div class="modal-body">
         <p class="muted">Type custom instructions Zoop will follow <b>only in this chat</b> — on top of your global persona. e.g. <i>"Always reply in pure Hindi", "Be extra flirty with her", "Never discuss work here", "Call him bhai", "Keep replies one line"</i>. It's also used as context when composing messages here.</p>
-        <textarea id="tuneText" class="about" spellcheck="false" placeholder="e.g. Talk to her in a sweet, caring way. Use her nickname 'Anu'. Never mention money."></textarea>
+        <textarea id="tuneText" class="about" spellcheck="false" placeholder="e.g. Talk to her in a sweet, caring way. Use her nickname 'Sam'. Never mention money."></textarea>
         <div class="row"><button id="tuneSave">Save</button><button id="tuneClear" class="ghost">Clear</button><span id="tuneMsg" class="ok"></span></div>
       </div>
     </div>
