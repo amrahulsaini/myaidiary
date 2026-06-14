@@ -247,8 +247,17 @@ async function loadContacts() {
 function renderContacts() {
   const list = $('#contactList'); const prev = list.scrollTop;
   let items = allContacts.filter((c) => (listFilter === 'group' ? !!c.is_group : !c.is_group));
-  if (searchQ) items = items.filter((c) => (c.name || c.jid).toLowerCase().includes(searchQ));
-  list.innerHTML = items.length ? '' : `<div class="empty">${listFilter === 'group' ? 'No groups yet (they sync a moment after connect).' : 'No contacts.'}</div>`;
+  if (searchQ) {
+    items = items.filter((c) => (c.name || c.jid).toLowerCase().includes(searchQ));
+  } else if (listFilter !== 'group') {
+    // Chats tab = real conversations only (like WhatsApp). Synced phonebook contacts with no
+    // messages are hidden here to avoid flooding the list — search reveals every contact.
+    items = items.filter((c) => c.msgs > 0);
+  }
+  const emptyMsg = listFilter === 'group'
+    ? 'No groups yet (they sync a moment after connect).'
+    : searchQ ? 'No contacts match.' : 'No conversations yet. Search to find a contact and start chatting.';
+  list.innerHTML = items.length ? '' : `<div class="empty">${emptyMsg}</div>`;
   items.forEach((c) => {
     const name = c.name || c.jid.split('@')[0];
     const blocked = !!c.blocked, on = !!c.auto_reply && !blocked;
