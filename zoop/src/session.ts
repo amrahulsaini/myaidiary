@@ -971,6 +971,20 @@ export class TenantSession {
     await this.pace(jid);
     await this.rawSend(jid, text, name);
   }
+  // Owner-triggered: (re)build the running summary for one chat from its past conversation.
+  // Costs credits (one summary AI call) and is gated on balance.
+  async buildSummary(jid: string): Promise<{ ok: boolean; summary: string; error?: string }> {
+    if (!billing.canSpend(this.db)) return { ok: false, summary: '', error: 'no_credits' };
+    const history = this.db.recentMessages(jid, 80).map((m: any) => ({ direction: m.direction, body: m.body }));
+    if (!history.length) return { ok: false, summary: '', error: 'no_messages' };
+    const s = await summarize({ model: this.model(), prev: this.db.getSummary(jid), history }, billing.charger(this.db, 'summary'));
+    if (s) {
+      this.db.setSummary(jid, s);
+      this.log('info', 'summary', `Summary built on request for ${jid.split('@')[0]}`);
+      return { ok: true, summary: s };
+    }
+    return { ok: false, summary: '', error: 'failed' };
+  }
   private async maybeSummarize(jid: string): Promise<void> {
     const c = this.db.getContact(jid);
     if (c && c.msg_count_since_summary >= config.summarizeEveryN) {
