@@ -1,0 +1,6 @@
+# Zoop needs ffmpeg at runtime for voice notes:
+# Gemini TTS returns raw PCM, which session.ts pipes through `ffmpeg` to produce
+# the OGG/Opus format WhatsApp voice notes require. The "..." keeps nixpacks'
+# auto-detected Node packages (incl. the toolchain better-sqlite3 compiles against).
+[phases.setup]
+nixPkgs = ["...", "ffmpeg"]
