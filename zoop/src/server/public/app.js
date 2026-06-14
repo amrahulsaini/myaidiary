@@ -17,8 +17,16 @@ const api = async (path, opts = {}) => {
 let activeJid = null, lastMsgTime = 0, lastLogId = 0, contactsSig = '', allContacts = [], contactsById = {}, searchQ = '', activeSummary = '', activeName = '', listFilter = 'dm', timers = [];
 
 function clearTimers() { timers.forEach(clearInterval); timers = []; }
-function showLogin() { clearTimers(); $('#app').classList.add('hidden'); $('#onboard').classList.add('hidden'); $('#login').classList.remove('hidden'); }
-function showApp() { $('#login').classList.add('hidden'); $('#onboard').classList.add('hidden'); $('#app').classList.remove('hidden'); boot(); }
+// Password managers anchor a floating popup to login forms. While logged INTO the app the login
+// form is hidden but still in the DOM, so the manager renders its popup at a fallback (top-left)
+// position. Stripping the password/email field types removes the "login form" the extension sees.
+function setLoginAuthMode(active) {
+  const email = $('#email'), pw = $('#pw');
+  if (email) email.type = active ? 'email' : 'text';
+  if (pw) pw.type = active ? 'password' : 'text';
+}
+function showLogin() { clearTimers(); $('#app').classList.add('hidden'); $('#onboard').classList.add('hidden'); $('#login').classList.remove('hidden'); setLoginAuthMode(true); }
+function showApp() { $('#login').classList.add('hidden'); $('#onboard').classList.add('hidden'); $('#app').classList.remove('hidden'); setLoginAuthMode(false); boot(); }
 
 // ---------- avatars ----------
 function initials(name) { const c = String(name || '?').replace(/[^\p{L}\p{N} ]/gu, '').trim(); if (!c) return '?'; const p = c.split(/\s+/); return ((p[0]?.[0] || '') + (p.length > 1 ? p[1][0] : '')).toUpperCase() || c[0].toUpperCase(); }
@@ -80,6 +88,7 @@ function startOnboard() {
   obIndex = 0; obAnswers = {};
   $('#login').classList.add('hidden'); $('#app').classList.add('hidden');
   $('#onboard').classList.remove('hidden');
+  setLoginAuthMode(false);
   renderOb();
 }
 function renderOb() {
