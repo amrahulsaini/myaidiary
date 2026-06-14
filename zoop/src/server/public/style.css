@@ -441,7 +441,8 @@ input[type=range] { accent-color: var(--ink); height: 4px; }
   border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; background: var(--panel); box-shadow: var(--shadow);
 }
 .connect-card .muted { margin: 12px 0; font-size: 13px; }
-.qr { width: 240px; height: 240px; border-radius: 12px; background: #fff; padding: 12px; margin: 8px auto; display: block; border: 1px solid var(--border); }
+/* QR image — scoped by id so the generic `qr` connection-state class on #connPill can't inherit it */
+#qrImg { width: 240px; height: 240px; border-radius: 12px; background: #fff; padding: 12px; margin: 8px auto; display: block; border: 1px solid var(--border); }
 
 /* ===================== Modals ===================== */
 .modal { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 20px; }
