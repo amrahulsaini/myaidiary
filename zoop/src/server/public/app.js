@@ -546,6 +546,18 @@ $('#balancePill').onclick = () => { const t = document.querySelector('.tab[data-
 // ---------- helpers ----------
 function esc(s) { return String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
 function flash(sel, msg) { const e = $(sel); e.textContent = msg; setTimeout(() => (e.textContent = ''), 2200); }
+// Stop password managers / browser autofill from injecting their floating popup over Zoop's inputs.
+function suppressAutofillUI() {
+  document.querySelectorAll('input, textarea').forEach((el) => {
+    // 'new-password' on the login fields disables the saved-login popup most reliably
+    el.setAttribute('autocomplete', (el.id === 'email' || el.id === 'pw') ? 'new-password' : 'off');
+    el.setAttribute('autocorrect', 'off');
+    el.setAttribute('data-1p-ignore', 'true');
+    el.setAttribute('data-lpignore', 'true');
+    el.setAttribute('data-bwignore', 'true');
+    el.setAttribute('data-form-type', 'other');
+  });
+}
 
 // ---------- boot ----------
 function boot() {
@@ -563,6 +575,7 @@ function boot() {
 
 (async () => {
   icons(); // render all static <i data-lucide> placeholders (login/header/nav/modals)
+  suppressAutofillUI();
   let me;
   try { me = await api('/me'); } catch { me = { authed: false }; }
   if (me.authed) showApp(); else showLogin();
