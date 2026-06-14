@@ -370,11 +370,38 @@ $('#renameBtn').onclick = async () => {
 };
 
 // ---------- summary modal ----------
-function openSummary() {
+function renderSummaryBody() {
   const body = $('#smBody');
-  $('#smTitle').innerHTML = '<i data-lucide="brain"></i> What Zoop knows about ' + esc(activeName || 'this chat'); icons();
-  if (activeSummary) body.innerHTML = `<div class="sm-meta">Built from your full chat history. Zoop uses this as context for every reply.</div>${esc(activeSummary)}`;
-  else body.innerHTML = `<div class="sm-meta">Still learning…</div>Zoop builds a running summary after a few messages in a chat. Keep chatting and it'll appear here.`;
+  const intro = activeSummary
+    ? `<div class="sm-meta">Built from your chat history. Zoop uses this as context for every reply.</div>${esc(activeSummary)}`
+    : `<div class="sm-meta">No summary yet.</div>Zoop builds one automatically after a few messages — or build it now from past conversations.`;
+  body.innerHTML = intro +
+    `<div class="row" style="margin-top:16px">
+       <button id="smBuild"><i data-lucide="sparkles"></i> ${activeSummary ? 'Rebuild summary' : 'Build summary'}</button>
+       <span id="smBuildMsg" class="muted"></span>
+     </div>`;
+  $('#smBuild').onclick = buildSummaryNow;
+  icons();
+}
+async function buildSummaryNow() {
+  if (!activeJid) return;
+  const btn = $('#smBuild');
+  btn.disabled = true;
+  $('#smBuildMsg').textContent = 'Reading past conversations…';
+  try {
+    const r = await api(`/contacts/${enc(activeJid)}/summarize`, { method: 'POST' });
+    if (r.ok) { activeSummary = r.summary || activeSummary; renderSummaryBody(); }
+    else {
+      btn.disabled = false;
+      $('#smBuildMsg').textContent = r.error === 'no_credits' ? 'Out of credits — top up to build.'
+        : r.error === 'no_messages' ? 'No messages here to summarize yet.'
+        : 'Could not build a summary — try again.';
+    }
+  } catch { btn.disabled = false; $('#smBuildMsg').textContent = 'Failed — try again.'; }
+}
+function openSummary() {
+  $('#smTitle').innerHTML = '<i data-lucide="brain"></i> What Zoop knows about ' + esc(activeName || 'this chat');
+  renderSummaryBody();
   $('#summaryModal').classList.remove('hidden');
 }
 $('#summaryBtn').onclick = openSummary;

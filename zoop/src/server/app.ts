@@ -224,6 +224,15 @@ export function buildServer() {
     if (after > 0) return res.json({ messages: db.messagesAfter(jid, after) });
     res.json({ messages: db.recentMessages(jid, 200), summary: db.getSummary(jid) });
   });
+  // Owner-triggered "Build summary": read past conversation and (re)generate the chat summary.
+  app.post('/api/contacts/:jid/summarize', async (req, res) => {
+    if (!tenantDb(req, res)) return;
+    const s = manager.get(req.session.tenantId!);
+    if (!s) return res.status(503).json({ error: 'session not running' });
+    const r = await s.buildSummary(req.params.jid);
+    if (!r.ok) return res.status(r.error === 'no_credits' ? 402 : 400).json({ error: r.error || 'failed' });
+    res.json({ ok: true, summary: r.summary });
+  });
   // serve a stored media blob (decrypted on the fly) so the dashboard can preview photos/voice.
   app.get('/api/media/:id', (req, res) => {
     const db = tenantDb(req, res);
