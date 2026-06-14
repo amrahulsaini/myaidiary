@@ -307,9 +307,11 @@ export class TenantDB {
           (SELECT MAX(created_at) FROM messages m WHERE m.jid = c.jid) AS last_at,
           (SELECT COUNT(*) FROM messages m WHERE m.jid = c.jid) AS msgs
          FROM contacts c
-         -- sort by the REAL latest message time (history-imported rows never updated last_message_at),
-         -- chats with no messages sink to the bottom — exactly like WhatsApp's chat list.
-         ORDER BY (last_at IS NULL) ASC, last_at DESC, c.last_message_at DESC`
+         -- Named contacts (saved phonebook name or WhatsApp pushName) come first — so after a
+         -- phonebook sync your real, named contacts (with photos) sit at the TOP, and anonymous
+         -- "+number" chats sink to the bottom. Within each group, most-recently-active first.
+         ORDER BY (COALESCE(c.saved_name, c.name) IS NULL) ASC,
+                  (last_at IS NULL) ASC, last_at DESC, c.last_message_at DESC`
       )
       .all() as any[];
     const out: any[] = [];
