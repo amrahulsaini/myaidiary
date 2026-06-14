@@ -264,7 +264,7 @@ export class TenantDB {
     return n;
   }
 
-  // Resolve a name the owner typed (e.g. "rishi") against saved name, their own name, and number.
+  // Resolve a name the owner typed (e.g. "alex") against saved name, their own name, and number.
   resolveContactByQuery(query: string): { jid: string; name: string } | null {
     const q = String(query || '').toLowerCase().trim();
     if (!q) return null;

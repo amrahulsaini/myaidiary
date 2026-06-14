@@ -55,7 +55,7 @@ $('#logoutBtn').onclick = async () => { await fetch('api/logout', { method: 'POS
 
 // ---------- onboarding wizard ----------
 const OB_STEPS = [
-  { key: 'name', type: 'text', q: "What's your name?", hint: 'Zoop will introduce itself as your assistant.', placeholder: 'e.g. Rahul' },
+  { key: 'name', type: 'text', q: "What's your name?", hint: 'Zoop will introduce itself as your assistant.', placeholder: 'e.g. Alex' },
   { key: 'tone', type: 'cards', q: 'Pick a tone', hint: 'How should the replies feel?', options: [
     { v: 'friendly', ico: 'smile', t: 'Friendly', d: 'Warm & casual, like a close friend' },
     { v: 'professional', ico: 'briefcase', t: 'Professional', d: 'Polite, clear, still warm' },
