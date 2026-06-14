@@ -600,29 +600,36 @@ function describeEl(el) {
     + (typeof el.className === 'string' && el.className.trim() ? '.' + el.className.trim().split(/\s+/).join('.') : '');
 }
 setTimeout(() => {
-  const W = window.innerWidth;
-  // probe points across the top-left region (scaled a bit to viewport)
-  const pts = [[150, 120], [230, 150], [300, 180], [200, 210], [130, 90], [350, 130]];
+  // probe points across the top-left region where the box appears
+  const pts = [[260, 110], [200, 90], [300, 140], [160, 130], [340, 100], [230, 160]];
   const lines = [];
   const seen = new Set();
+  let target = null;
   for (const [x, y] of pts) {
     const el = document.elementFromPoint(x, y);
-    if (!el) { continue; }
-    const chain = [];
-    let e = el;
-    for (let i = 0; i < 4 && e && e !== document.body; i++) { chain.push(describeEl(e)); e = e.parentElement; }
+    if (!el) continue;
+    const tag = describeEl(el);
+    // skip the obvious shell elements; we want the rogue box
+    if (/^(html|body)$/.test(el.tagName.toLowerCase())) continue;
     const r = el.getBoundingClientRect();
     const cs = getComputedStyle(el);
-    const key = describeEl(el);
-    if (seen.has(key)) continue;
-    seen.add(key);
-    lines.push(`(${x},${y}) ${chain.join(' < ')}  box=${Math.round(r.width)}x${Math.round(r.height)}@${Math.round(r.left)},${Math.round(r.top)} bg=${cs.backgroundColor} z=${cs.zIndex} pos=${cs.position}`);
+    if (!seen.has(tag)) {
+      seen.add(tag);
+      lines.push(`@(${x},${y}) → ${tag}  ${Math.round(r.width)}x${Math.round(r.height)} bg=${cs.backgroundColor} z=${cs.zIndex} pos=${cs.position}`);
+    }
+    // pick the most "box-like" element as the one to outline
+    if (!target && r.width > 120 && r.width < 600 && r.height > 60) target = el;
   }
-  const banner = document.createElement('div');
-  banner.id = 'zoopDiag';
-  banner.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:2147483647;background:#0b0b0b;color:#3fb950;font:11px/1.5 ui-monospace,monospace;padding:10px;white-space:pre-wrap;max-height:45vh;overflow:auto;border-top:2px solid #3fb950';
-  banner.textContent = 'ZOOP DIAG — what is at the top-left box (screenshot this whole bar):\n' + (lines.join('\n') || 'nothing found at probe points') +
-    '\n\nviewport=' + W + 'x' + window.innerHeight + '  — tap to dismiss';
-  banner.onclick = () => banner.remove();
-  document.body.appendChild(banner);
+  if (target) {
+    target.style.outline = '4px solid red';
+    target.style.outlineOffset = '-2px';
+    const lbl = document.createElement('div');
+    const tr = target.getBoundingClientRect();
+    lbl.style.cssText = `position:fixed;left:${Math.max(0, tr.left)}px;top:${Math.max(0, tr.top)}px;z-index:2147483647;background:red;color:#fff;font:bold 12px/1.3 monospace;padding:4px 7px;max-width:90vw;pointer-events:none`;
+    lbl.textContent = '⟵ THIS BOX = ' + describeEl(target);
+    document.body.appendChild(lbl);
+  }
+  const msg = 'ZOOP DIAGNOSTIC — the white box is:\n\n' + (lines.join('\n') || 'nothing detected at probe points') +
+    '\n\n(Tell me this text, or screenshot — the red-outlined box on the page is the culprit.)';
+  try { alert(msg); } catch {}
 }, 1800);
