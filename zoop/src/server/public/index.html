@@ -132,13 +132,15 @@
             <div class="bal-sub" id="walletSub">Every AI reply, voice note and photo read uses credits.</div>
           </div>
           <div class="recharge-box">
-            <div class="recharge-note"><i data-lucide="clock"></i> Recharge coming soon</div>
+            <div class="recharge-note"><i data-lucide="zap"></i> Recharge instantly via UPI</div>
             <div class="amt-options">
-              <button class="amt-opt" disabled>₹100</button>
-              <button class="amt-opt" disabled>₹500</button>
-              <button class="amt-opt" disabled>₹1000</button>
+              <button class="amt-opt" data-amt="500">₹500</button>
+              <button class="amt-opt" data-amt="1000">₹1000</button>
+              <button class="amt-opt" data-amt="2000">₹2000</button>
             </div>
-            <button id="rechargeBtn" disabled><i data-lucide="credit-card"></i> Add credits</button>
+            <input id="rechargeAmt" type="number" min="500" step="100" placeholder="Custom amount (min ₹500)" />
+            <button id="rechargeBtn"><i data-lucide="qr-code"></i> Add credits</button>
+            <div id="rechargeErr" class="err"></div>
           </div>
         </div>
         <h3 class="sec-title"><i data-lucide="receipt-text"></i> Usage &amp; history</h3>
@@ -288,6 +290,28 @@
         <button id="smClose" class="iconbtn"><i data-lucide="x"></i></button>
       </div>
       <div id="smBody" class="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Recharge modal: UPI QR (no redirect) -->
+  <div id="rechargeModal" class="modal hidden">
+    <div class="modal-backdrop" id="rcBackdrop"></div>
+    <div class="modal-card">
+      <div class="modal-head"><div><i data-lucide="qr-code"></i> Pay <span id="rcAmt">₹—</span> via UPI</div><button id="rcClose" class="iconbtn"><i data-lucide="x"></i></button></div>
+      <div class="modal-body rc-body">
+        <div id="rcStage">
+          <div class="rc-qrwrap"><img id="rcQr" class="rc-qr" alt="UPI QR code" /></div>
+          <p class="muted rc-hint">Scan with any UPI app — GPay, PhonePe, Paytm, BHIM. This screen updates the moment you pay.</p>
+          <a id="rcUpiBtn" class="rc-upi-btn" target="_blank" rel="noopener"><i data-lucide="smartphone"></i> Pay in UPI app</a>
+          <div class="rc-status" id="rcStatus"><span class="rc-spinner"></span> Waiting for payment…</div>
+        </div>
+        <div id="rcDone" class="rc-done hidden">
+          <div class="rc-check"><i data-lucide="check"></i></div>
+          <h3>Payment received 🎉</h3>
+          <p class="muted" id="rcDoneSub">Credits added to your wallet.</p>
+          <button id="rcDoneBtn">Done</button>
+        </div>
+      </div>
     </div>
   </div>
 

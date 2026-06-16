@@ -580,6 +580,20 @@ async function loadWallet() {
     : "You're out of credits — Zoop has paused replying. Top up to resume.";
   const box = $('#ledger');
   box.innerHTML = (w.ledger && w.ledger.length) ? w.ledger.map(ledgerRowHTML).join('') : '<div class="empty" style="padding:24px">No usage yet.</div>';
+  // gate the recharge UI on whether the payment gateway is actually configured on the server
+  const rb = document.querySelector('.recharge-box');
+  if (rb) {
+    if (w.rechargeEnabled) {
+      rb.classList.remove('hidden');
+      if (w.minRechargeInr) {
+        MIN_RECHARGE = Number(w.minRechargeInr) || MIN_RECHARGE;
+        const amtIn = $('#rechargeAmt');
+        if (amtIn) { amtIn.min = MIN_RECHARGE; amtIn.placeholder = `Custom amount (min ₹${MIN_RECHARGE})`; }
+      }
+    } else {
+      rb.classList.add('hidden');
+    }
+  }
   icons();
 }
 // lightweight pill refresh (no ledger re-render) for the polling loop
@@ -587,6 +601,73 @@ async function refreshBalance() {
   try { const w = await api('/wallet'); updateBalanceUI(w.balanceInr, w.canSpend); } catch {}
 }
 $('#balancePill').onclick = () => { const t = document.querySelector('.tab[data-tab="wallet"]'); if (t) t.click(); };
+
+// ---------- recharge (UPI QR, no redirect) ----------
+let MIN_RECHARGE = 500;
+let rcPollTimer = null;
+// preset amount buttons fill the input
+document.querySelectorAll('.amt-opt[data-amt]').forEach((b) => {
+  b.onclick = () => {
+    $('#rechargeAmt').value = b.dataset.amt;
+    $('#rechargeErr').textContent = '';
+    document.querySelectorAll('.amt-opt[data-amt]').forEach((x) => x.classList.toggle('sel', x === b));
+  };
+});
+$('#rechargeAmt').addEventListener('input', () => {
+  document.querySelectorAll('.amt-opt[data-amt]').forEach((x) => x.classList.toggle('sel', x.dataset.amt === $('#rechargeAmt').value));
+});
+function closeRecharge() {
+  if (rcPollTimer) { clearInterval(rcPollTimer); rcPollTimer = null; }
+  $('#rechargeModal').classList.add('hidden');
+}
+$('#rcClose').onclick = closeRecharge;
+$('#rcBackdrop').onclick = closeRecharge;
+$('#rcDoneBtn').onclick = () => { closeRecharge(); loadWallet(); };
+
+$('#rechargeBtn').onclick = async () => {
+  const amt = Math.round(Number($('#rechargeAmt').value));
+  const errEl = $('#rechargeErr');
+  if (!Number.isFinite(amt) || amt < MIN_RECHARGE) { errEl.textContent = `Minimum recharge is ₹${MIN_RECHARGE}.`; return; }
+  errEl.textContent = '';
+  $('#rechargeBtn').disabled = true;
+  let r;
+  try { r = await api('/recharge', { method: 'POST', body: { amount: amt } }); }
+  catch { errEl.textContent = 'Network error. Try again.'; $('#rechargeBtn').disabled = false; return; }
+  $('#rechargeBtn').disabled = false;
+  if (!r || !r.qrId || !r.imageUrl) { errEl.textContent = (r && r.error) || 'Could not start payment.'; return; }
+  openRecharge(r);
+};
+
+function openRecharge(r) {
+  $('#rcAmt').textContent = inr2(r.amount);
+  $('#rcQr').src = r.imageUrl;
+  // "Pay in UPI app": use a real upi:// intent if the backend provides one (S2S UPI), else open the
+  // QR image so a phone can save it and scan from the gallery in any UPI app.
+  const upiBtn = $('#rcUpiBtn');
+  upiBtn.href = r.upiIntent || r.imageUrl;
+  $('#rcStage').classList.remove('hidden');
+  $('#rcDone').classList.add('hidden');
+  $('#rcStatus').innerHTML = '<span class="rc-spinner"></span> Waiting for payment…';
+  $('#rechargeModal').classList.remove('hidden');
+  icons();
+  // poll for payment every 3s
+  if (rcPollTimer) clearInterval(rcPollTimer);
+  rcPollTimer = setInterval(() => pollRecharge(r.qrId), 3000);
+}
+
+async function pollRecharge(qrId) {
+  let s;
+  try { s = await api('/recharge/status/' + enc(qrId)); } catch { return; }
+  if (!s) return;
+  if (s.paid && (s.credited || Number(s.balanceInr) >= 0)) {
+    if (rcPollTimer) { clearInterval(rcPollTimer); rcPollTimer = null; }
+    $('#rcStage').classList.add('hidden');
+    $('#rcDoneSub').textContent = `Credits added — new balance ${inr2(s.balanceInr)}.`;
+    $('#rcDone').classList.remove('hidden');
+    updateBalanceUI(s.balanceInr, true);
+    icons();
+  }
+}
 
 // ---------- helpers ----------
 function esc(s) { return String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
