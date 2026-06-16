@@ -14,6 +14,7 @@ import { manager } from '../manager.js';
 import { DEFAULT_PERSONA } from '../ai.js';
 import type { TenantDB } from '../tenant-db.js';
 import * as billing from '../billing.js';
+import * as razorpay from '../razorpay.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -24,9 +25,21 @@ declare module 'express-session' {
   }
 }
 
+// stash the raw request body so the Razorpay webhook can verify its HMAC signature.
+interface RawBodyReq extends express.Request {
+  rawBody?: Buffer;
+}
+
 export function buildServer() {
   const app = express();
-  app.use(express.json({ limit: '12mb' }));
+  app.use(
+    express.json({
+      limit: '12mb',
+      verify: (req, _res, buf) => {
+        (req as RawBodyReq).rawBody = buf;
+      },
+    })
+  );
   app.use(
     session({
       name: 'zoop.sid',
@@ -111,15 +124,88 @@ export function buildServer() {
         kind: r.kind, model: r.model, tokensIn: r.tokens_in, tokensOut: r.tokens_out,
         amountInr: r.amount_inr, balanceAfter: r.balance_after, note: r.note, at: r.created_at,
       })),
-      // payment gateway is intentionally disabled for now
-      rechargeEnabled: false,
+      rechargeEnabled: razorpay.enabled(),
+      minRechargeInr: billing.MIN_RECHARGE_INR,
     });
   });
 
-  // Recharge endpoint — payment gateway disabled, so this always reports "coming soon".
-  app.post('/api/recharge', (req, res) => {
-    if (!tenantDb(req, res)) return;
-    res.status(503).json({ error: 'Recharge is coming soon — the payment gateway is not enabled yet.' });
+  // Idempotently credit a finished recharge to a tenant's wallet. Keyed by the QR id so polling
+  // AND the webhook can both call this safely — only the first one actually grants the credits.
+  function creditRecharge(db: TenantDB, qrId: string, receivedInr: number): boolean {
+    if (receivedInr <= 0) return false;
+    const marker = `rzp_credited_${qrId}`;
+    if (db.getSetting(marker, '') === '1') return false; // already credited
+    billing.grant(db, receivedInr, 'Recharge');
+    db.setSetting(marker, '1');
+    return true;
+  }
+
+  // ---------- recharge (Razorpay UPI QR — no redirect) ----------
+  // Mint a single-use UPI QR for the requested amount; the dashboard shows it and polls status.
+  app.post('/api/recharge', async (req, res) => {
+    const db = tenantDb(req, res);
+    if (!db) return;
+    if (!razorpay.enabled()) return res.status(503).json({ error: 'Recharge is not configured yet.' });
+    const inr = Math.round(Number(req.body?.amount));
+    if (!Number.isFinite(inr) || inr < billing.MIN_RECHARGE_INR) {
+      return res.status(400).json({ error: `Minimum recharge is ₹${billing.MIN_RECHARGE_INR}.` });
+    }
+    if (inr > 100000) return res.status(400).json({ error: 'Maximum recharge is ₹1,00,000.' });
+    try {
+      const qr = await razorpay.createQr(inr, req.session.tenantId!);
+      res.json({ qrId: qr.id, imageUrl: qr.imageUrl, amount: inr });
+    } catch (e: any) {
+      res.status(502).json({ error: 'Could not start payment — ' + String(e?.message || e) });
+    }
+  });
+
+  // Poll a QR: when paid, credit the wallet (idempotent) and return the new balance.
+  app.get('/api/recharge/status/:qrId', async (req, res) => {
+    const db = tenantDb(req, res);
+    if (!db) return;
+    if (!razorpay.enabled()) return res.status(503).json({ error: 'not configured' });
+    try {
+      const st = await razorpay.getQr(req.params.qrId);
+      if (st.tenantId && st.tenantId !== req.session.tenantId) {
+        return res.status(403).json({ error: 'forbidden' });
+      }
+      const credited = creditRecharge(db, st.id, st.receivedInr);
+      if (credited) {
+        try { db.log('info', 'billing', `Recharge ₹${st.receivedInr} credited (QR ${st.id})`); } catch { /* ignore */ }
+      }
+      res.json({
+        paid: st.receivedInr > 0,
+        status: st.status,
+        credited,
+        balanceInr: billing.getBalance(db),
+      });
+    } catch (e: any) {
+      res.status(502).json({ error: String(e?.message || e) });
+    }
+  });
+
+  // Razorpay webhook (unauthenticated, signature-verified) for instant/reliable crediting even if
+  // the user closed the tab. Configure it in the Razorpay dashboard for the `qr_code.credited` event
+  // pointing at https://<host>/journal/whatsapp/api/recharge/webhook with RAZORPAY_WEBHOOK_SECRET.
+  app.post('/api/recharge/webhook', (req, res) => {
+    const sig = String(req.headers['x-razorpay-signature'] || '');
+    const raw = (req as RawBodyReq).rawBody || Buffer.from(JSON.stringify(req.body || {}));
+    if (!razorpay.verifyWebhook(raw, sig)) return res.status(400).json({ error: 'bad signature' });
+    try {
+      const ev = req.body || {};
+      const qr = ev?.payload?.qr_code?.entity;
+      const pay = ev?.payload?.payment?.entity;
+      const qrId: string = qr?.id || pay?.qr_code_id || '';
+      const tenantId: string = String(qr?.notes?.tenantId || pay?.notes?.tenantId || '');
+      const receivedInr =
+        (Number(qr?.payments_amount_received) || Number(pay?.amount) || 0) / 100;
+      if (qrId && tenantId && getTenant(tenantId)) {
+        creditRecharge(manager.getDb(tenantId), qrId, receivedInr);
+      }
+    } catch {
+      /* ack anyway — Razorpay retries on non-2xx, but a parse error shouldn't loop forever */
+    }
+    res.json({ ok: true });
   });
 
   // Admin top-up (no PG yet): grant credits to any account by email. Guarded by ZOOP_ADMIN_TOKEN.

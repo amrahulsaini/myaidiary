@@ -13,7 +13,10 @@ export const USD_TO_INR = 86;
 export const MARKUP = 2;
 
 // Free trial credits every new account starts with (INR).
-export const SIGNUP_GRANT_INR = 50;
+export const SIGNUP_GRANT_INR = 3;
+
+// Minimum top-up the user can recharge in one go (INR).
+export const MIN_RECHARGE_INR = 500;
 
 // Official Google Gemini API rates — USD per 1,000,000 tokens. [input, output].
 // (These are Google's published rates; the user pays MARKUP × this.)
