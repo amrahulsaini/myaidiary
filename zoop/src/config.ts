@@ -43,6 +43,14 @@ export const config = {
     minGapPerContactMs: num('MIN_GAP_PER_CONTACT_MS', 1500),
   },
   summarizeEveryN: num('SUMMARIZE_EVERY_N_MESSAGES', 4),
+  // Razorpay (UPI QR recharge). Keys live in the server env ONLY — never in git.
+  razorpay: {
+    keyId: str('RAZORPAY_KEY_ID'),
+    keySecret: str('RAZORPAY_KEY_SECRET'),
+    // optional: set in the Razorpay dashboard webhook config for reliable, instant crediting.
+    webhookSecret: str('RAZORPAY_WEBHOOK_SECRET'),
+  },
+  minRechargeInr: num('MIN_RECHARGE_INR', 500),
   paths: {
     data: 'data',
     platformDb: 'data/platform.db',
