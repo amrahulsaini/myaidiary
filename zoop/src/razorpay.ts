@@ -94,6 +94,60 @@ export async function closeQr(qrId: string): Promise<void> {
   }
 }
 
+// ---------- Standard Checkout (Orders) — clean UPI QR on desktop + one-tap UPI app on mobile ----------
+export function keyId(): string {
+  return config.razorpay.keyId;
+}
+
+export interface OrderCreated {
+  id: string;
+  amountInr: number;
+}
+
+// Create an Order the Razorpay Checkout opens against (tagged with the tenant for attribution).
+export async function createOrder(amountInr: number, tenantId: string): Promise<OrderCreated> {
+  const j = await rzp('/orders', 'POST', {
+    amount: Math.round(amountInr * 100), // paise
+    currency: 'INR',
+    notes: { tenantId, purpose: 'zoop_recharge' },
+  });
+  return { id: j.id, amountInr };
+}
+
+// Verify the Checkout success callback: HMAC-SHA256(order_id|payment_id, key_secret) === signature.
+export function verifyPaymentSignature(orderId: string, paymentId: string, signature: string): boolean {
+  if (!orderId || !paymentId || !signature) return false;
+  const expected = crypto
+    .createHmac('sha256', config.razorpay.keySecret)
+    .update(orderId + '|' + paymentId)
+    .digest('hex');
+  try {
+    return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature));
+  } catch {
+    return false;
+  }
+}
+
+export interface PaymentInfo {
+  id: string;
+  status: string; // created | authorized | captured | refunded | failed
+  amountInr: number;
+  orderId: string;
+  tenantId: string;
+}
+
+// Fetch a payment to confirm it really succeeded + read its amount/tenant before crediting.
+export async function getPayment(paymentId: string): Promise<PaymentInfo> {
+  const j = await rzp('/payments/' + encodeURIComponent(paymentId), 'GET');
+  return {
+    id: j.id,
+    status: j.status,
+    amountInr: (Number(j.amount) || 0) / 100,
+    orderId: j.order_id,
+    tenantId: String(j?.notes?.tenantId || ''),
+  };
+}
+
 // Verify a webhook payload signature (HMAC-SHA256 of the raw body with the webhook secret).
 export function verifyWebhook(rawBody: Buffer | string, signature: string): boolean {
   if (!config.razorpay.webhookSecret || !signature) return false;
