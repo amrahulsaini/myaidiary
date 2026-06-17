@@ -293,28 +293,7 @@
     </div>
   </div>
 
-  <!-- Recharge modal: UPI QR (no redirect) -->
-  <div id="rechargeModal" class="modal hidden">
-    <div class="modal-backdrop" id="rcBackdrop"></div>
-    <div class="modal-card">
-      <div class="modal-head"><div><i data-lucide="qr-code"></i> Pay <span id="rcAmt">₹—</span> via UPI</div><button id="rcClose" class="iconbtn"><i data-lucide="x"></i></button></div>
-      <div class="modal-body rc-body">
-        <div id="rcStage">
-          <div class="rc-qrwrap"><img id="rcQr" class="rc-qr" alt="UPI QR code" /></div>
-          <p class="muted rc-hint">Scan with any UPI app — GPay, PhonePe, Paytm, BHIM. This screen updates the moment you pay.</p>
-          <a id="rcUpiBtn" class="rc-upi-btn" target="_blank" rel="noopener"><i data-lucide="smartphone"></i> Pay in UPI app</a>
-          <div class="rc-status" id="rcStatus"><span class="rc-spinner"></span> Waiting for payment…</div>
-        </div>
-        <div id="rcDone" class="rc-done hidden">
-          <div class="rc-check"><i data-lucide="check"></i></div>
-          <h3>Payment received 🎉</h3>
-          <p class="muted" id="rcDoneSub">Credits added to your wallet.</p>
-          <button id="rcDoneBtn">Done</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
   <script src="app.js"></script>
 </body>
