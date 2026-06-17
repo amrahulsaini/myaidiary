@@ -140,8 +140,9 @@ export function buildServer() {
     return true;
   }
 
-  // ---------- recharge (Razorpay UPI QR — no redirect) ----------
-  // Mint a single-use UPI QR for the requested amount; the dashboard shows it and polls status.
+  // ---------- recharge (Razorpay Standard Checkout — in-page, no redirect) ----------
+  // Create an Order; the dashboard opens Razorpay Checkout against it (clean UPI QR on desktop,
+  // one-tap UPI app on mobile). Returns the public key + order id.
   app.post('/api/recharge', async (req, res) => {
     const db = tenantDb(req, res);
     if (!db) return;
@@ -152,55 +153,56 @@ export function buildServer() {
     }
     if (inr > 100000) return res.status(400).json({ error: 'Maximum recharge is ₹1,00,000.' });
     try {
-      const qr = await razorpay.createQr(inr, req.session.tenantId!);
-      res.json({ qrId: qr.id, imageUrl: qr.imageUrl, amount: inr });
+      const order = await razorpay.createOrder(inr, req.session.tenantId!);
+      res.json({ orderId: order.id, amount: inr, keyId: razorpay.keyId() });
     } catch (e: any) {
       res.status(502).json({ error: 'Could not start payment — ' + String(e?.message || e) });
     }
   });
 
-  // Poll a QR: when paid, credit the wallet (idempotent) and return the new balance.
-  app.get('/api/recharge/status/:qrId', async (req, res) => {
+  // Verify the Checkout success callback, then credit the wallet (idempotent by payment id).
+  app.post('/api/recharge/verify', async (req, res) => {
     const db = tenantDb(req, res);
     if (!db) return;
     if (!razorpay.enabled()) return res.status(503).json({ error: 'not configured' });
+    const orderId = String(req.body?.orderId || '');
+    const paymentId = String(req.body?.paymentId || '');
+    const signature = String(req.body?.signature || '');
+    if (!razorpay.verifyPaymentSignature(orderId, paymentId, signature)) {
+      return res.status(400).json({ error: 'Payment verification failed.' });
+    }
     try {
-      const st = await razorpay.getQr(req.params.qrId);
-      if (st.tenantId && st.tenantId !== req.session.tenantId) {
-        return res.status(403).json({ error: 'forbidden' });
+      const p = await razorpay.getPayment(paymentId);
+      if (p.tenantId && p.tenantId !== req.session.tenantId) return res.status(403).json({ error: 'forbidden' });
+      if (p.status !== 'captured' && p.status !== 'authorized') {
+        return res.json({ ok: false, paid: false, balanceInr: billing.getBalance(db) });
       }
-      const credited = creditRecharge(db, st.id, st.receivedInr);
+      const credited = creditRecharge(db, p.id, p.amountInr);
       if (credited) {
-        try { db.log('info', 'billing', `Recharge ₹${st.receivedInr} credited (QR ${st.id})`); } catch { /* ignore */ }
+        try { db.log('info', 'billing', `Recharge ₹${p.amountInr} credited (payment ${p.id})`); } catch { /* ignore */ }
       }
-      res.json({
-        paid: st.receivedInr > 0,
-        status: st.status,
-        credited,
-        balanceInr: billing.getBalance(db),
-      });
+      res.json({ ok: true, paid: true, credited, balanceInr: billing.getBalance(db) });
     } catch (e: any) {
       res.status(502).json({ error: String(e?.message || e) });
     }
   });
 
-  // Razorpay webhook (unauthenticated, signature-verified) for instant/reliable crediting even if
-  // the user closed the tab. Configure it in the Razorpay dashboard for the `qr_code.credited` event
-  // pointing at https://<host>/journal/whatsapp/api/recharge/webhook with RAZORPAY_WEBHOOK_SECRET.
+  // Razorpay webhook (unauthenticated, signature-verified) — reliable crediting even if the user's
+  // tab closed before the callback. Configure it in the Razorpay dashboard for the `payment.captured`
+  // event pointing at https://<host>/journal/whatsapp/api/recharge/webhook with RAZORPAY_WEBHOOK_SECRET.
   app.post('/api/recharge/webhook', (req, res) => {
     const sig = String(req.headers['x-razorpay-signature'] || '');
     const raw = (req as RawBodyReq).rawBody || Buffer.from(JSON.stringify(req.body || {}));
     if (!razorpay.verifyWebhook(raw, sig)) return res.status(400).json({ error: 'bad signature' });
     try {
       const ev = req.body || {};
-      const qr = ev?.payload?.qr_code?.entity;
       const pay = ev?.payload?.payment?.entity;
-      const qrId: string = qr?.id || pay?.qr_code_id || '';
-      const tenantId: string = String(qr?.notes?.tenantId || pay?.notes?.tenantId || '');
-      const receivedInr =
-        (Number(qr?.payments_amount_received) || Number(pay?.amount) || 0) / 100;
-      if (qrId && tenantId && getTenant(tenantId)) {
-        creditRecharge(manager.getDb(tenantId), qrId, receivedInr);
+      const order = ev?.payload?.order?.entity;
+      const paymentId: string = pay?.id || '';
+      const tenantId: string = String(pay?.notes?.tenantId || order?.notes?.tenantId || '');
+      const receivedInr = (Number(pay?.amount) || 0) / 100;
+      if (paymentId && tenantId && receivedInr > 0 && getTenant(tenantId)) {
+        creditRecharge(manager.getDb(tenantId), paymentId, receivedInr);
       }
     } catch {
       /* ack anyway — Razorpay retries on non-2xx, but a parse error shouldn't loop forever */

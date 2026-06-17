@@ -602,9 +602,9 @@ async function refreshBalance() {
 }
 $('#balancePill').onclick = () => { const t = document.querySelector('.tab[data-tab="wallet"]'); if (t) t.click(); };
 
-// ---------- recharge (UPI QR, no redirect) ----------
+// ---------- recharge (Razorpay Standard Checkout — clean UPI QR on desktop, 1-tap UPI app on mobile) ----------
 let MIN_RECHARGE = 500;
-let rcPollTimer = null;
+let myEmail = '';
 // preset amount buttons fill the input
 document.querySelectorAll('.amt-opt[data-amt]').forEach((b) => {
   b.onclick = () => {
@@ -616,57 +616,68 @@ document.querySelectorAll('.amt-opt[data-amt]').forEach((b) => {
 $('#rechargeAmt').addEventListener('input', () => {
   document.querySelectorAll('.amt-opt[data-amt]').forEach((x) => x.classList.toggle('sel', x.dataset.amt === $('#rechargeAmt').value));
 });
-function closeRecharge() {
-  if (rcPollTimer) { clearInterval(rcPollTimer); rcPollTimer = null; }
-  $('#rechargeModal').classList.add('hidden');
-}
-$('#rcClose').onclick = closeRecharge;
-$('#rcBackdrop').onclick = closeRecharge;
-$('#rcDoneBtn').onclick = () => { closeRecharge(); loadWallet(); };
 
 $('#rechargeBtn').onclick = async () => {
   const amt = Math.round(Number($('#rechargeAmt').value));
   const errEl = $('#rechargeErr');
   if (!Number.isFinite(amt) || amt < MIN_RECHARGE) { errEl.textContent = `Minimum recharge is ₹${MIN_RECHARGE}.`; return; }
   errEl.textContent = '';
+  if (typeof Razorpay === 'undefined') { errEl.textContent = 'Payment library still loading — try again in a second.'; return; }
   $('#rechargeBtn').disabled = true;
   let r;
   try { r = await api('/recharge', { method: 'POST', body: { amount: amt } }); }
   catch { errEl.textContent = 'Network error. Try again.'; $('#rechargeBtn').disabled = false; return; }
   $('#rechargeBtn').disabled = false;
-  if (!r || !r.qrId || !r.imageUrl) { errEl.textContent = (r && r.error) || 'Could not start payment.'; return; }
-  openRecharge(r);
+  if (!r || !r.orderId || !r.keyId) { errEl.textContent = (r && r.error) || 'Could not start payment.'; return; }
+  openCheckout(r);
 };
 
-function openRecharge(r) {
-  $('#rcAmt').textContent = inr2(r.amount);
-  $('#rcQr').src = r.imageUrl;
-  // "Pay in UPI app": use a real upi:// intent if the backend provides one (S2S UPI), else open the
-  // QR image so a phone can save it and scan from the gallery in any UPI app.
-  const upiBtn = $('#rcUpiBtn');
-  upiBtn.href = r.upiIntent || r.imageUrl;
-  $('#rcStage').classList.remove('hidden');
-  $('#rcDone').classList.add('hidden');
-  $('#rcStatus').innerHTML = '<span class="rc-spinner"></span> Waiting for payment…';
-  $('#rechargeModal').classList.remove('hidden');
-  icons();
-  // poll for payment every 3s
-  if (rcPollTimer) clearInterval(rcPollTimer);
-  rcPollTimer = setInterval(() => pollRecharge(r.qrId), 3000);
+function openCheckout(r) {
+  const options = {
+    key: r.keyId,
+    amount: r.amount * 100,
+    currency: 'INR',
+    order_id: r.orderId,
+    name: 'Zoop',
+    description: `Wallet recharge — ₹${r.amount}`,
+    image: 'https://myaidiary.me/favicon.ico',
+    prefill: { email: myEmail || '' },
+    theme: { color: '#16a34a' },
+    handler: async (resp) => {
+      $('#rechargeErr').textContent = 'Verifying payment…';
+      let v;
+      try {
+        v = await api('/recharge/verify', { method: 'POST', body: {
+          orderId: resp.razorpay_order_id, paymentId: resp.razorpay_payment_id, signature: resp.razorpay_signature,
+        } });
+      } catch { v = null; }
+      if (v && v.ok) {
+        updateBalanceUI(v.balanceInr, true);
+        loadWallet();
+        rechargeMsg(`✓ ₹${r.amount} added — balance ${inr2(v.balanceInr)}`, true);
+      } else {
+        rechargeMsg((v && v.error) || 'Payment received — credits will appear shortly.', false);
+        setTimeout(loadWallet, 4000);
+      }
+    },
+    modal: { ondismiss: () => { rechargeMsg('Payment cancelled.', false); } },
+  };
+  try {
+    const rz = new Razorpay(options);
+    rz.on('payment.failed', (e) => rechargeMsg((e && e.error && e.error.description) || 'Payment failed.', false));
+    rz.open();
+  } catch {
+    $('#rechargeErr').textContent = 'Could not open the payment window.';
+  }
 }
 
-async function pollRecharge(qrId) {
-  let s;
-  try { s = await api('/recharge/status/' + enc(qrId)); } catch { return; }
-  if (!s) return;
-  if (s.paid && (s.credited || Number(s.balanceInr) >= 0)) {
-    if (rcPollTimer) { clearInterval(rcPollTimer); rcPollTimer = null; }
-    $('#rcStage').classList.add('hidden');
-    $('#rcDoneSub').textContent = `Credits added — new balance ${inr2(s.balanceInr)}.`;
-    $('#rcDone').classList.remove('hidden');
-    updateBalanceUI(s.balanceInr, true);
-    icons();
-  }
+// show a success (green) or error (red) message in the recharge box
+function rechargeMsg(msg, ok) {
+  const e = $('#rechargeErr');
+  if (!e) return;
+  e.textContent = msg;
+  e.style.color = ok ? '#16a34a' : '';
+  setTimeout(() => { e.textContent = ''; e.style.color = ''; }, 5000);
 }
 
 // ---------- helpers ----------
@@ -704,6 +715,7 @@ function boot() {
   suppressAutofillUI();
   let me;
   try { me = await api('/me'); } catch { me = { authed: false }; }
+  if (me.email) myEmail = me.email;
   if (me.authed) showApp(); else showLogin();
   icons();
 })();
