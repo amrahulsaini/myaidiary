@@ -15,6 +15,11 @@ import * as billing from './billing.js';
 import { spawn } from 'node:child_process';
 
 const waLogger = pino({ level: 'silent' });
+// After linking, WhatsApp delivers a burst of already-seen / just-delivered messages; we skip
+// auto-replying for a short window so we don't answer that backlog. It is anchored to CONNECT time
+// (not the history stream) because a full-history sync can run for MINUTES on a large account —
+// staying silent that whole time is exactly the "auto on but nothing sends" bug.
+const HISTORY_SETTLE_MS = 30000;
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const rand = (min: number, max: number) => Math.floor(min + Math.random() * (max - min));
 function withTimeout<T>(p: Promise<T>, ms: number, label: string): Promise<T> {
@@ -81,6 +86,7 @@ export class TenantSession {
   private everConnected = false; // has this session ever linked/opened?
   private historySyncing = false; // suppress replies while history is streaming in
   private histTimer: NodeJS.Timeout | null = null;
+  private catchUpTimer: NodeJS.Timeout | null = null;
   private stopped = false;
   private savedNameByPn = new Map<string, string>();
   private debounceTimers = new Map<string, NodeJS.Timeout>();
@@ -362,6 +368,15 @@ export class TenantSession {
         this.meJid = this.sock?.user?.id || '';
         this.ownerJid = this.meJid ? jidNormalizedUser(this.meJid) : '';
         this.log('info', 'wa', `WhatsApp connected as ${this.meJid}`);
+        // Suppress auto-replies for a short, FIXED window after linking (skip the on-link message
+        // burst), then answer live messages normally — even if the full-history sync is still
+        // streaming. Catch-up (scheduleCatchUp) then answers anything that came in during the window.
+        this.historySyncing = true;
+        if (this.histTimer) clearTimeout(this.histTimer);
+        this.histTimer = setTimeout(() => {
+          this.historySyncing = false;
+          this.scheduleCatchUp();
+        }, HISTORY_SETTLE_MS);
         // Let a fresh link SETTLE before any heavy activity. A new device that instantly fetches
         // all groups + every profile pic + full address book + sends catch-up messages looks like
         // a bot and WhatsApp kicks it. So wait, then do it gently — and only if still connected.
@@ -377,8 +392,8 @@ export class TenantSession {
           }
           this.backfillPfps().catch(() => {});
         }, 45000);
-        // NOTE: auto catch-up disabled — it was replying to month-old history messages on link.
-        // Live new messages are still answered normally; we just don't mass-reply on connect.
+        // Catch-up (bounded to recent unanswered DMs) runs once the settle window ends — see
+        // scheduleCatchUp / catchUpOnStartup — so messages that arrived on link still get answered.
       }
       if (connection === 'close') {
         this.connectionState = 'close';
@@ -417,12 +432,13 @@ export class TenantSession {
     });
 
     s.ev.on('messaging-history.set', (h: any) => {
-      // While history is streaming in, suppress all replies (so we don't answer old messages
-      // mid-sync). Cleared when the final batch arrives, with a safety timeout.
-      this.historySyncing = !h?.isLatest;
-      if (this.histTimer) clearTimeout(this.histTimer);
-      this.histTimer = setTimeout(() => { this.historySyncing = false; }, 180000);
-      if (h?.isLatest) this.log('info', 'wa', 'History sync complete');
+      // NOTE: reply-suppression is NOT gated on the history stream — a full-history sync can run for
+      // minutes and we must not stay silent that whole time. The short suppression window is anchored
+      // to connection-open (see the 'open' handler). Here we only import the history rows.
+      if (h?.isLatest) {
+        this.log('info', 'wa', 'History sync complete');
+        this.scheduleCatchUp(); // in case it finished before the settle window; guarded to run once
+      }
       try {
         this.importHistory(h);
       } catch (err: any) {
@@ -493,14 +509,29 @@ export class TenantSession {
       await sleep(800);
     }
   }
+  // Schedule the one-time post-link catch-up. Debounced so multiple history batches don't stack it.
+  private scheduleCatchUp(): void {
+    if (this.caughtUp || this.catchUpTimer) return;
+    this.catchUpTimer = setTimeout(() => {
+      this.catchUpTimer = null;
+      this.catchUpOnStartup().catch(() => {});
+    }, 10000); // let the connection settle before answering anything
+  }
+  // Reply ONCE, after history sync finishes, to recent DMs that went unanswered while the sync was
+  // suppressing replies (a fresh link stores incoming messages but scheduleReply() bails during sync,
+  // so without this the assistant stays silent until the contact happens to message again).
   private async catchUpOnStartup(): Promise<void> {
+    if (this.caughtUp) return;
+    if (this.connectionState !== 'open' || !this.sock) return;
+    if (this.historySyncing) return; // still streaming — the histTimer will reschedule us
+    this.caughtUp = true; // run at most once per session, even in 'approval'/'off' mode
     if (this.db.getSetting('mode', config.reply.mode) !== 'auto') return;
-    const list = this.db.contactsAwaitingReply();
+    const list = this.db.contactsAwaitingReply(6 * 3600 * 1000, 20); // only the last 6h, capped
     if (!list.length) return;
-    this.log('info', 'reply', `Catch-up: replying to ${list.length} unanswered chat(s)`);
+    this.log('info', 'reply', `Catch-up: replying to ${list.length} unanswered chat(s) since link`);
     for (const c of list) {
       if (this.connectionState !== 'open') break;
-      this.enqueueReply(c.jid, c.name).catch(() => {});
+      this.scheduleReply(c.jid, c.name); // reuse the normal debounce + in-flight + rate-limit path
     }
   }
 
@@ -1024,6 +1055,10 @@ export class TenantSession {
     if (this.followupTimer) {
       clearInterval(this.followupTimer);
       this.followupTimer = null;
+    }
+    if (this.catchUpTimer) {
+      clearTimeout(this.catchUpTimer);
+      this.catchUpTimer = null;
     }
     try {
       if (this.sock) {
